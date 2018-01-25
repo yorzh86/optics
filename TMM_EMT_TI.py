@@ -8,94 +8,114 @@ import cmath
 from TMM_aniso import get_A_B
 import pylab as pl
 
-wl = 12
-# wl in eV; eV to nm -> 1eV = 1.2398E+3 nm
+# CONSTANTS
+#-------------------------------
 c0 = 2.99792458e+8
 ep0 = 8.854187817e-12
 mu0 = 4*pi*1e-7
-mu = np.array([[1,1,1,1]])
-N_layers = 4
-om = 2*pi*c0/wl*1E6
-k0 = float(om/c0)
+#-------------------------------
 
-theta_i= np.array([[10,20,30,40,50,60,70,80]])
-        
-d_ti = 100.92
-# Bi2Se3 conducting 0.92 + 100 nm bulk thickness topological insulator nanometers
-d_diel = 100
-# thickness dielectric nanometers
-ff = d_ti/(d_ti+d_diel)
-# filling ratio
+# NANO-STRUCTURE
+#-------------------------------
+#~ d_ti = 100.92
+#~ d_diel = 100
+#~ ff = d_ti/(d_ti+d_diel)
+N_layers = 18
+N_periods = 8
 
-eps1 = 1.0
-eps3 = 1.0
+mu = np.ones((1, N_layers), dtype=float)
+d_TMM = np.ones((1, N_layers), dtype=float)
+d_TMM[0] = 30.0
+d_TMM[0][0] = d_TMM[0][-1] = 10E6
 
-eps_dO = 2.2
-eps_mO = 4.2
-eps_dE = 2.2
-eps_mE = 4.2
+# select wavelengths
+wl = np.array([[400, 500, 600]])
 
-eps_TMM_O = np.array([[eps1, eps_dO, eps_mO, eps3]])
-eps_TMM_E = np.array([[eps1, eps_dE, eps_mE, eps3]])
-# structure described by _O and _E epsilons
-d_TMM = np.array([[1, 1, 1, 1]])
+# Setup dielectric fn of material for different wavelength
+eps_air = np.array([[1.0]])
+eps_mO = np.array([4.2, 5.2, 6.2])
+eps_dO = np.array([2.2, 1.2, 0.2])
+eps_dE = np.array([2.2, 1.2, 0.2])
+eps_mE = np.array([2.2, 1.2, 0.2])
+
+# select angles of incidence
+#theta_i= np.zeros((1,180), dtype=float)
+#theta_i[0] = np.linspace(0,89.9,180) # or:
+theta_i= np.array([[0]])
+
+#-------------------------------
+
+# TESTING
+#-------------------------------
+# Set up auxiliary lists (for easy appending)
 AA =[]
 BB = []
 CC = []
-# auxiliary lists (for easy appending)
-
-#eps_diel_O = np.array([6.05, 6.00, 5.95, 5.95, 5.90, 5.90])
-#eps_diel_E = np.array([6.05, 6.00, 5.95, 5.95, 5.90, 5.90])
-## Dielectric. Isotropic
-#eps_bulk_O = np.array([22.0+5j, 25.0+7j, 27.0+7j, 28.0+11j, 30.0+18j, 20.0+20j])
-#eps_bulk_E = np.array([22.0+5j, 25.0+7j, 27.0+7j, 28.0+11j, 30.0+18j, 20.0+20j])
-## Bulk isotropic (bulk - interband Yin J)
-#eps_cond_O = np.array([24.47+27.0j, -11.0+8.6j, -3.73+2.5j, -0.71+1.8j, 0.11+1.7j, 0.96+1.6j])
-#eps_cond_E = np.array([24.47+27.0j, -11.0+8.6j, -3.73+2.5j, -0.71+1.8j, 0.11+1.7j, 0.96+1.6j])
-# Conduction surface anisotropic. Needs correction! (black/red lines)
-#d_TMM = np.array([1000, 100, 0.92, 100, 0.92, 1000])
 
 for i in range(len(theta_i[0])):
-    kx = k0*sin(theta_i[0][i]*pi/180)
-    kz_air = sqrt(pow(k0,2)-pow(kx,2))
-    kz_end = sqrt(pow(k0,2)*eps_TMM_O[0][-1]-pow(kx,2)*eps_TMM_O[0][-1]/eps_TMM_E[0][-1])
+    for j in range(len(wl[0])):
+        #Epsilon of period (metal, dielectric)
+        # move it to wavelength loop
+        eps_period_O = np.array([[eps_mO[j], eps_dO[j]]])
+        eps_period_E = np.array([[eps_mE[j], eps_dE[j]]])
+        # Build a long array of total structure:
+        # 1. do period x N_periods
+        # 2. do (air) + (period x N_periods)
+        # 3. do (air + period x N_periods)+ air
+        # 4. change shape to match the rest of the code
+        eps_period_O = np.tile(eps_period_O, N_periods)
+        eps_TMM_O = np.append(eps_air, eps_period_O)
+        eps_TMM_O = np.append(eps_TMM_O, eps_air)
+        eps_TMM_O = np.array([eps_TMM_O])
+        
+        eps_period_E = np.tile(eps_period_E, N_periods)
+        eps_TMM_E = np.append(eps_air, eps_period_E)
+        eps_TMM_E = np.append(eps_TMM_E, eps_air)
+        eps_TMM_E = np.array([eps_TMM_E])
 
-    Ap, Bp = get_A_B(d_TMM, N_layers, wl, eps_TMM_O, eps_TMM_E, kx, mu)
+        om = 2*pi*c0/wl[0][j]*1E9
+        k0 = float(om/c0)        
+        kx = k0*sin(theta_i[0][i]*pi/180)
+        kz_air = sqrt(pow(k0,2)-pow(kx,2))
+        kz_end = sqrt(pow(k0,2)*eps_TMM_O[0][-1]-pow(kx,2)*eps_TMM_O[0][-1]/eps_TMM_E[0][-1])
+    
+        Ap, Bp = get_A_B(d_TMM, N_layers, wl[0][j], eps_TMM_O, eps_TMM_E, kx, mu)
 
-    Rp_TM = pow(np.abs(Bp[0][0]/Ap[0][0]),2)
-    Tr_TM = np.real(kz_end/eps_TMM_O[-1][0])/np.real(kz_air/eps_TMM_O[0][0])*pow(np.abs(Ap[0][-1]/Ap[0][0]), 2)
-    Ab_TM = 1 - Rp_TM - Tr_TM
-    AA.append(Rp_TM)
-    BB.append(Tr_TM)
-    CC.append(Ab_TM)
+        Rp_TM = pow(np.abs(Bp[0][0]/Ap[0][0]),2)
+        Tr_TM = np.real(kz_end/eps_TMM_O[-1][0])/np.real(kz_air/eps_TMM_O[0][0])*pow(np.abs(Ap[0][-1]/Ap[0][0]), 2)
+        Ab_TM = 1 - Rp_TM - Tr_TM
+        AA.append(Rp_TM)
+        BB.append(Tr_TM)
+        CC.append(Ab_TM)
 
 Rp_TM = np.array(AA)
 Tr_TM = np.array(BB)
 Ab_TM = np.array(CC)
 
-#~ print "Rp:", Rp_TM
-#~ print "Tp:", Tr_TM
-#~ print "Ab:", Ab_TM
+#~ print "Rp:", "%0.3f" % Rp_TM[i]
+print "Rp:", Rp_TM, '\n'
+print "Tp:", Tr_TM, '\n'
+print "Ab:", Ab_TM, '\n'
 
 #add penetration depth
 #for l in range (wl.size):
 #    n = sqrt(eps_[])
 #    kappa = n.imag
 #    pd = wl[l]/(4.0*pi*kappa)
+#-------------------------------
 
-#--------------------------
-# here goes plotting magic:
-#--------------------------
+# POST PROCESSING
+#-------------------------------
 def plotRp_Tp(ax, ay,theta_i, R, T):
-    ax.plot(theta_i[:], R[:],'r.', label= 'Reflectance', markersize = 15)
-    ax.plot(theta_i[:], R[:], color='darkred', linewidth=0.8, linestyle='-')
+    ax.plot(theta_i[:], R[:], label= 'Reflectance')
+    ax.plot(theta_i[:], R[:], color='red', linewidth=0.5, linestyle='-')
     ax.yaxis.tick_left()
     ax.set_ylabel('Reflectance, $R$', color = 'r')
     ax.tick_params('y',colors='r')
-    
+
     ay = ax.twinx()
-    ay.plot(theta_i[:], T[:],'b*', label= 'Transmittance', markersize = 15)
-    ay.plot(theta_i[:], T[:], color='darkblue', linewidth=0.8, linestyle='-')
+    ay.plot(theta_i[:], T[:], label= 'Transmittance')
+    ay.plot(theta_i[:], T[:], color='darkblue', linewidth=0.5, linestyle='-')
     ay.set_ylabel('Transmittance, $T$', color = 'b')
     ay.tick_params('y',colors='b')
     ax.minorticks_on()
@@ -119,5 +139,6 @@ def doFigure(theta_i, Rp_TM, Tr_TM):
     fig.savefig('plotR_T.pdf')
     return
 
-doFigure(theta_i[0], Rp_TM, Tr_TM)
-pl.show()
+#doFigure(theta_i[0], Rp_TM, Tr_TM)
+#pl.show()
+#-------------------------------
