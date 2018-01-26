@@ -28,34 +28,30 @@ Material_name = "Ag-TiO2"
 N_layers = 18
 N_periods = 8
 
-# Permeability and thickness of layers
+# Permeability and thickness of layers (nm)
 mu = np.ones((1, N_layers), dtype=float)
 d_TMM = np.ones((1, N_layers), dtype=float)
-d_TMM[0] = 0.03
-d_TMM[0][0] = d_TMM[0][-1] = 1E6
+d_TMM[0] = 30*1E-9
+d_TMM[0][0] = d_TMM[0][-1] = 1E12
 
 # Setup wavelengths
-#wl = np.array([[0.4, 0.5, 0.6, 0.7, 0.8]])
-wl = np.array([[0.4]])
-
-# Setup dielectric fn for each layer at different wavelengths
-eps_air = np.array([[1.0]])
-#eps_mO = np.array([[-7.7123+0.0505j, -12.6127+0.0986j,-18.6019+0.1705j, -25.6796+0.2707j,-33.8458+0.4040j]])
-#eps_mE = np.array([[-7.7123+0.0505j, -12.6127+0.0986j,-18.6019+0.1705j, -25.6796+0.2707j,-33.8458+0.4040j]])
-
-eps_mO=np.array([[3, 3, 3, 4, 1]])
-eps_mE=np.array([[2, 2, 1, 1, 1]])
-
-#eps_dO = np.array([[9.1038+0.0782j, 7.3514,  6.7857, 6.5088, 6.3491]])
-#eps_dE = np.array([[11.4552+0.5068j, 9.2018, 8.4019, 8.0158, 7.7948]])
-
-eps_dO = np.array([[1, 2, 3, 4, 5]])
-eps_dE = np.array([[2, 2, 3, 3, 4]])
+#wl = np.array([[400, 500, 600, 700, 800]])
+wl = np.array([[400]])
 
 # Select angles of incidence
 theta_i= np.zeros((1,180), dtype=float)
 theta_i[0] = np.linspace(0,89.9,180) # or:
-#theta_i= np.array([[0, 10, 20, 30]])
+#theta_i= np.array([[0,10,20,30]])
+
+# Setup dielectric fn for each layer at different wavelengths
+eps_air = np.array([[1.0]])
+eps_mO = np.array([[-7.7123+0.0505j, -12.6127+0.0986j,-18.6019+0.1705j, -25.6796+0.2707j,-33.8458+0.4040j]])
+eps_mE = np.array([[-7.7123+0.0505j, -12.6127+0.0986j,-18.6019+0.1705j, -25.6796+0.2707j,-33.8458+0.4040j]])
+
+eps_dO = np.array([[9.1038+0.0782j, 7.3514,  6.7857, 6.5088, 6.3491]])
+eps_dE = np.array([[11.4552+0.5068j, 9.2018, 8.4019, 8.0158, 7.7948]])
+
+
 #-------------------------------
 
 # TESTING
@@ -75,7 +71,7 @@ for i in range(len(theta_i[0])):
         # 3. do (air + period x N_periods)+ air
         # 4. change shape to match the rest of the code
         eps_period_O = np.tile(eps_period_O, N_periods)
-        eps_TMM_O = np.append(eps_air, eps_period_O)  
+        eps_TMM_O = np.append(eps_air, eps_period_O)
         eps_TMM_O = np.append(eps_TMM_O, eps_air)
         eps_TMM_O = np.array([eps_TMM_O])
 
@@ -84,11 +80,11 @@ for i in range(len(theta_i[0])):
         eps_TMM_E = np.append(eps_TMM_E, eps_air)
         eps_TMM_E = np.array([eps_TMM_E])
 
-        om = 2*pi*c0/wl[0][j]*1E6#*1E6?? 1E9?
+        om = 2*pi*c0/wl[0][j]*1E9
         k0 = float(om/c0)
         kx = k0*sin(theta_i[0][i]*pi/180)
-        kz_air = sqrt(pow(k0,2)-pow(kx,2))
-        kz_end = sqrt(pow(k0,2)*eps_TMM_O[0][-1]-pow(kx,2)*eps_TMM_O[0][-1]/eps_TMM_E[0][-1])
+        kz_air = cmath.sqrt(pow(k0,2)-pow(kx,2))
+        kz_end = cmath.sqrt(pow(k0,2)*eps_TMM_O[0][-1]-pow(kx,2)*eps_TMM_O[0][-1]/eps_TMM_E[0][-1])
 
         Ap, Bp = get_A_B(d_TMM, N_layers, wl[0][j], eps_TMM_O, eps_TMM_E, kx, mu)
 
@@ -110,10 +106,10 @@ Ab_TM = np.array(CC)
 
 print
 print "Material:", Material_name
-print "Tested incidence angles:", theta_i[0]
+print "Tested incidence angles: 0-89."
 print "Tested wavelengths,[um]:", wl[0], '\n'
-#~ print "Rp:", Rp_TM
-#~ print "Tp:", Tr_TM
+#print "Rp:", Rp_TM
+#print "Tp:", Tr_TM
 
 #print('\x1b[6;30;42m' + 'Success!' + '\x1b[0m')
 #add penetration depth
@@ -135,21 +131,21 @@ def plotRp_Tp(ax, ay, xaxis, R, T):
 
     ay = ax.twinx()
     ay.plot(xaxis[:], R[:], label= 'Reflectance')
-    ay.plot(xaxis[:], R[:], color='darkblue', linewidth=0.3, linestyle='--')
+    ay.plot(xaxis[:], R[:], color='b', linewidth=0.3, linestyle='-.')
     ay.set_ylabel('Reflectance, $R$', color = 'b')
     ay.tick_params('y',colors='b')
 
-    ax.set_xlabel('Incidence angle theta, $theta_i$')
+    ax.set_xlabel('Incidence angle theta, 'r'$\theta$')
     ax.legend(loc=3,fancybox=True)
     ay.legend(loc=2,fancybox=True)
 
     ymajor_ticks = np.arange(0, 1.01, 0.2)
     yminor_ticks = np.arange(0, 1.02, 0.02)
-    
+
     # 1 angle - many wl:
     #xmajor_ticks = np.arange(300, 800, 100)
     #xminor_ticks = np.arange(300, 725, 25)
-    
+
     # 1 wl - many angles:
     xmajor_ticks = np.arange(0, 100, 10)
     xminor_ticks = np.arange(0, 91, 1)
@@ -160,6 +156,8 @@ def plotRp_Tp(ax, ay, xaxis, R, T):
     ay.set_yticks(yminor_ticks, minor = True)
     ax.set_xticks(xmajor_ticks)
     ax.set_xticks(xminor_ticks, minor = True)
+    pl.text(0.7, 0.85,"$\lambda$ = 400 nm", horizontalalignment = 'center', verticalalignment = 'center',
+            transform = ax.transAxes)
     #ax(ay).minorticks_on()
     #ax.grid(which='both')
     #ax.grid(which='minor', linestyle = '--')
@@ -177,6 +175,6 @@ def doFigure(xaxis, Rp_TM, Tr_TM):
     return
 
 # Select theta_i[0] or wl[0]:
-#~ doFigure(theta_i[0], Rp_TM, Tr_TM)
-#~ pl.show()
+doFigure(theta_i[0], Rp_TM, Tr_TM)
+pl.show()
 #-------------------------------

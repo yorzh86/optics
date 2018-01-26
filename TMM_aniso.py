@@ -35,7 +35,7 @@ def get_A_B(d, N_layers, wl, eps_O, eps_E, kx, mu):
     # matrixes for A and B coefficients
 
     for l in range(N_layers):
-        om = 2*pi*c0/wl*1E6 #* 1E9 or 6?
+        om = 2*pi*c0/wl*1.0E9
         k0 = om/c0
         kz_p[0][l] = cmath.sqrt(eps_O[0][l]*mu[0][l]*pow(k0,2) - pow(kx,2)*eps_O[0][l]/eps_E[0][l])
         kz_n[0][l] = -kz_p[0][l]
@@ -43,7 +43,7 @@ def get_A_B(d, N_layers, wl, eps_O, eps_E, kx, mu):
             kz_p[0][l] = np.conj(kz_p[0][l])
 
         z[0][l] = 1.0/(om*eps0)*kz_p[0][l]/eps_O[0][l]
-        #~ print "------"        
+        #~ print "------"
         #~ print "l:", l
         #~ print "eps_O[0][l]:", eps_O[0][l]
         #~ print "mu[0][l]:", mu[0][l]
