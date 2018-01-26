@@ -16,7 +16,6 @@ def get_A_B(d, N_layers, wl, eps_O, eps_E, kx, mu):
     c0 = 2.99792458E8
     eps0 =8.854187817e-12
 
-
     # axiliary array;includes PD^-1D elements
     kz_p= np.zeros((1, N_layers), dtype=complex)
     kz_n= np.zeros((1, N_layers), dtype=complex)
@@ -36,7 +35,7 @@ def get_A_B(d, N_layers, wl, eps_O, eps_E, kx, mu):
     # matrixes for A and B coefficients
 
     for l in range(N_layers):
-        om = 2*pi*c0/wl*1.0E9
+        om = 2*pi*c0/wl*1E6 #* 1E9 or 6?
         k0 = om/c0
         kz_p[0][l] = cmath.sqrt(eps_O[0][l]*mu[0][l]*pow(k0,2) - pow(kx,2)*eps_O[0][l]/eps_E[0][l])
         kz_n[0][l] = -kz_p[0][l]
@@ -44,6 +43,17 @@ def get_A_B(d, N_layers, wl, eps_O, eps_E, kx, mu):
             kz_p[0][l] = np.conj(kz_p[0][l])
 
         z[0][l] = 1.0/(om*eps0)*kz_p[0][l]/eps_O[0][l]
+        #~ print "------"        
+        #~ print "l:", l
+        #~ print "eps_O[0][l]:", eps_O[0][l]
+        #~ print "mu[0][l]:", mu[0][l]
+        #~ print "pow(k0,2):", pow(k0,2)
+        #~ print "pow(kx,2):", pow(kx,2)
+        #~ print "eps_E[0][l]:", eps_E[0][l]
+        #~ print "eps_O[0][l]/eps_E[0][l]:", eps_O[0][l]/eps_E[0][l]
+        #~ print "product:", eps_O[0][l]*mu[0][l]*pow(k0,2) - pow(kx,2)*eps_O[0][l]/eps_E[0][l]
+        #~ print "kzp:", kz_p[0][l]
+        #~ print "------"
 
     Mp[N_layers-1] = np.identity(2)
     for l in range(N_layers-2, -1, -1):
@@ -57,9 +67,17 @@ def get_A_B(d, N_layers, wl, eps_O, eps_E, kx, mu):
             [r_ij, t_ij*t_ji-r_ij*r_ji],
             ])*1.0/t_ij
 
+        #~ print "------"
+        #~ print "l:", l
+        #~ print "kz_p[0][l]:", kz_p[0][l]
+        #~ print "d[0][l]:", d[0][l]
+        #~ print "product:", -1j*kz_p[0][l]*d[0][l]
+        #~ print "exp(product):", cmath.exp(-1j*kz_p[0][l]*d[0][l]) Error here!!!
+        #~ print "------"
+
         P[l] = np.array([
-            [cmath.exp(-kz_p[0][l]*d[0][l]*1j), 0.0],
-            [0.0, cmath.exp(-kz_n[0][l]*d[0][l]*1j)],
+            [cmath.exp(-1j*kz_p[0][l]*d[0][l]), 0.0],
+            [0.0, cmath.exp(-1j*kz_n[0][l]*d[0][l])],
             ])
         M[l] = P[l].dot(DD[l])
         Mp[l] = np.dot(M[l],Mp[l+1])
