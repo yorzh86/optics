@@ -53,9 +53,9 @@ eps_dO = np.array([[1, 2, 3, 4, 5]])
 eps_dE = np.array([[2, 2, 3, 3, 4]])
 
 # Select angles of incidence
-#theta_i= np.zeros((1,180), dtype=float)
-#theta_i[0] = np.linspace(0,89.9,180) # or:
-theta_i= np.array([[0, 10, 20, 30]])
+theta_i= np.zeros((1,180), dtype=float)
+theta_i[0] = np.linspace(0,89.9,180) # or:
+#theta_i= np.array([[0, 10, 20, 30]])
 #-------------------------------
 
 # TESTING
@@ -112,8 +112,8 @@ print
 print "Material:", Material_name
 print "Tested incidence angles:", theta_i[0]
 print "Tested wavelengths,[um]:", wl[0], '\n'
-print "Rp:", Rp_TM
-print "Tp:", Tr_TM
+#~ print "Rp:", Rp_TM
+#~ print "Tp:", Tr_TM
 
 #print('\x1b[6;30;42m' + 'Success!' + '\x1b[0m')
 #add penetration depth
@@ -142,12 +142,18 @@ def plotRp_Tp(ax, ay, xaxis, R, T):
     ax.set_xlabel('Incidence angle theta, $theta_i$')
     ax.legend(loc=3,fancybox=True)
     ay.legend(loc=2,fancybox=True)
-    #ay.legend(loc='best',fancybox=True)
 
     ymajor_ticks = np.arange(0, 1.01, 0.2)
     yminor_ticks = np.arange(0, 1.02, 0.02)
-    xmajor_ticks = np.arange(300, 800, 100)
-    xminor_ticks = np.arange(300, 725, 25)
+    
+    # 1 angle - many wl:
+    #xmajor_ticks = np.arange(300, 800, 100)
+    #xminor_ticks = np.arange(300, 725, 25)
+    
+    # 1 wl - many angles:
+    xmajor_ticks = np.arange(0, 100, 10)
+    xminor_ticks = np.arange(0, 91, 1)
+
     ax.set_yticks(ymajor_ticks)
     ax.set_yticks(yminor_ticks, minor = True)
     ay.set_yticks(ymajor_ticks)
@@ -167,11 +173,10 @@ def doFigure(xaxis, Rp_TM, Tr_TM):
     ayR = fig.add_subplot(111)
     plotRp_Tp(axR, ayR, xaxis, R, T)
     fig.tight_layout()
-    #pl.subplots_adjust(top=0.91, hspace=0.46)
-    #fig.suptitle('Reflectance/Transmittance', fontsize=12, fontweight='bold')
     fig.savefig('plotR_T.pdf')
     return
 
-#~ doFigure(wl[0], Rp_TM, Tr_TM)
+# Select theta_i[0] or wl[0]:
+#~ doFigure(theta_i[0], Rp_TM, Tr_TM)
 #~ pl.show()
 #-------------------------------
