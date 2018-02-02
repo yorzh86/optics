@@ -1,4 +1,5 @@
 import numpy as np
+import cmath
 
 #Array of wavelength[nm] and epsilon.real
 # [486...1098]nm
@@ -231,7 +232,17 @@ wl_eps_imag = np.array([
     [1097.1993, 0.27879965],
 ])
 
-def get_eps_ZnSe(x):
+def get_eps_ZnSe_Marple(x1):
+    # Calculates epsilon of ZnSe when input energy in [nm]
+    # source: https://refractiveindex.info/?shelf=main&book=ZnSe&page=Marple
+    # Use:
+    # print get_eps_ZnSe_Marple(500)
+    # [7.46715328467, 0] - 0 stands for imaginary part
+    x = x1*1E-3
+    eps = 4.0+(1.90*x**2)/(x**2 - 0.113)
+    return [eps, 0]
+
+def get_eps_ZnSe_Desai(x):
     # fn interates through known values of eps(eV) and interpolates
     # source Desai:"Optical and Dispersion Analysis of ZnSe thing film"
     # ZnSe thickness = 7300 A (730 nm)

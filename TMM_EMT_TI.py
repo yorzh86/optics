@@ -12,8 +12,8 @@ from math import *
 import cmath
 from TMM_aniso import get_A_B
 from Bi2Se3_drude import drude_O_eps, drude_E_eps
-from Bi2Se3_bulk import get_eps_Bi2Se3_bulk
-from ZnSe import get_eps_ZnSe
+from Bi2Se3_bulk import get_eps_Bi2Se3_bulk_Yin
+from ZnSe import get_eps_ZnSe_Marple
 import pylab as pl
 
 # CONSTANTS
@@ -76,12 +76,12 @@ Ab = np.zeros((len(theta_i[0]),len(wl[0])),dtype=float)
 for i in range(len(theta_i[0])):
     for j in range(len(wl[0])):
         # Setup dielectric fn for each layer at different wavelengths
-        eps_dO[0][j] = complex(get_eps_ZnSe(wl[0][j])[0],get_eps_ZnSe(wl[0][j])[1])
-        eps_dE[0][j] = complex(get_eps_ZnSe(wl[0][j])[0],get_eps_ZnSe(wl[0][j])[1])
+        eps_dO[0][j] = complex(get_eps_ZnSe_Marple(wl[0][j])[0],get_eps_ZnSe_Marple(wl[0][j])[1])
+        eps_dE[0][j] = complex(get_eps_ZnSe_Marple(wl[0][j])[0],get_eps_ZnSe_Marple(wl[0][j])[1])
         eps_condO[0][j] = complex(drude_O_eps(wl[0][j])[0],drude_O_eps(wl[0][j])[1])
         eps_condE[0][j] = complex(drude_E_eps(wl[0][j])[0],drude_E_eps(wl[0][j])[1])
-        eps_bulkO[0][j] = complex(get_eps_Bi2Se3_bulk(wl[0][j])[0],get_eps_Bi2Se3_bulk(wl[0][j])[1])
-        eps_bulkE[0][j] = complex(get_eps_Bi2Se3_bulk(wl[0][j])[0],get_eps_Bi2Se3_bulk(wl[0][j])[1])
+        eps_bulkO[0][j] = complex(get_eps_Bi2Se3_bulk_Yin(wl[0][j])[0],get_eps_Bi2Se3_bulk_Yin(wl[0][j])[1])
+        eps_bulkE[0][j] = complex(get_eps_Bi2Se3_bulk_Yin(wl[0][j])[0],get_eps_Bi2Se3_bulk_Yin(wl[0][j])[1])
 
         #Epsilon of period (dielectric, conduction, bulk, conduction)
         eps_period_O = np.array([
@@ -148,15 +148,15 @@ print "Ab:", Ab
 #-------------------------------
 # 1. Perform plotting magic
 def plotRp_Tp(ax, ay, xaxis, R, A):
-    ax.plot(xaxis[:], A[:], label= 'Absorbtance')
-    ax.plot(xaxis[:], A[:], color='r', linewidth=0.4, linestyle='--')
+    ax.plot(xaxis[:], A[:], label= 'Absorbtance', color = 'r')
+    ax.plot(xaxis[:], A[:], color='r')
     ax.yaxis.tick_left()
     ax.set_ylabel('Absorbtance, $A$', color = 'r')
     ax.tick_params('y',colors='r')
 
     ay = ax.twinx()
-    ay.plot(xaxis[:], R[:], label= 'Reflectance')
-    ay.plot(xaxis[:], R[:], color='b', linewidth=0.3, linestyle='-')
+    ay.plot(xaxis[:], R[:], label= 'Reflectance', color = 'b')
+    ay.plot(xaxis[:], R[:], color='b')
     ay.set_ylabel('Reflectance, $R$', color = 'b')
     ay.tick_params('y',colors='b')
 
@@ -175,7 +175,6 @@ def plotRp_Tp(ax, ay, xaxis, R, A):
     # 1 wl - many angles:
     #xmajor_ticks = np.arange(0, 100, 10)
     #xminor_ticks = np.arange(0, 91, 1)
-
     ax.set_yticks(ymajor_ticks)
     ax.set_yticks(yminor_ticks, minor = True)
     ay.set_yticks(ymajor_ticks)
@@ -186,7 +185,7 @@ def plotRp_Tp(ax, ay, xaxis, R, A):
     #        transform = ax.transAxes)
     pl.text(0.7, 0.85,"$\ theta$ = 0", horizontalalignment = 'center', verticalalignment = 'center',
             transform = ax.transAxes)
-    
+
     #ax(ay).minorticks_on()
     #ax.grid(which='both')
     #ax.grid(which='minor', linestyle = '--')

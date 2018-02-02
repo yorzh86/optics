@@ -112,7 +112,7 @@ wl_eps_imag = np.array([
     [4.998106, 0.30769232],
 ])
 
-def get_eps_Bi2Se3_bulk(x1):
+def get_eps_Bi2Se3_bulk_Yin(x1):
     # fn interates through known values of eps(eV) and interpolates
     # source Yin et al. Figure 5:"Plasmonics of Topological Insulators at Optical Frequencies"
     # to simulate bulk - we look at interband contributions (solid lines)
