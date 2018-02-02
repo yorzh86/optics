@@ -1,11 +1,11 @@
 #Concerns:
-
 #1. interpolation gives WAAAY better results than Drude model
 #2. ZnSe starts only from 490 nm.
+#3. High absorbtance???
 
 #todo:
-#- add eps array creation for lambda
 #- plot for different angles
+#- re-do Thickness array creation (hard coded 4 periods (d_TMM)
 
 import numpy as np
 from math import *
@@ -33,31 +33,38 @@ CC = []
 # NANO-STRUCTURE
 #-------------------------------
 Material_name = "Bi2Se3-ZnSe"
-N_layers = 22
-N_periods = 5
+N_layers = 18
+N_periods = 4
 
 # Permeability and thickness of layers (nm)
 mu = np.ones((1, N_layers), dtype=float)
-d_TMM = np.ones((1, N_layers), dtype=float)
-d_TMM[0] = 100*1E-9
-d_TMM[0][0] = d_TMM[0][-1] = 1E12
+#d_TMM = np.ones((1, N_layers), dtype=float)
+#d_TMM[0] = 100*1E-9
+#d_TMM[0][0] = d_TMM[0][-1] = 1E12
+d_TMM = np.array([
+[1E12,   0.92E-9, 100E-9, 100E-9, 0.92E-9,    0.92E-9, 100E-9, 100E-9, 0.92E-9,   \
+ 0.92E-9, 100E-9, 100E-9, 0.92E-9,   0.92E-9, 100E-9, 100E-9, 0.92E-9,    1E12]])
 
 # Setup wavelengths
-#wl = np.array([[400, 500, 600, 700, 800]])
-wl = np.array([[400]])
+wl = np.array([[500,600]])
 
 # Select angles of incidence
-theta_i= np.zeros((1,180), dtype=float)
-theta_i[0] = np.linspace(0,89.9,180) # or:
-#theta_i= np.array([[0,10,20,30]])
+#theta_i= np.zeros((1,180), dtype=float)
+#theta_i[0] = np.linspace(0,89.9,180) # or:
+theta_i= np.array([[0,10,20,30]])
 
 # Setup dielectric fn for each layer at different wavelengths
 eps_air = np.array([[1.0]])
-eps_mO = np.array([[-7.7123+0.0505j, -12.6127+0.0986j,-18.6019+0.1705j, -25.6796+0.2707j,-33.8458+0.4040j]])
-eps_mE = np.array([[-7.7123+0.0505j, -12.6127+0.0986j,-18.6019+0.1705j, -25.6796+0.2707j,-33.8458+0.4040j]])
+eps_dO = np.zeros((1,len(wl[0])), dtype=complex)
+eps_dE = np.zeros((1,len(wl[0])), dtype=complex)
+eps_condO = np.zeros((1,len(wl[0])), dtype=complex)
+eps_condE = np.zeros((1,len(wl[0])), dtype=complex)
+eps_bulkO = np.zeros((1,len(wl[0])), dtype=complex)
+eps_bulkE = np.zeros((1,len(wl[0])), dtype=complex)
 
-eps_dO = np.array([[9.1038+0.0782j, 7.3514,  6.7857, 6.5088, 6.3491]])
-eps_dE = np.array([[11.4552+0.5068j, 9.2018, 8.4019, 8.0158, 7.7948]])
+Rp = np.zeros((len(theta_i[0]),len(wl[0])),dtype=float)
+Tr = np.zeros((len(theta_i[0]),len(wl[0])),dtype=float)
+Ab = np.zeros((len(theta_i[0]),len(wl[0])),dtype=float)
 
 #-------------------------------
 
@@ -67,8 +74,15 @@ eps_dE = np.array([[11.4552+0.5068j, 9.2018, 8.4019, 8.0158, 7.7948]])
 # 2. Loop through all wavelengths
 for i in range(len(theta_i[0])):
     for j in range(len(wl[0])):
+        # Setup dielectric fn for each layer at different wavelengths
+        eps_dO[0][j] = complex(get_eps_ZnSe(wl[0][j])[0],get_eps_ZnSe(wl[0][j])[1])
+        eps_dE[0][j] = complex(get_eps_ZnSe(wl[0][j])[0],get_eps_ZnSe(wl[0][j])[1])
+        eps_condO[0][j] = complex(drude_O_eps(wl[0][j])[0],drude_O_eps(wl[0][j])[1])
+        eps_condE[0][j] = complex(drude_E_eps(wl[0][j])[0],drude_E_eps(wl[0][j])[1])      
+        eps_bulkO[0][j] = complex(get_eps_Bi2Se3_bulk(wl[0][j])[0],get_eps_Bi2Se3_bulk(wl[0][j])[1])
+        eps_bulkE[0][j] = complex(get_eps_Bi2Se3_bulk(wl[0][j])[0],get_eps_Bi2Se3_bulk(wl[0][j])[1])
 
-        #Epsilon of period (metal, dielectric)
+        #Epsilon of period (dielectric, conduction, bulk, conduction)
         eps_period_O = np.array([
             [eps_dO[0][j], eps_condO[0][j], eps_bulkO[0][j], eps_condO[0][j] ]])
         eps_period_E = np.array([
@@ -101,24 +115,31 @@ for i in range(len(theta_i[0])):
         Tr_TM = np.real(kz_end/eps_TMM_O[-1][0])/np.real(kz_air/eps_TMM_O[0][0])*pow(np.abs(Ap[0][-1]/Ap[0][0]), 2)
         Ab_TM = 1 - Rp_TM - Tr_TM
 
-        AA.append(Rp_TM)
-        BB.append(Tr_TM)
-        CC.append(Ab_TM)
+        #AA.append(Rp_TM)
+        #BB.append(Tr_TM)
+        #CC.append(Ab_TM)
+        
+        Rp[i][j] = Rp_TM
+        Tr[i][j] = Tr_TM
+        Ab[i][j] = Ab_TM
 
+#Rp_TM = np.array(AA)
+#Tr_TM = np.array(BB)
+#Ab_TM = np.array(CC)
 
-
-Rp_TM = np.array(AA)
-Tr_TM = np.array(BB)
-Ab_TM = np.array(CC)
 
 #~ print "Rp:", "%0.3f" % Rp_TM[i]
 
-print
-print "Material:", Material_name
-print "Tested incidence angles: 0-89."
-print "Tested wavelengths,[um]:", wl[0], '\n'
-#print "Rp:", Rp_TM
-#print "Tp:", Tr_TM
+#~ print
+#~ print "Material:", Material_name
+#~ print "Tested incidence angles:", theta_i[0]
+#~ print "Tested wavelengths,[um]:", wl[0], '\n'
+
+#~ print "Rp:", Rp
+#~ print
+#~ print "Tp:", Tr
+#~ print
+#~ print "Ab:", Ab
 
 #print('\x1b[6;30;42m' + 'Success!' + '\x1b[0m')
 #add penetration depth
@@ -184,6 +205,6 @@ def doFigure(xaxis, Rp_TM, Tr_TM):
     return
 
 # Select theta_i[0] or wl[0]:
-doFigure(theta_i[0], Rp_TM, Tr_TM)
-pl.show()
+#doFigure(theta_i[0], Rp_TM, Tr_TM)
+#pl.show()
 #-------------------------------

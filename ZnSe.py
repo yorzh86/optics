@@ -259,4 +259,4 @@ def get_eps_ZnSe(x):
             break
     eps_real = low_eps_r+(x-low_wl_r)*(up_eps_r-low_eps_r)/(up_wl_r-low_wl_r)
     
-    return eps_real, eps_imag
+    return [eps_real, eps_imag]

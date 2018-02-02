@@ -119,8 +119,10 @@ def get_eps_Bi2Se3_bulk(x1):
     
     # How to use:
     #x = 490 #nm -> 2.53 eV
-    #a, b = get_eps_Bi2Se3_bulk(x)
-    #print "Bi2Se3 bulk epsilon(real, imag) for",x, "[eV] is:", a,b
+    #a = get_eps_Bi2Se3_bulk(x)
+    #print "Bi2Se3 bulk epsilon(real, imag) for",x, "[nm] is:", a
+
+    #convert nm to eV
     x = 1.2398/x1*1E3 #WIKI correct!!
     for i in range(len(wl_eps_imag)):
         if (wl_eps_imag[i][0]>x):
@@ -140,4 +142,4 @@ def get_eps_Bi2Se3_bulk(x1):
             break
     eps_real = low_eps_r+(x-low_wl_r)*(up_eps_r-low_eps_r)/(up_wl_r-low_wl_r)
     
-    return eps_real, eps_imag
+    return [eps_real, eps_imag]

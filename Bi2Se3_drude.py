@@ -15,8 +15,8 @@ import math
 #for red line (ordinary, through plane) works for [0.6...4.2 eV]
 def drude_O_eps(w1, w0=1.0585527, wp=2.63263661, eps_inf=2.55029383, gamma=0.13258352):
     #Calculates epsilon, given energy[nm]. Other parameters w0,wp,etc can also be changed
-    #a,b = drude_O_eps(500, w0=1.0585527, eps_inf=1.0)
-    #print "real:", a, "imag:", b
+    #a = drude_O_eps(500, w0=1.0585527, eps_inf=1.0)
+    #print a
     
     #convert [nm] to [eV] #WIKI correct!!
     w = 1.2398/w1*1E3
@@ -24,13 +24,13 @@ def drude_O_eps(w1, w0=1.0585527, wp=2.63263661, eps_inf=2.55029383, gamma=0.132
         ((math.pow(w0,2) - math.pow(w,2))**2 + math.pow(w*gamma, 2))+eps_inf
     eps_i = math.pow(wp,2)*gamma*w/((math.pow(w0,2) - math.pow(w,2))**2 + \
         math.pow(w*gamma, 2))
-    return eps_r, eps_i 
+    return [eps_r, eps_i] 
 
 #for black line (extra-ordinary, in plane) works for [0.6...4.2 eV]
 def drude_E_eps(w1, w0=1.7211499, wp=8.46042266, eps_inf=0.18658023, gamma=0.98665155):
     #Calculates epsilon, given energy[nm]. Other parameters w0,wp,etc can also be changed
-    #a,b = drude_E_eps(500, eps_inf=1.0, gamma = 0.05)
-    #print "real:", a, "imag:", b
+    #a = drude_E_eps(500, eps_inf=1.0, gamma = 0.05)
+    #print a
     
     #convert [nm] to [eV] #WIKI correct!!
     w = 1.2398/w1*1E3
@@ -38,7 +38,7 @@ def drude_E_eps(w1, w0=1.7211499, wp=8.46042266, eps_inf=0.18658023, gamma=0.986
         ((math.pow(w0,2) - math.pow(w,2))**2 + math.pow(w*gamma, 2))+eps_inf
     eps_i = math.pow(wp,2)*gamma*w/((math.pow(w0,2) - math.pow(w,2))**2 + \
         math.pow(w*gamma, 2))
-    return eps_r, eps_i
+    return [eps_r, eps_i]
 
 # ========Optimization part:===========
 #Black - in plane (extraordinary)
@@ -290,7 +290,6 @@ b1 = (0.0, 5)
 b2 = (0.0, 0.3)
 bnds = (b1,b1,b2)
 sol = opt.minimize(objective, x0, bounds=bnds)
-print sol
 
 # Red (ordinary, through plane)
 # initial,                                 fn = 1570, sol = [2.25, 2.72, 0.082]
