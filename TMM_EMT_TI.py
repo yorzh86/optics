@@ -1,11 +1,19 @@
-# -*- coding: utf-8 -*-
-"""
-@author: yorzh
-"""
+#Concerns:
+
+#1. interpolation gives WAAAY better results than Drude model
+#2. ZnSe starts only from 490 nm.
+
+#todo:
+#- add eps array creation for lambda
+#- plot for different angles
+
 import numpy as np
 from math import *
 import cmath
 from TMM_aniso import get_A_B
+from Bi2Se3_drude import drude_O_eps, drude_E_eps
+from Bi2Se3_bulk import get_eps_Bi2Se3_bulk
+from ZnSe import get_eps_ZnSe
 import pylab as pl
 
 # CONSTANTS
@@ -24,14 +32,14 @@ CC = []
 
 # NANO-STRUCTURE
 #-------------------------------
-Material_name = "Ag-TiO2"
-N_layers = 18
-N_periods = 8
+Material_name = "Bi2Se3-ZnSe"
+N_layers = 22
+N_periods = 5
 
 # Permeability and thickness of layers (nm)
 mu = np.ones((1, N_layers), dtype=float)
 d_TMM = np.ones((1, N_layers), dtype=float)
-d_TMM[0] = 30*1E-9
+d_TMM[0] = 100*1E-9
 d_TMM[0][0] = d_TMM[0][-1] = 1E12
 
 # Setup wavelengths
@@ -51,7 +59,6 @@ eps_mE = np.array([[-7.7123+0.0505j, -12.6127+0.0986j,-18.6019+0.1705j, -25.6796
 eps_dO = np.array([[9.1038+0.0782j, 7.3514,  6.7857, 6.5088, 6.3491]])
 eps_dE = np.array([[11.4552+0.5068j, 9.2018, 8.4019, 8.0158, 7.7948]])
 
-
 #-------------------------------
 
 # TESTING
@@ -62,8 +69,10 @@ for i in range(len(theta_i[0])):
     for j in range(len(wl[0])):
 
         #Epsilon of period (metal, dielectric)
-        eps_period_O = np.array([[eps_mO[0][j], eps_dO[0][j]]])
-        eps_period_E = np.array([[eps_mE[0][j], eps_dE[0][j]]])
+        eps_period_O = np.array([
+            [eps_dO[0][j], eps_condO[0][j], eps_bulkO[0][j], eps_condO[0][j] ]])
+        eps_period_E = np.array([
+            [eps_dE[0][j], eps_condE[0][j], eps_bulkE[0][j], eps_condE[0][j] ]])
 
         # Build a long array of nano-structure:
         # 1. do (period x N_periods)
