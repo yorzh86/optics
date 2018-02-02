@@ -46,12 +46,13 @@ d_TMM = np.array([
  0.92E-9, 100E-9, 100E-9, 0.92E-9,   0.92E-9, 100E-9, 100E-9, 0.92E-9,    1E12]])
 
 # Setup wavelengths
-wl = np.array([[500,600]])
+wl = np.array([[500,600,700,800,900,1000]])
 
 # Select angles of incidence
 #theta_i= np.zeros((1,180), dtype=float)
 #theta_i[0] = np.linspace(0,89.9,180) # or:
-theta_i= np.array([[0,10,20,30,40,50,60,70,80,89.9]])
+#theta_i= np.array([[0,10,20,30,40,50,60,70,80,89.9]])
+theta_i= np.array([[0]])
 
 # Setup dielectric fn for each layer at different wavelengths
 eps_air = np.array([[1.0]])
@@ -159,7 +160,8 @@ def plotRp_Tp(ax, ay, xaxis, R, A):
     ay.set_ylabel('Reflectance, $R$', color = 'b')
     ay.tick_params('y',colors='b')
 
-    ax.set_xlabel('Incidence angle theta, 'r'$\theta$')
+    #ax.set_xlabel('Incidence angle theta, 'r'$\theta$')
+    ax.set_xlabel('Wavelength, 'r'$\lambda$')
     ax.legend(loc=3,fancybox=True)
     ay.legend(loc=2,fancybox=True)
 
@@ -167,12 +169,12 @@ def plotRp_Tp(ax, ay, xaxis, R, A):
     yminor_ticks = np.arange(0, 1.02, 0.02)
 
     # 1 angle - many wl:
-    #xmajor_ticks = np.arange(300, 800, 100)
-    #xminor_ticks = np.arange(300, 725, 25)
+    xmajor_ticks = np.arange(500, 1100, 100)
+    xminor_ticks = np.arange(500, 1010, 10)
 
     # 1 wl - many angles:
-    xmajor_ticks = np.arange(0, 100, 10)
-    xminor_ticks = np.arange(0, 91, 1)
+    #xmajor_ticks = np.arange(0, 100, 10)
+    #xminor_ticks = np.arange(0, 91, 1)
 
     ax.set_yticks(ymajor_ticks)
     ax.set_yticks(yminor_ticks, minor = True)
@@ -180,8 +182,11 @@ def plotRp_Tp(ax, ay, xaxis, R, A):
     ay.set_yticks(yminor_ticks, minor = True)
     ax.set_xticks(xmajor_ticks)
     ax.set_xticks(xminor_ticks, minor = True)
-    pl.text(0.7, 0.85,"$\lambda$ = 500 nm", horizontalalignment = 'center', verticalalignment = 'center',
+    #pl.text(0.7, 0.85,"$\lambda$ = 500 nm", horizontalalignment = 'center', verticalalignment = 'center',
+    #        transform = ax.transAxes)
+    pl.text(0.7, 0.85,"$\ theta$ = 0", horizontalalignment = 'center', verticalalignment = 'center',
             transform = ax.transAxes)
+    
     #ax(ay).minorticks_on()
     #ax.grid(which='both')
     #ax.grid(which='minor', linestyle = '--')
@@ -195,18 +200,25 @@ def doFigure(xaxis, Rp, Ab):
     ayR = fig.add_subplot(111)
     plotRp_Tp(axR, ayR, xaxis, R, A)
     fig.tight_layout()
-    fig.savefig('plotR_T.pdf')
+    fig.savefig('plotR_A.pdf')
     return
 R =[]
 T =[]
 A =[]
 
-for i in range(len(Rp)):
-    R.append(Rp[i][0])
-    T.append(Tr[i][0])
-    A.append(Ab[i][0])
+#fixed angle - many wl:
+for i in range(len(Rp[0])):
+    R.append(Rp[0][i])
+    T.append(Tr[0][i])
+    A.append(Ab[0][i])
+
+#fixed wl - many angles:
+#for i in range(len(Rp)):
+#    R.append(Rp[i][0])
+#    T.append(Tr[i][0])
+#    A.append(Ab[i][0])
 
 # Select theta_i[0] or wl[0]:
-doFigure(theta_i[0], R, A)
+doFigure(wl[0], R, A)
 pl.show()
 #-------------------------------
