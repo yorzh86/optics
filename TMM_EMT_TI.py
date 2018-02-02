@@ -51,7 +51,7 @@ wl = np.array([[500,600]])
 # Select angles of incidence
 #theta_i= np.zeros((1,180), dtype=float)
 #theta_i[0] = np.linspace(0,89.9,180) # or:
-theta_i= np.array([[0,10,20,30]])
+theta_i= np.array([[0,10,20,30,40,50,60,70,80,89.9]])
 
 # Setup dielectric fn for each layer at different wavelengths
 eps_air = np.array([[1.0]])
@@ -78,7 +78,7 @@ for i in range(len(theta_i[0])):
         eps_dO[0][j] = complex(get_eps_ZnSe(wl[0][j])[0],get_eps_ZnSe(wl[0][j])[1])
         eps_dE[0][j] = complex(get_eps_ZnSe(wl[0][j])[0],get_eps_ZnSe(wl[0][j])[1])
         eps_condO[0][j] = complex(drude_O_eps(wl[0][j])[0],drude_O_eps(wl[0][j])[1])
-        eps_condE[0][j] = complex(drude_E_eps(wl[0][j])[0],drude_E_eps(wl[0][j])[1])      
+        eps_condE[0][j] = complex(drude_E_eps(wl[0][j])[0],drude_E_eps(wl[0][j])[1])
         eps_bulkO[0][j] = complex(get_eps_Bi2Se3_bulk(wl[0][j])[0],get_eps_Bi2Se3_bulk(wl[0][j])[1])
         eps_bulkE[0][j] = complex(get_eps_Bi2Se3_bulk(wl[0][j])[0],get_eps_Bi2Se3_bulk(wl[0][j])[1])
 
@@ -115,31 +115,25 @@ for i in range(len(theta_i[0])):
         Tr_TM = np.real(kz_end/eps_TMM_O[-1][0])/np.real(kz_air/eps_TMM_O[0][0])*pow(np.abs(Ap[0][-1]/Ap[0][0]), 2)
         Ab_TM = 1 - Rp_TM - Tr_TM
 
-        #AA.append(Rp_TM)
-        #BB.append(Tr_TM)
-        #CC.append(Ab_TM)
-        
         Rp[i][j] = Rp_TM
         Tr[i][j] = Tr_TM
         Ab[i][j] = Ab_TM
 
-#Rp_TM = np.array(AA)
-#Tr_TM = np.array(BB)
-#Ab_TM = np.array(CC)
-
-
 #~ print "Rp:", "%0.3f" % Rp_TM[i]
 
-#~ print
-#~ print "Material:", Material_name
-#~ print "Tested incidence angles:", theta_i[0]
-#~ print "Tested wavelengths,[um]:", wl[0], '\n'
+print
+print "Material:", Material_name
+print "Period number:", N_periods
+print "Overal number of layers:", N_layers
+print "Tested incidence angles:", theta_i[0]
+print "Tested wavelengths,[nm]:", wl[0], '\n'
 
-#~ print "Rp:", Rp
-#~ print
-#~ print "Tp:", Tr
-#~ print
-#~ print "Ab:", Ab
+print "Rp:", Rp
+print
+print "Tp:", Tr
+print
+print "Ab:", Ab
+
 
 #print('\x1b[6;30;42m' + 'Success!' + '\x1b[0m')
 #add penetration depth
@@ -152,16 +146,16 @@ for i in range(len(theta_i[0])):
 # POST PROCESSING
 #-------------------------------
 # 1. Perform plotting magic
-def plotRp_Tp(ax, ay, xaxis, R, T):
-    ax.plot(xaxis[:], T[:], label= 'Transmittance')
-    ax.plot(xaxis[:], T[:], color='r', linewidth=0.4, linestyle='-')
+def plotRp_Tp(ax, ay, xaxis, R, A):
+    ax.plot(xaxis[:], A[:], label= 'Absorbtance')
+    ax.plot(xaxis[:], A[:], color='r', linewidth=0.4, linestyle='--')
     ax.yaxis.tick_left()
-    ax.set_ylabel('Transmittance, $T$', color = 'r')
+    ax.set_ylabel('Absorbtance, $A$', color = 'r')
     ax.tick_params('y',colors='r')
 
     ay = ax.twinx()
     ay.plot(xaxis[:], R[:], label= 'Reflectance')
-    ay.plot(xaxis[:], R[:], color='b', linewidth=0.3, linestyle='-.')
+    ay.plot(xaxis[:], R[:], color='b', linewidth=0.3, linestyle='-')
     ay.set_ylabel('Reflectance, $R$', color = 'b')
     ay.tick_params('y',colors='b')
 
@@ -186,25 +180,33 @@ def plotRp_Tp(ax, ay, xaxis, R, T):
     ay.set_yticks(yminor_ticks, minor = True)
     ax.set_xticks(xmajor_ticks)
     ax.set_xticks(xminor_ticks, minor = True)
-    pl.text(0.7, 0.85,"$\lambda$ = 400 nm", horizontalalignment = 'center', verticalalignment = 'center',
+    pl.text(0.7, 0.85,"$\lambda$ = 500 nm", horizontalalignment = 'center', verticalalignment = 'center',
             transform = ax.transAxes)
     #ax(ay).minorticks_on()
     #ax.grid(which='both')
     #ax.grid(which='minor', linestyle = '--')
     #ax.grid(which='major', linestyle = '--')
 
-def doFigure(xaxis, Rp_TM, Tr_TM):
-    R = Rp_TM
-    T = Tr_TM
+def doFigure(xaxis, Rp, Ab):
+    R = Rp
+    A = Ab
     fig = pl.figure()
     axR = fig.add_subplot(111)
     ayR = fig.add_subplot(111)
-    plotRp_Tp(axR, ayR, xaxis, R, T)
+    plotRp_Tp(axR, ayR, xaxis, R, A)
     fig.tight_layout()
     fig.savefig('plotR_T.pdf')
     return
+R =[]
+T =[]
+A =[]
+
+for i in range(len(Rp)):
+    R.append(Rp[i][0])
+    T.append(Tr[i][0])
+    A.append(Ab[i][0])
 
 # Select theta_i[0] or wl[0]:
-#doFigure(theta_i[0], Rp_TM, Tr_TM)
-#pl.show()
+doFigure(theta_i[0], R, A)
+pl.show()
 #-------------------------------
