@@ -1,13 +1,5 @@
-#Concerns:
-#1. interpolation gives WAAAY better results than Drude model
-#2. ZnSe starts only from 490 nm.
-#3. High absorbtance???
-
-#todo:
-#- plot for different angles
-#- re-do Thickness array creation (hard coded 4 periods (d_TMM)
-
 import numpy as np
+import sys
 from math import *
 import cmath
 from TMM_aniso import get_A_B
@@ -23,13 +15,6 @@ ep0 = 8.854187817e-12
 mu0 = 4*pi*1e-7
 #-------------------------------
 
-# AUXILIARY VARIABLES
-#-------------------------------
-#AA = []
-#BB = []
-#CC = []
-#-------------------------------
-
 # NANO-STRUCTURE
 #-------------------------------
 Material_name = "Bi2Se3-ZnSe"
@@ -38,22 +23,27 @@ N_periods = 4
 
 # Permeability and thickness of layers (nm)
 mu = np.ones((1, N_layers), dtype=float)
-#d_TMM = np.ones((1, N_layers), dtype=float)
-#d_TMM[0] = 100*1E-9
-#d_TMM[0][0] = d_TMM[0][-1] = 1E12
-d_TMM = np.array([
-[1E12,   0.92E-9, 100E-9, 100E-9, 0.92E-9,    0.92E-9, 100E-9, 100E-9, 0.92E-9,   \
- 0.92E-9, 100E-9, 100E-9, 0.92E-9,   0.92E-9, 100E-9, 100E-9, 0.92E-9,    1E12]])
+
+d_TMM = np.zeros((1, 4*N_periods+2), dtype = float)
+d_air = 1E12
+d_cond = 0.92*1E-9
+d_bulk = 100*1E-9
+d_dielectric = 100*1E-9
+aa_ = [d_dielectric, d_cond, d_bulk, d_cond]
+d_TMM[0] = d_air
+aa_ = np.tile(aa_, 4)
+for i in range(len(d_TMM[0])-2):
+    d_TMM[0][i+1] = aa_[i]
 
 # Setup wavelengths
-wl = np.zeros((1,500), dtype=float)
-wl[0] = np.linspace(500,1000, 500)
-#wl = np.array([[600]])
+#wl = np.zeros((1,500), dtype=float)
+#wl[0] = np.linspace(500,1000, 500)
+#wl = np.array([[550]])
 
 # Select angles of incidence
-#theta_i= np.zeros((1,180), dtype=float)
-#theta_i[0] = np.linspace(0,89.9,180) # or:
-theta_i= np.array([[0]])
+theta_i= np.zeros((1,180), dtype=float)
+theta_i[0] = np.linspace(0,89.9,180) # or:
+#theta_i= np.array([[0]])
 
 # Setup dielectric fn for each layer at different wavelengths
 eps_air = np.array([[1.0]])
@@ -126,19 +116,19 @@ for i in range(len(theta_i[0])):
         Tr[i][j] = Tr_TM
         Ab[i][j] = Ab_TM
 
-#print
-#print "Material:", Material_name
-#print "Period number:", N_periods
-#print "Overal number of layers:", N_layers
+print
+print "Material:", Material_name
+print "Overal number of layers:", N_layers
+print "Period number:", N_periods
+print "Structure:", d_TMM
 #print "Tested incidence angles:", theta_i[0]
 #print "Tested wavelengths,[nm]:", wl[0], '\n'
-#
+
 #print "Rp:", Rp
 #print
 #print "Tp:", Tr
 #print
 #print "Ab:", Ab
-
 
 #print('\x1b[6;30;42m' + 'Success!' + '\x1b[0m')
 #add penetration depth
@@ -152,11 +142,11 @@ for i in range(len(theta_i[0])):
 #-------------------------------
 # 1. Perform plotting magic
 def plot_Rp_Tp(ax, ay, xaxis, R, T):
-    ax.plot(xaxis[:], A[:], label= 'Absorbtance', color = 'y')
-    ax.plot(xaxis[:], A[:], color='y')
+    ax.plot(xaxis[:], T[:], label= 'Transmittance', color = 'r')
+    ax.plot(xaxis[:], T[:], color='r')
     ax.yaxis.tick_left()
-    ax.set_ylabel('Absorbtance, $A$', color = 'y')
-    ax.tick_params('y',colors='y')
+    ax.set_ylabel('Transmittance, $T$', color = 'r')
+    ax.tick_params('y',colors='r')
 
     ay = ax.twinx()
     ay.plot(xaxis[:], R[:], label= 'Reflectance', color = 'b')
@@ -164,39 +154,42 @@ def plot_Rp_Tp(ax, ay, xaxis, R, T):
     ay.set_ylabel('Reflectance, $R$', color = 'b')
     ay.tick_params('y',colors='b')
 
-    #ax.set_xlabel('Incidence angle theta, 'r'$\theta$')
-    ax.set_xlabel('Wavelength, 'r'$\lambda$')
-    ax.legend(loc=1,fancybox=True)
-    ay.legend(loc=2,fancybox=True)
+    ax.set_xlabel('Incidence angle theta, 'r'$\theta$')
+    #ax.set_xlabel('Wavelength, 'r'$\lambda$')
+    ax.legend(loc=2, fancybox=True)
+    #ax.legend(bbox_to_anchor=(0, 0.99, 1, 0), loc=2)
+    #ay.legend(bbox_to_anchor=(0, 0.9, 1, 0),  loc=2)
+    ay.legend(loc=1, fancybox=True)
 
     ymajor_ticks = np.arange(0, 1.01, 0.2)
     yminor_ticks = np.arange(0, 1.02, 0.02)
 
     # 1 angle - many wl:
-    xmajor_ticks = np.arange(500, 1100, 100)
-    xminor_ticks = np.arange(500, 1010, 10)
+    #xmajor_ticks = np.arange(500, 1100, 100)
+    #xminor_ticks = np.arange(500, 1010, 10)
 
     # 1 wl - many angles:
-    #xmajor_ticks = np.arange(0, 100, 10)
-    #xminor_ticks = np.arange(0, 91, 1)
+    xmajor_ticks = np.arange(0, 100, 10)
+    xminor_ticks = np.arange(0, 91, 1)
     ax.set_yticks(ymajor_ticks)
     ax.set_yticks(yminor_ticks, minor = True)
     ay.set_yticks(ymajor_ticks)
     ay.set_yticks(yminor_ticks, minor = True)
     ax.set_xticks(xmajor_ticks)
     ax.set_xticks(xminor_ticks, minor = True)
-    #pl.text(0.5, 0.85,"$\lambda$ = 600 nm", horizontalalignment = 'center', verticalalignment = 'center',
-    #        transform = ax.transAxes)
-    pl.text(0.5, 0.85,"$\ theta$ = 0", horizontalalignment = 'center', verticalalignment = 'center',
+    pl.text(0.5, 0.85,"$\lambda$ = 550 nm", horizontalalignment = 'center', verticalalignment = 'center',
             transform = ax.transAxes)
+    #pl.text(0.5, 0.85,"$\ theta$ = 0", horizontalalignment = 'center', verticalalignment = 'center',
+    #        transform = ax.transAxes)
 
-def doFigure_RTA(xaxis, R, A):
+def doFigure_RTA(xaxis, R, x):
     fig = pl.figure()
     axR = fig.add_subplot(111)
     ayR = fig.add_subplot(111)
-    plot_Rp_Tp(axR, ayR, xaxis, R, A)
+    plot_Rp_Tp(axR, ayR, xaxis, R, x)
     fig.tight_layout()
-    fig.savefig('plot_R_A.pdf')
+    fig.savefig('plots/plot_R_T_per_theta_i.pdf')
+    fig.savefig('plots/plot_R_T_per_theta_i.png', dpi=500)
     return
 
 R =[]
@@ -204,20 +197,20 @@ T =[]
 A =[]
 
 #fixed angle - many wl:
-for i in range(len(Rp[0])):
-    R.append(Rp[0][i])
-    T.append(Tr[0][i])
-    A.append(Ab[0][i])
+#for i in range(len(Rp[0])):
+#    R.append(Rp[0][i])
+#    T.append(Tr[0][i])
+#    A.append(Ab[0][i])
 
 #fixed wl - many angles:
-#for i in range(len(Rp)):
-#    R.append(Rp[i][0])
-#    T.append(Tr[i][0])
-#    A.append(Ab[i][0])
+for i in range(len(Rp)):
+    R.append(Rp[i][0])
+    T.append(Tr[i][0])
+    A.append(Ab[i][0])
 
 # Select theta_i[0] or wl[0]:
-doFigure_RTA(wl[0], R, A)
-pl.show()
+#doFigure_RTA(theta_i[0], R, T)
+#pl.show()
 
 def plot_Eps(ax, wl, epsE, epsO):
     ax.plot(wl, epsE, label= "Epsilon extraordinary", color='r')
@@ -240,5 +233,5 @@ def doFigure_Eps(wl, epsE, epsO):
     fig.savefig('plot_Eps_bulk.pdf')
     return
 
-doFigure_Eps(wl[0], eps_condE[0], eps_condO[0])
-pl.show()
+#doFigure_Eps(wl[0], eps_condE[0], eps_condO[0])
+#pl.show()
