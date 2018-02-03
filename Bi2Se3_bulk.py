@@ -1,4 +1,7 @@
 import numpy as np
+import cmath
+import math
+import pylab as pl
 
 wl_eps_real = np.array([
     [0.024621213, 16.02564],
@@ -112,11 +115,66 @@ wl_eps_imag = np.array([
     [4.998106, 0.30769232],
 ])
 
+def get_eps_Bi2Se3_bulk_Wolf(x1):
+    # fn calculates epsilon of bulk part of Bi2Se3 for 300K
+    # using 3x-Lorentz-Drude model
+    # given energy in [nm] (units conversion performed below)
+    # source: M.S.Wolf"INFRARED AND OPTICAL STUDIES OF TOPOLOGICAL INSULATORS"
+    # to use: print get_eps_Bi2Se3_bulk_Wolf(500)
+    #(0.689172927554+0.0609276491179j)
+
+    w = 1.2398/x1*1E3  #[nm to eV]
+    x = w*8065.54429   #[eV to cm^-1]
+    eps_inf = 1.0
+    wpD     = 908.66
+    w0D     = 0.0
+    gammaD  = 7.43
+    wp = np.array([ [675.9, 100, 11249] ])
+    w0 = np.array([ [63.03, 126.94, 2029.5] ])
+    gamma = np.array([ [17.5, 10, 3920.5] ])
+
+    eps1 = eps_inf - math.pow(wpD,2)/(math.pow(x,2)+1j*gammaD*x)
+    eps2 = 0.0+0.0j
+
+    for i in range(len(wp[0])):
+         eps2 += math.pow(wp[0][i],2)/(math.pow(w0[0][i],2)-math.pow(x,2)-1j*gamma[0][i]*x)
+         #eps2 += math.pow(wp[0][i],2)/cmath.pi/4.0/(math.pow(w0[0][i],2)-math.pow(x,2)-1j*gamma[0][i]*x)
+    return eps1+eps2
+
+
+#========
+# Uncomment to test. Compare with figure 5.12 300K drude (page 62)
+# Attention, change fn to work with cm^-1(delete all unit conversion)
+#========
+#R = np.zeros((1, 1000), dtype=complex)
+#freq = np.linspace(1,25000, 1000)
+#for i in range(len(freq)):
+#    a = get_eps_Bi2Se3_bulk_Wolf(freq[i])
+#    R[0][i] = math.pow(np.abs((cmath.sqrt(a)-1)/(cmath.sqrt(a)+1)),2)
+#
+#b = get_eps_Bi2Se3_bulk_Wolf(100)
+#c = math.pow(np.abs((cmath.sqrt(b)-1)/(cmath.sqrt(b)+1)),2)
+#print 'R, at 100 cm^-1, (should be ~0.95):', c
+#
+#b1 = get_eps_Bi2Se3_bulk_Wolf(300)
+#c1 = math.pow(np.abs((cmath.sqrt(b1)-1)/(cmath.sqrt(b1)+1)),2)
+#print 'R, at 300 cm^-1, (should be ~0.38):', c1
+#
+#b3 = get_eps_Bi2Se3_bulk_Wolf(500)
+#c3 = math.pow(np.abs((cmath.sqrt(b3)-1)/(cmath.sqrt(b3)+1)),2)
+#print 'R, at 500 cm^-1, (should be ~0.43):', c3
+#
+#b2 = get_eps_Bi2Se3_bulk_Wolf(1000)
+#c2 = math.pow(np.abs((cmath.sqrt(b2)-1)/(cmath.sqrt(b2)+1)),2)
+#print 'R, at 1000 cm^-1, (should be ~0.5):', c2
+#pl.plot(freq, R[0])
+
+
 def get_eps_Bi2Se3_bulk_Yin(x1):
     # fn interates through known values of eps(eV) and interpolates
     # source Yin et al. Figure 5:"Plasmonics of Topological Insulators at Optical Frequencies"
     # to simulate bulk - we look at interband contributions (solid lines)
-    
+
     # How to use:
     #x = 490 #nm -> 2.53 eV
     #a = get_eps_Bi2Se3_bulk(x)
@@ -130,9 +188,9 @@ def get_eps_Bi2Se3_bulk_Yin(x1):
             up_wl_i  =  wl_eps_imag[i][0]
             low_eps_i = wl_eps_imag[i-1][1]
             up_eps_i  =  wl_eps_imag[i][1]
-            break    
+            break
     eps_imag = low_eps_i+(x-low_wl_i)*(up_eps_i-low_eps_i)/(up_wl_i-low_wl_i)
-    
+
     for j in range(len(wl_eps_real)):
         if (wl_eps_real[j][0]>x):
             low_wl_r =  wl_eps_real[j-1][0]
@@ -141,5 +199,5 @@ def get_eps_Bi2Se3_bulk_Yin(x1):
             up_eps_r  =  wl_eps_real[j][1]
             break
     eps_real = low_eps_r+(x-low_wl_r)*(up_eps_r-low_eps_r)/(up_wl_r-low_wl_r)
-    
+
     return [eps_real, eps_imag]
