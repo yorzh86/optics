@@ -136,15 +136,16 @@ def get_eps_Bi2Se3_bulk_Wolf(x1):
     eps1 = eps_inf - math.pow(wpD,2)/(math.pow(x,2)+1j*gammaD*x)
     eps2 = 0.0+0.0j
 
+    # Attention - I do not divide by 4pi to get correct results
     for i in range(len(wp[0])):
          eps2 += math.pow(wp[0][i],2)/(math.pow(w0[0][i],2)-math.pow(x,2)-1j*gamma[0][i]*x)
-         #eps2 += math.pow(wp[0][i],2)/cmath.pi/4.0/(math.pow(w0[0][i],2)-math.pow(x,2)-1j*gamma[0][i]*x)
     return eps1+eps2
 
 
 #========
 # Uncomment to test. Compare with figure 5.12 300K drude (page 62)
-# Attention, change fn to work with cm^-1(delete all unit conversion)
+# Attention, change fn to work with cm^-1(delete all unit conversion(w,x) and change
+# x1 to x)
 #========
 #R = np.zeros((1, 1000), dtype=complex)
 #freq = np.linspace(1,25000, 1000)
@@ -172,7 +173,7 @@ def get_eps_Bi2Se3_bulk_Wolf(x1):
 
 def get_eps_Bi2Se3_bulk_Yin(x1):
     # fn interates through known values of eps(eV) and interpolates
-    # source Yin et al. Figure 5:"Plasmonics of Topological Insulators at Optical Frequencies"
+    # source: Yin et al. Figure 5:"Plasmonics of Topological Insulators at Optical Frequencies"
     # to simulate bulk - we look at interband contributions (solid lines)
 
     # How to use:
