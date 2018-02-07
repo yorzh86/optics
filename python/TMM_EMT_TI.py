@@ -6,6 +6,7 @@ from TMM_aniso import get_A_B
 from Bi2Se3_drude import drude_O_eps, drude_E_eps
 from Bi2Se3_bulk import get_eps_Bi2Se3_bulk_Yin, get_eps_Bi2Se3_bulk_Wolf
 from ZnSe import get_eps_ZnSe_Marple
+from sigma_epsilon import epsilon_charge
 import pylab as pl
 
 # CONSTANTS
@@ -18,21 +19,22 @@ mu0 = 4*pi*1e-7
 # NANO-STRUCTURE
 #-------------------------------
 Material_name = "Bi2Se3-ZnSe"
-N_layers = 18
-N_periods = 4
+N_periods = 10
+N_layers = 2+N_periods*4
+
 
 # Permeability
 mu = np.ones((1, N_layers), dtype=float)
 
 # Thickness of layers for TMM
 d_TMM = np.zeros((1, 4*N_periods+2), dtype = float)
-d_air = 1E12
+d_air = 0
 d_cond = 0.92*1E-9
-d_bulk = 100*1E-9
+d_bulk = 20*1E-9
 d_dielectric = 100*1E-9
 aa_ = [d_dielectric, d_cond, d_bulk, d_cond]
 d_TMM[0] = d_air
-aa_ = np.tile(aa_, 4)
+aa_ = np.tile(aa_, N_periods)
 for i in range(len(d_TMM[0])-2):
     d_TMM[0][i+1] = aa_[i]
 
@@ -44,7 +46,8 @@ ffd = d_dielectric/(d_cond+d_bulk+d_dielectric)
 
 # Setup wavelengths
 wl = np.zeros((1,500), dtype=float)
-wl[0] = np.linspace(500,1000, 500)
+wl[0] = np.linspace(500, 3500, 500)
+#wl[0] = np.linspace(500, 20000, 500)
 #wl = np.array([[400]])
 
 # Select angles of incidence
@@ -94,11 +97,17 @@ for i in range(len(theta_i[0])):
         eps_dO[0][j] = complex(get_eps_ZnSe_Marple(wl[0][j])[0],get_eps_ZnSe_Marple(wl[0][j])[1])
         eps_dE[0][j] = complex(get_eps_ZnSe_Marple(wl[0][j])[0],get_eps_ZnSe_Marple(wl[0][j])[1])
 
-        eps_condO[0][j] = complex(drude_O_eps(wl[0][j])[0],drude_O_eps(wl[0][j])[1])
-        eps_condE[0][j] = complex(drude_E_eps(wl[0][j])[0],drude_E_eps(wl[0][j])[1])
+        #eps_condO[0][j] = complex(drude_O_eps(wl[0][j])[0],drude_O_eps(wl[0][j])[1])
+        #eps_condE[0][j] = complex(drude_E_eps(wl[0][j])[0],drude_E_eps(wl[0][j])[1])
 
         eps_bulkO[0][j] = get_eps_Bi2Se3_bulk_Wolf(wl[0][j])
         eps_bulkE[0][j] = get_eps_Bi2Se3_bulk_Wolf(wl[0][j])
+
+        #HOW DR.ZHANG DOES
+        # WHY?!?!?!?!? WHY SUMMATION? WHY DISREGARD Drude model from Eslinger completely
+        # Shouldnt we use epsilon_charge ONLY for extraordinary (inplane) and use Drude mode for Ordinary??
+        eps_condO[0][j] = epsilon_charge(wl[0][j], d_cond) + eps_bulkO[0][j]
+        eps_condE[0][j] = eps_bulkE[0][j]
 
         eps_EMTO_st[0][j] = ff*eps_bulkO[0][j]+(1.0-ff)*eps_dO[0][j]
         eps_EMTE_st[0][j] = eps_bulkE[0][j]*eps_dE[0][j]/(ff*eps_dE[0][j]+(1-ff)*eps_bulkE[0][j])
@@ -189,26 +198,27 @@ print "Period number:", N_periods
 # POST PROCESSING
 #-------------------------------
 # 1. Perform plotting magic
-def plot_Rp_Tp(ax, ay, xaxis, R, T):
-    ax.plot(xaxis[:], Ti[:], label= 'Transmittance', color = 'r')
-    #ax.plot(xaxis[:], Tst[:], label= 'T "Standard"', color = 'r', linestyle=":")
+def plot_Rp_Tp(ax, xaxis, R_TMM, R_EMTi, R_EMTst):
+    ax.plot(xaxis[:], R_TMM[:], label= 'Reflectance TMM', color = 'r', linewidth = 0.4)
+    ax.plot(xaxis[:], R_EMTi[:], label= 'Reflectance EMTi', color = 'b', linewidth = 0.4)
+    ax.plot(xaxis[:], R_EMTst[:], label= 'Reflectance EMTst', color = 'g', linewidth = 0.4)
     #ax.plot(xaxis[:], Ti[:], color='r')
     ax.yaxis.tick_left()
-    ax.set_ylabel('Transmittance, $T$', color = 'r')
-    ax.tick_params('y',colors='r')
+    ax.set_ylabel('Reflectance, $R$')#, color = 'r')
+    #ax.tick_params('y',colors='r')
 
-    ay = ax.twinx()
-    ay.plot(xaxis[:], Ri[:], label= 'Reflectance', color = 'b')
-    #ay.plot(xaxis[:], Rst[:], label= 'R "Standard"', color = 'b', linestyle=":")
-    #ay.plot(xaxis[:], R[:], color='b')
-    ay.set_ylabel('Reflectance, $R$', color = 'b')
-    ay.tick_params('y',colors='b')
+#    ay = ax.twinx()
+#    ay.plot(xaxis[:], R[:], label= 'Reflectance', color = 'b')
+#    #ay.plot(xaxis[:], Rst[:], label= 'R "Standard"', color = 'b', linestyle=":")
+#    #ay.plot(xaxis[:], R[:], color='b')
+#    ay.set_ylabel('Reflectance, $R$', color = 'b')
+#    ay.tick_params('y',colors='b')
 
     #ax.set_xlabel('Incidence angle theta, 'r'$\theta$')
     ax.set_xlabel('Wavelength, 'r'$\lambda$')
 
     ax.legend(loc=2, fancybox=True)
-    ay.legend(loc=1, fancybox=True)
+    #ay.legend(loc=1, fancybox=True)
     #ax.legend(bbox_to_anchor=(0, 0.99, 1, 0), loc=2)
     #ay.legend(bbox_to_anchor=(0, 0.9, 1, 0),  loc=2)
 
@@ -216,42 +226,57 @@ def plot_Rp_Tp(ax, ay, xaxis, R, T):
     yminor_ticks = np.arange(0, 1.02, 0.02)
 
     # 1 angle - many wl:
-    xmajor_ticks = np.arange(500, 1100, 100)
-    xminor_ticks = np.arange(500, 1010, 10)
+    xmajor_ticks = np.arange(500, 4000, 500)
+    xminor_ticks = np.arange(500, 3550, 50)
+    #xmajor_ticks = np.arange(500, 24000, 4000)
+    #xminor_ticks = np.arange(500, 21000, 1000)
 
     # 1 wl - many angles:
     #xmajor_ticks = np.arange(0, 100, 10)
     #xminor_ticks = np.arange(0, 91, 1)
     ax.set_yticks(ymajor_ticks)
     ax.set_yticks(yminor_ticks, minor = True)
-    ay.set_yticks(ymajor_ticks)
-    ay.set_yticks(yminor_ticks, minor = True)
+    #ay.set_yticks(ymajor_ticks)
+    #ay.set_yticks(yminor_ticks, minor = True)
     ax.set_xticks(xmajor_ticks)
     ax.set_xticks(xminor_ticks, minor = True)
     #pl.text(0.5, 0.85,"$\lambda$ = 400 nm", horizontalalignment = 'center', verticalalignment = 'center',
     #        transform = ax.transAxes)
-    pl.text(0.5, 0.85,"$\ theta$ = 0", horizontalalignment = 'center', verticalalignment = 'center',
+    pl.text(0.55, 0.85,"$\ theta$ = 0", horizontalalignment = 'center', verticalalignment = 'center',
             transform = ax.transAxes)
 
-def doFigure_RTA(xaxis, R, x):
+def doFigure_RTA(xaxis, R, Ri, Rst):
     fig = pl.figure()
     axR = fig.add_subplot(111)
     ayR = fig.add_subplot(111)
-    plot_Rp_Tp(axR, ayR, xaxis, R, x)
-    fig.tight_layout()
-    #fig.savefig('../plots/plot_R_T_EMT_i1_vs_st(0 deg).png', dpi=500)
+    plot_Rp_Tp(axR,xaxis, R, Ri, Rst)
+    #fig.tight_layout()
+    fig.suptitle('Reflectance via TMM and EMT(0.5-3.5um)', fontsize=10)
+    fig.savefig('../plots/update/TMM,EMTi,EMTst_R_R_0.5-3.5um,bulk=20,Np=10.png', dpi=500)
     return
 
 R =[]
 T =[]
 A =[]
 
-#EMT: fixed angle - many wl:
-for i in range(len(RpEMT_i1[0])):
-    R.append(RpEMT_i1[0][i])
-    T.append(TrEMT_i1[0][i])
-    A.append(AbEMT_i1[0][i])
+Rst =[]
+Tst =[]
+Ast =[]
 
+Ri =[]
+Ti =[]
+Ai =[]
+
+#EMT: fixed angle - many wl:
+for i in range(len(RpEMT_st[0])):
+    Rst.append(RpEMT_st[0][i])
+    Tst.append(TrEMT_st[0][i])
+    Ast.append(AbEMT_st[0][i])
+
+for i in range(len(RpEMT_i1[0])):
+    Ri.append(RpEMT_i1[0][i])
+    Ti.append(TrEMT_i1[0][i])
+    Ai.append(AbEMT_i1[0][i])
 #EMT: fixed wl - many angles:
 #for i in range(len(RpEMT_i1)):
 #    R.append(RpEMT_i1[i][0])
@@ -259,10 +284,10 @@ for i in range(len(RpEMT_i1[0])):
 #    A.append(AbEMT_i1[i][0])
 #------
 #TMM: fixed angle - many wl:
-#for i in range(len(Rp[0])):
-#    R.append(Rp[0][i])
-#    T.append(Tr[0][i])
-#    A.append(Ab[0][i])
+for i in range(len(Rp[0])):
+    R.append(Rp[0][i])
+    T.append(Tr[0][i])
+    A.append(Ab[0][i])
 
 #TMM: fixed wl - many angles:
 #for i in range(len(Rp)):
@@ -271,8 +296,8 @@ for i in range(len(RpEMT_i1[0])):
 #    A.append(Ab[i][0])
 
 # Select theta_i[0] or wl[0]:
-#doFigure_RTA(wl[0], R, T)
-#pl.show()
+doFigure_RTA(wl[0], R, Ri, Rst)
+pl.show()
 
 # Attention - works only for 1 theta and range of wavelengths
 def plot_Eps(ax, wl, epsER, epsOR, epsEI, epsOI):
