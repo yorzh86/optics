@@ -5,7 +5,9 @@ from math import *
 import cmath
 from TMM_aniso import get_A_B
 from Bi2Se3_drude import drude_E_eps
+from Bi2Te3_drude import Bi2Te3_drude_through_eps
 from Bi2Se3_bulk import get_eps_Bi2Se3_bulk_Wolf
+from Bi2Te3_bulk import get_eps_Bi2Te3_bulk_Wolf
 from ZnSe import get_eps_ZnSe_Marple
 from sigma_epsilon import epsilon_charge
 import pylab as pl
@@ -19,7 +21,7 @@ mu0 = 4*pi*1e-7
 
 # NANO-STRUCTURE
 #-------------------------------
-Material_name = "Bi2Se3-ZnSe"
+Material_name = "Bi2Te3-ZnSe"
 N_periods = 10
 N_layers = 2+N_periods*4
 Plot_resolution = 500
@@ -31,8 +33,8 @@ mu = np.ones((1, N_layers), dtype=float)
 # Thickness of layers for TMM
 d_TMM = np.zeros((1, 4*N_periods+2), dtype = float)
 d_air = 0
-d_cond = 0.92*1E-9
-d_bulk = 20*1E-9
+d_cond = 1.9*1E-9 #Bi2Te3 1.9, Bi2Se3 0.92
+d_bulk = 60*1E-9
 
 d_dielectric = 100*1E-9
 aa_ = [d_dielectric, d_cond, d_bulk, d_cond]
@@ -49,8 +51,8 @@ ffd = d_dielectric/(d_cond+d_bulk+d_dielectric)
 
 # Setup wavelengths
 wl = np.zeros((1,Plot_resolution), dtype=float)
-#wl[0] = np.linspace(500, 3500, Plot_resolution)
-wl[0] = np.linspace(500, 20000, Plot_resolution)
+wl[0] = np.linspace(500, 3500, Plot_resolution)
+#wl[0] = np.linspace(500, 20000, Plot_resolution)
 #wl = np.array([[400]])
 
 # Select angles of incidence
@@ -100,11 +102,11 @@ for i in range(len(theta_i[0])):
         eps_dO[0][j] = complex(get_eps_ZnSe_Marple(wl[0][j])[0],get_eps_ZnSe_Marple(wl[0][j])[1])
         eps_dE[0][j] = complex(get_eps_ZnSe_Marple(wl[0][j])[0],get_eps_ZnSe_Marple(wl[0][j])[1])
 
-        eps_bulkO[0][j] = get_eps_Bi2Se3_bulk_Wolf(wl[0][j])
-        eps_bulkE[0][j] = get_eps_Bi2Se3_bulk_Wolf(wl[0][j])
+        eps_bulkO[0][j] = get_eps_Bi2Te3_bulk_Wolf(wl[0][j])
+        eps_bulkE[0][j] = get_eps_Bi2Te3_bulk_Wolf(wl[0][j])
 
         eps_condO[0][j] = epsilon_charge(wl[0][j], d_cond) + eps_bulkO[0][j]
-        eps_condE[0][j] = complex(drude_E_eps(wl[0][j])[0],drude_E_eps(wl[0][j])[1])
+        eps_condE[0][j] = complex(Bi2Te3_drude_through_eps(wl[0][j])[0],Bi2Te3_drude_through_eps(wl[0][j])[1])
 
         eps_EMTO_st[0][j] = ff*eps_bulkO[0][j]+(1.0-ff)*eps_dO[0][j]
         eps_EMTE_st[0][j] = eps_bulkE[0][j]*eps_dE[0][j]/(ff*eps_dE[0][j]+(1-ff)*eps_bulkE[0][j])
@@ -196,13 +198,13 @@ print "Period number:", N_periods
 # POST PROCESSING
 #-------------------------------
 # 1. Perform plotting magic
-def plot_Rp_Tp(ax, xaxis, T_TMM, T_EMTi, T_EMTst):
-    ax.plot(xaxis[:], T_TMM[:], label= 'Transmittance TMM', color = 'r', linewidth = 0.4)
-    ax.plot(xaxis[:], T_EMTi[:], label= 'Transmittance EMTi', color = 'b', linewidth = 0.4)
-    ax.plot(xaxis[:], T_EMTst[:], label= 'Transmittance EMTst', color = 'g', linewidth = 0.4)
+def plot_Rp_Tp(ax, xaxis, R_TMM, R_EMTi, R_EMTst):
+    ax.plot(xaxis[:], R_TMM[:], label= 'Reflectance TMM', color = 'r', linewidth = 0.4)
+    ax.plot(xaxis[:], R_EMTi[:], label= 'Reflectance EMTi', color = 'b', linewidth = 0.4)
+    ax.plot(xaxis[:], R_EMTst[:], label= 'Reflectance EMTst', color = 'g', linestyle=':')#linewidth = 0.4)
     #ax.plot(xaxis[:], Ti[:], color='r')
     ax.yaxis.tick_left()
-    ax.set_ylabel('Transmittance, $T$')#, color = 'r')
+    ax.set_ylabel('Reflectance, $R$')#, color = 'r')
     #ax.tick_params('y',colors='r')
 
 #    ay = ax.twinx()
@@ -215,7 +217,7 @@ def plot_Rp_Tp(ax, xaxis, T_TMM, T_EMTi, T_EMTst):
     #ax.set_xlabel('Incidence angle theta, 'r'$\theta$')
     ax.set_xlabel('Wavelength, 'r'$\lambda$')
 
-    ax.legend(loc=1, fancybox=True)
+    ax.legend(loc=2, fancybox=True)
     #ay.legend(loc=1, fancybox=True)
     #ax.legend(bbox_to_anchor=(0, 0.99, 1, 0), loc=2)
     #ay.legend(bbox_to_anchor=(0, 0.9, 1, 0),  loc=2)
@@ -224,10 +226,10 @@ def plot_Rp_Tp(ax, xaxis, T_TMM, T_EMTi, T_EMTst):
     yminor_ticks = np.arange(0, 1.02, 0.02)
 
     # 1 angle - many wl:
-    #xmajor_ticks = np.arange(500, 4000, 500)
-    #xminor_ticks = np.arange(500, 3550, 50)
-    xmajor_ticks = np.arange(500, 24000, 4000)
-    xminor_ticks = np.arange(500, 21000, 1000)
+    xmajor_ticks = np.arange(500, 4000, 500)
+    xminor_ticks = np.arange(500, 3550, 50)
+    #xmajor_ticks = np.arange(500, 24000, 4000)
+    #xminor_ticks = np.arange(500, 21000, 1000)
 
     # 1 wl - many angles:
     #xmajor_ticks = np.arange(0, 100, 10)
@@ -240,17 +242,17 @@ def plot_Rp_Tp(ax, xaxis, T_TMM, T_EMTi, T_EMTst):
     ax.set_xticks(xminor_ticks, minor = True)
     #pl.text(0.5, 0.85,"$\lambda$ = 400 nm", horizontalalignment = 'center', verticalalignment = 'center',
     #        transform = ax.transAxes)
-    pl.text(0.85, 0.7,"$\ theta$ = 0", horizontalalignment = 'center', verticalalignment = 'center',
+    pl.text(0.2, 0.7,"$\ theta$ = 0", horizontalalignment = 'center', verticalalignment = 'center',
             transform = ax.transAxes)
 
-def doFigure_RTA(xaxis, T, Ti, Tst):
+def doFigure_RTA(xaxis, R, Ri, Rst):
     fig = pl.figure()
     axR = fig.add_subplot(111)
     ayR = fig.add_subplot(111)
-    plot_Rp_Tp(axR,xaxis, T, Ti, Tst)
+    plot_Rp_Tp(axR,xaxis, R, Ri, Rst)
     #fig.tight_layout()
-    fig.suptitle('Transmittance via TMM and EMT(0.5-20um)', fontsize=10)
-    fig.savefig('../plots/updateFeb8/Bi2Se3/TMM,EMTi,EMTst_T_T_0.5-20um,bulk=20,Np=10.png', dpi=500)
+    fig.suptitle('Reflectance via TMM and EMT(0.5-20um)', fontsize=10)
+    fig.savefig('../plots/updateFeb8/Bi2Te3/TMM,EMTi,EMTst_R_R_0.5-3.5um,bulk=60,Np=10.png', dpi=500)
     return
 
 R =[]
@@ -294,7 +296,7 @@ for i in range(len(Rp[0])):
 #    A.append(Ab[i][0])
 
 # Select theta_i[0] or wl[0]:
-doFigure_RTA(wl[0], T, Ti, Tst)
+doFigure_RTA(wl[0], R, Ri, Rst)
 pl.show()
 
 # ============== epsilon======================
@@ -308,21 +310,21 @@ def plot_Eps(ax, wl, epsER, epsOR, epsEI, epsOI):
     ax.plot(wl, wl*0, linestyle = '-.', color='grey', linewidth = 0.3)
     ax.set_ylabel('Epsilon, 'r'$\epsilon$')
     ax.set_xlabel('Wavelength, 'r'$\lambda$ [nm]')
-    ax.minorticks_on()
+    #ax.minorticks_on()
 
     xmajor_ticks = np.arange(500, 4000, 500)
     xminor_ticks = np.arange(500, 3550, 50)
     #xmajor_ticks = np.arange(500, 24000, 4000)
-    #xminor_ticks = np.arange(500, 21000, 1000)
-    ymajor_ticks = np.arange(-2., 14.5, 1)
-    yminor_ticks = np.arange(-2., 14.1, 0.1)
+    #minor_ticks = np.arange(500, 21000, 1000)
+    ymajor_ticks = np.arange(-20., 35.0, 10)
+    yminor_ticks = np.arange(-20., 32, 2)
 
     ax.set_xticks(xmajor_ticks)
     ax.set_xticks(xminor_ticks, minor = True)
     ax.set_yticks(ymajor_ticks)
     ax.set_yticks(yminor_ticks, minor = True)
-    ax.legend(loc=2, fancybox=True)
-    pl.text(0.2, 0.65,"$\ theta$ = 0", horizontalalignment='center', verticalalignment = 'center',
+    ax.legend(loc=3, fancybox=True)
+    pl.text(0.59, 0.2,"$\ theta$ = 0", horizontalalignment='center', verticalalignment = 'center',
         transform = ax.transAxes)
 
 def doFigure_Eps(wl, epsER, epsOR, epsEI, epsOI):
@@ -331,8 +333,8 @@ def doFigure_Eps(wl, epsER, epsOR, epsEI, epsOI):
     plot_Eps(axEps, wl, epsER, epsOR, epsEI, epsOI)
     fig.suptitle('Dielectric function of material calculated using improved EMT', fontsize=10)
     #fig.tight_layout()
-    #fig.savefig('../plots/updateFeb8/Bi2Se3/Eps_EMTi(0.5-3.5um), bulk=20.png', dpi=500)
+    fig.savefig('../plots/updateFeb8/Bi2Te3/Eps_EMTi(0.5-3.5um), bulk=60.png', dpi=500)
     return
 
-#doFigure_Eps(wl[0], eps_EMTE_i1[0].real, eps_EMTO_i1[0].real, eps_EMTE_i1[0].imag, eps_EMTO_i1[0].imag)
-#pl.show()
+doFigure_Eps(wl[0], eps_EMTE_i1[0].real, eps_EMTO_i1[0].real, eps_EMTE_i1[0].imag, eps_EMTO_i1[0].imag)
+pl.show()

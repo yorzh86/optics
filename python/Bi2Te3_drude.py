@@ -97,7 +97,7 @@ new_eps_ri = np.ones((26,2), dtype=float)
 #~ for i in range(len(w_ri)):
     #~ eps_r = (math.pow(wp,2)*(math.pow(w0,2) - math.pow(w_ri[i][0],2))) / \
         #~ ((math.pow(w0,2) - math.pow(w_ri[i][0],2))**2 + math.pow(w_ri[i][0]*gamma, 2))+eps_inf
-    
+
     #~ eps_i = math.pow(wp,2)*gamma*w_ri[i][1]/((math.pow(w0,2) - math.pow(w_ri[i][1],2))**2 + \
         #~ math.pow(w_ri[i][1]*gamma, 2))
 
@@ -113,7 +113,7 @@ new_eps_ri = np.ones((26,2), dtype=float)
 def objective(x):
     w0 = 0.9310534  #through plane, red line
     FF = 0.0
-    
+
     wp = x[0]
     eps_inf = x[1]
     gamma = x[2]
@@ -128,8 +128,8 @@ def objective(x):
         new_eps_ri[i][1] = eps_i
 
     for i in range(len(w_ri)):
-        FF += math.pow((eps_ri[i][0] - new_eps_ri[i][0]),2) + math.pow((eps_ri[i][1] - new_eps_ri[i][1]),2)   
-    
+        FF += math.pow((eps_ri[i][0] - new_eps_ri[i][0]),2) + math.pow((eps_ri[i][1] - new_eps_ri[i][1]),2)
+
     return FF
 
 #Initial guess obtained manually through Excel
@@ -138,7 +138,7 @@ x0 = [0, 0, 0.3]
 b1 = (0, 3)
 b2 = (0, 0.1)
 bnds = (b1,b1,b2)
-sol = opt.minimize(objective, x0, bounds=bnds)
+#sol = opt.minimize(objective, x0, bounds=bnds)
 #print sol
 #x0 = 0, 0, 0.3
 #fun 150
