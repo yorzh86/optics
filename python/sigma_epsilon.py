@@ -1,3 +1,4 @@
+from __future__ import division
 import numpy as np
 from math import *
 #import sys
@@ -12,12 +13,13 @@ ee = 1.60217656535e-19        # elementary electric charge [C] or [J/ev]
 ep0 = 8.854187817e-12         # electric permittivity
 c0 = 2.99792458e+8            # Speed of light in vacuum
 
-tau = 100*1E-15                # Yin et al: 55-150fs 1E-15
+tau = 55*1E-15                # Yin et al: 55-150fs 1E-15 55 matches Bi2Se3 and Bi2Te3
 
 
-def epsilon_charge(wl, d, mu = 0.2, T = 300):
+def epsilon_charge(wl, d, mu = 0.19, T = 300):
     # Fn returns value of epsilon of conductor
     # wl - wavelength in nm, d thickness in m
+    # mu - Fermi energy
     #to use: print epsilon_charge(500, 0.92*1E-9)
     # (1.00210490977+1.9835170885j)
 

@@ -1,12 +1,4 @@
-# -*- coding: utf-8 -*-
-"""
-@author: yorzh
-"""
-
-# -*- coding: utf-8 -*-
-"""
-@author: yorzh
-"""
+from __future__ import division
 import numpy as np
 from math import *
 import cmath

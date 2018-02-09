@@ -1,10 +1,4 @@
-#todo:
-# check bulk eps
-# do new structures + periods.
-
-#concerns:
-# interpolation will give WAY better results than drude model
-
+from __future__ import division
 import numpy as np
 import scipy.optimize as opt
 import math
@@ -12,8 +6,8 @@ import math
 #Black - parallel (extraordinary)
 #Red   - through plane (ordinary)
 
-#for red line (ordinary, through plane) works for [0.6...4.2 eV]
-def drude_O_eps(w1, w0=1.0585527, wp=2.63263661, eps_inf=2.55029383, gamma=0.13258352):
+#for red line (through plane) works for [0.6...4.2 eV]
+def drude_E_eps(w1, w0=1.0585527, wp=2.63263661, eps_inf=2.55029383, gamma=0.13258352):
     #Calculates epsilon, given energy[nm]. Other parameters w0,wp,etc can also be changed
     #a = drude_O_eps(500, w0=1.0585527, eps_inf=1.0)
     #print a
@@ -27,8 +21,8 @@ def drude_O_eps(w1, w0=1.0585527, wp=2.63263661, eps_inf=2.55029383, gamma=0.132
     return [eps_r, eps_i] 
 
 
-#for black line (extra-ordinary, in plane) works for [0.6...4.2 eV]
-def drude_E_eps(w1, w0=1.7211499, wp=8.46042266, eps_inf=0.18658023, gamma=0.98665155):
+#for black line (in plane) works for [0.6...4.2 eV]
+def drude_O_eps(w1, w0=1.7211499, wp=8.46042266, eps_inf=0.18658023, gamma=0.98665155):
     #Calculates epsilon, given energy[nm]. Other parameters w0,wp,etc can also be changed
     #a = drude_E_eps(500, eps_inf=1.0, gamma = 0.05)
     #print a
@@ -42,8 +36,8 @@ def drude_E_eps(w1, w0=1.7211499, wp=8.46042266, eps_inf=0.18658023, gamma=0.986
     return [eps_r, eps_i]
 
 # ========Optimization part:===========
-#Black - in plane (extraordinary)
-#Red   - through plane (ordinary)
+#Black - in plane (ordinary)
+#Red   - through plane (extraordinary)
 
 # Array grabbed from plot for red line Bi2Se3 (real and imaginary)
 O_w_ri = np.array([
@@ -290,8 +284,8 @@ x0 = [2.25, 1.0, 0.082]
 b1 = (0.0, 5)
 b2 = (0.0, 0.3)
 bnds = (b1,b1,b2)
-sol = opt.minimize(objective, x0, bounds=bnds)
-
+#sol = opt.minimize(objective, x0, bounds=bnds)
+#print sol
 # Red (ordinary, through plane)
 # initial,                                 fn = 1570, sol = [2.25, 2.72, 0.082]
 # best, bounds(0:5, 0:5, 0:0.3)            fn = 468,  sol = [2.63263661, 2.55029383, 0.13258352]
