@@ -5,17 +5,17 @@ import math
 import pylab as pl
 
 
-def get_eps_Bi2Te3_bulk_Wolf(x1):
+def bulk_Wolf(x1):
     # fn calculates epsilon of bulk part of Bi2Se3 for 300K
     # using 3x-Lorentz-Drude model
     # given energy in [nm] (units conversion performed below)
     # source: M.S.Wolf"INFRARED AND OPTICAL STUDIES OF TOPOLOGICAL INSULATORS"
-    # to use: print get_eps_Bi2Te3_bulk_Wolf(500)
+    # to use: print bulk_Wolf(500)
     ##(-8.61086993518+5.93331696103j)
 
     w = 1.2398/x1*1E3  #[nm to eV]
     x = w*8065.54429   #[eV to cm^-1]
-    
+
     eps_inf = 1.0
     wpD     = 5651.5
     w0D     = 0.0

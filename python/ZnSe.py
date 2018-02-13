@@ -233,35 +233,35 @@ wl_eps_imag = np.array([
     [1097.1993, 0.27879965],
 ])
 
-def get_eps_ZnSe_Marple(x1):
+def eps_ZnSe_Marple(x1):
     # Calculates epsilon of ZnSe when input energy in [nm]
     # source: https://refractiveindex.info/?shelf=main&book=ZnSe&page=Marple
     # Use:
-    # print get_eps_ZnSe_Marple(500)
+    # print eps_ZnSe_Marple(500)
     # [7.46715328467, 0] - 0 stands for imaginary part
     x = x1*1E-3
     eps = 4.0+(1.90*x**2)/(x**2 - 0.113)
     return [eps, 0]
 
-def get_eps_ZnSe_Desai(x):
+def eps_ZnSe_Desai(x):
     # fn interates through known values of eps(eV) and interpolates
     # source Desai:"Optical and Dispersion Analysis of ZnSe thing film"
     # ZnSe thickness = 7300 A (730 nm)
-    
+
     # How to use:
     #x = 492.5 #nm
-    #a, b = get_eps_ZnSe(x)
+    #a, b = eps_ZnSe(x)
     #print "ZnSe epsilon(real, imag) for",x, "[nm] is:", a,b
-    
+
     for i in range(len(wl_eps_imag)):
         if (wl_eps_imag[i][0]>x):
             low_wl_i =  wl_eps_imag[i-1][0]
             up_wl_i  =  wl_eps_imag[i][0]
             low_eps_i = wl_eps_imag[i-1][1]
             up_eps_i  =  wl_eps_imag[i][1]
-            break    
+            break
     eps_imag = low_eps_i+(x-low_wl_i)*(up_eps_i-low_eps_i)/(up_wl_i-low_wl_i)
-    
+
     for j in range(len(wl_eps_real)):
         if (wl_eps_real[j][0]>x):
             low_wl_r =  wl_eps_real[j-1][0]
@@ -270,5 +270,5 @@ def get_eps_ZnSe_Desai(x):
             up_eps_r  =  wl_eps_real[j][1]
             break
     eps_real = low_eps_r+(x-low_wl_r)*(up_eps_r-low_eps_r)/(up_wl_r-low_wl_r)
-    
+
     return [eps_real, eps_imag]

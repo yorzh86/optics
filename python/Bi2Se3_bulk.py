@@ -116,12 +116,12 @@ wl_eps_imag = np.array([
     [4.998106, 0.30769232],
 ])
 
-def get_eps_Bi2Se3_bulk_Wolf(x1):
+def bulk_Wolf(x1):
     # fn calculates epsilon of bulk part of Bi2Se3 for 300K
     # using 3x-Lorentz-Drude model
     # given energy in [nm] (units conversion performed below)
     # source: M.S.Wolf"INFRARED AND OPTICAL STUDIES OF TOPOLOGICAL INSULATORS"
-    # to use: print get_eps_Bi2Se3_bulk_Wolf(500)
+    # to use: print bulk_Wolf(500)
     #(0.689172927554+0.0609276491179j)
 
     w = 1.2398/x1*1E3  #[nm to eV]
@@ -172,14 +172,14 @@ def get_eps_Bi2Se3_bulk_Wolf(x1):
 #pl.plot(freq, R[0])
 
 
-def get_eps_Bi2Se3_bulk_Yin(x1):
+def bulk_Yin(x1):
     # fn interates through known values of eps(eV) and interpolates
     # source: Yin et al. Figure 5:"Plasmonics of Topological Insulators at Optical Frequencies"
     # to simulate bulk - we look at interband contributions (solid lines)
 
     # How to use:
     #x = 490 #nm -> 2.53 eV
-    #a = get_eps_Bi2Se3_bulk(x)
+    #a = bulk_Yin(x)
     #print "Bi2Se3 bulk epsilon(real, imag) for",x, "[nm] is:", a
 
     #convert nm to eV

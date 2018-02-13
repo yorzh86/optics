@@ -35,17 +35,6 @@ def get_A_B(d, N_layers, wl, eps_O, eps_E, kx, mu):
             kz_p[0][l] = np.conj(kz_p[0][l])
 
         z[0][l] = 1.0/(om*eps0)*kz_p[0][l]/eps_O[0][l]
-        #~ print "------"
-        #~ print "l:", l
-        #~ print "eps_O[0][l]:", eps_O[0][l]
-        #~ print "mu[0][l]:", mu[0][l]
-        #~ print "pow(k0,2):", pow(k0,2)
-        #~ print "pow(kx,2):", pow(kx,2)
-        #~ print "eps_E[0][l]:", eps_E[0][l]
-        #~ print "eps_O[0][l]/eps_E[0][l]:", eps_O[0][l]/eps_E[0][l]
-        #~ print "product:", eps_O[0][l]*mu[0][l]*pow(k0,2) - pow(kx,2)*eps_O[0][l]/eps_E[0][l]
-        #~ print "kzp:", kz_p[0][l]
-        #~ print "------"
 
     Mp[N_layers-1] = np.identity(2)
     for l in range(N_layers-2, -1, -1):
