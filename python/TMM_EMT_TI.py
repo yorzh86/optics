@@ -4,6 +4,7 @@ import sys
 from math import *
 import cmath
 from TMM_aniso import get_A_B
+import postprocess
 
 from Bi2Se3_drude import drude_E_eps
 from Bi2Se3_bulk import  bulk_Wolf
@@ -28,7 +29,7 @@ mu0 = 4*pi*1e-7
 #-------------------------------
 N_periods = 10
 N_layers = 2+N_periods*4
-Plot_resolution = 50
+Plot_resolution = 5
 
 # Permeability
 mu = np.ones((1, N_layers), dtype=float)
@@ -37,7 +38,7 @@ mu = np.ones((1, N_layers), dtype=float)
 d_TMM = np.zeros((1, 4*N_periods+2), dtype = float)
 d_air = 0
 d_cond = d_conduct()
-d_bulk = (50-d_cond*2)*1E-9
+d_bulk = (50*1E-9-d_cond*2)
 d_dielectric = 30*1E-9
 
 aa_ = [d_dielectric, d_cond, d_bulk, d_cond]
@@ -84,6 +85,8 @@ eps_EMTE_i1 = np.zeros((1,len(wl[0])), dtype=complex)
 Rp = np.zeros((len(theta_i[0]),len(wl[0])),dtype=float)
 Tr = np.zeros((len(theta_i[0]),len(wl[0])),dtype=float)
 Ab = np.zeros((len(theta_i[0]),len(wl[0])),dtype=float)
+print Rp
+sys.exit()
 
 RpEMT_st = np.zeros((len(theta_i[0]),len(wl[0])),dtype=float)
 TrEMT_st = np.zeros((len(theta_i[0]),len(wl[0])),dtype=float)
@@ -180,10 +183,6 @@ for i in range(len(theta_i[0])):
         AbEMT_i1[i][j] = Ab_EMT_i1
 
 
-print
-print "Material:", material_name()
-print "Overal number of layers:", N_layers
-print "Period number:", N_periods
 
 
 #print('\x1b[6;30;42m' + 'Success!' + '\x1b[0m')
@@ -196,131 +195,42 @@ print "Period number:", N_periods
 
 # POST PROCESSING
 #-------------------------------
-# 1. Perform plotting magic
-def plot_Rp_Tp(ax, xaxis, TMM, EMTi, EMTst):
-    ax.plot(xaxis[:], TMM[:], label= 'Transmittance TMM', color = 'r', linewidth = 0.4)
-    ax.plot(xaxis[:], EMTi[:], label= 'Transmittance EMTi', color = 'b', linewidth = 0.4)
-    ax.plot(xaxis[:], EMTst[:], label= 'Transmittance EMTst', color = 'g', linestyle=':')#linewidth = 0.4)
-    ax.yaxis.tick_left()
-    ax.set_ylabel('Transmittance, $T$')#, color = 'r')
+print
+print "Material:", material_name()
+print "Overal number of layers:", N_layers
+print "Period number:", N_periods
 
-    #ax.set_xlabel('Incidence angle theta, 'r'$\theta$')
-    ax.set_xlabel('Wavelength, 'r'$\lambda$')
-    ax.legend(loc=2, fancybox=True)
+R_3 = np.zeros((3, Plot_resolution), dtype=float)
+T_3 = np.zeros((3, Plot_resolution), dtype=float)
 
-    ymajor_ticks = np.arange(0, 1.01, 0.2)
-    yminor_ticks = np.arange(0, 1.02, 0.02)
-
-    # 1 angle - many wl:
-    xmajor_ticks = np.arange(500, 4000, 500)
-    xminor_ticks = np.arange(500, 3550, 50)
-    #xmajor_ticks = np.arange(500, 24000, 4000)
-    #xminor_ticks = np.arange(500, 21000, 1000)
-
-    # 1 wl - many angles:
-    #xmajor_ticks = np.arange(0, 100, 10)
-    #xminor_ticks = np.arange(0, 91, 1)
-    ax.set_yticks(ymajor_ticks)
-    ax.set_yticks(yminor_ticks, minor = True)
-    ax.set_xticks(xmajor_ticks)
-    ax.set_xticks(xminor_ticks, minor = True)
-    #pl.text(0.5, 0.85,"$\lambda$ = 400 nm", horizontalalignment = 'center', verticalalignment = 'center',
-    #        transform = ax.transAxes)
-    pl.text(0.2, 0.7,"$\ theta$ = 0", horizontalalignment = 'center', verticalalignment = 'center',
-            transform = ax.transAxes)
-
-def doFigure_RTA(xaxis, T, Ti, Tst):
-    fig = pl.figure()
-    axR = fig.add_subplot(111)
-    ayR = fig.add_subplot(111)
-    plot_Rp_Tp(axR,xaxis, T, Ti, Tst)
-    #fig.tight_layout()
-    fig.suptitle('Transmittance of Bi2Se3 via TMM and EMT(0.5-3.5um)', fontsize=10)
-    fig.savefig('../plots/updateFeb11/Bi2Se3/TMM,EMTi,EMTst_T_T_0.5-3.5um,bulk=8.16nm.png', dpi=500)
-    return
-
-R =[]
-T =[]
-A =[]
-
-Rst =[]
-Tst =[]
-Ast =[]
-
-Ri =[]
-Ti =[]
-Ai =[]
-
-#EMT: fixed angle - many wl:
+#fixed angle - many wl:
 for i in range(len(RpEMT_st[0])):
-    Rst.append(RpEMT_st[0][i])
-    Tst.append(TrEMT_st[0][i])
-    Ast.append(AbEMT_st[0][i])
+    R_3[0][i] = RpEMT_st[0][i] #EMT_st
+    T_3[0][i] = TrEMT_st[0][i]
 
-for i in range(len(RpEMT_i1[0])):
-    Ri.append(RpEMT_i1[0][i])
-    Ti.append(TrEMT_i1[0][i])
-    Ai.append(AbEMT_i1[0][i])
+    R_3[1][i] = RpEMT_i1[0][i] #EMT_i1
+    T_3[1][i] = TrEMT_i1[0][i]
 
-#EMT: fixed wl - many angles:
-#for i in range(len(RpEMT_i1)):
-#    R.append(RpEMT_i1[i][0])
-#    T.append(TrEMT_i1[i][0])
-#    A.append(AbEMT_i1[i][0])
-#------
-#TMM: fixed angle - many wl:
-for i in range(len(Rp[0])):
-    R.append(Rp[0][i])
-    T.append(Tr[0][i])
-    A.append(Ab[0][i])
+    R_3[2][i] = Rp[0][i] #TMM
+    T_3[2][i] = Tr[0][i]
 
-#TMM: fixed wl - many angles:
-#for i in range(len(Rp)):
-#    R.append(Rp[i][0])
-#    T.append(Tr[i][0])
-#    A.append(Ab[i][0])
+#fixed wl - many angles:
+#for i in range(len(RpEMT_st[0])):
+#    R_3[0][i] = RpEMT_st[i][0] #EMT_st
+#    T_3[0][i] = TrEMT_st[i][0]
+#
+#    R_3[1][i] = RpEMT_i1[i][0] #EMT_i1
+#    T_3[1][i] = TrEMT_i1[i][0]
+#
+#    R_3[2][i] = Rp[i][0] #TMM
+#    T_3[2][i] = Tr[i][0]
 
-# Select theta_i[0] or wl[0]:
-#doFigure_RTA(wl[0], T, Ti, Tst)
-#pl.show()
+default1 = '_eps.png'
+default2 = '_T_T_T.png'
+directory = '../plots/updateFeb16/Bi2Se3/'
 
-# ============== epsilon======================
-# Attention - works only for 1 theta and range of wavelengths
-def plot_Eps(ax, wl, epsER, epsOR, epsEI, epsOI):
-    ax.plot(wl, epsER, label= "Extraordinary, real", color='r')
-    ax.plot(wl, epsOR, label= "Ordinary, real", color='b')
-
-    ax.plot(wl, epsEI, color='r', linestyle=':',  label='Extraordinary, imaginary')
-    ax.plot(wl, epsOI, color='b', linestyle=':', label='Ordinary, imaginary')
-    ax.plot(wl, wl*0, linestyle = '-.', color='grey', linewidth = 0.3)
-    ax.set_ylabel('Epsilon, 'r'$\epsilon$')
-    ax.set_xlabel('Wavelength, 'r'$\lambda$ [nm]')
-    #ax.minorticks_on()
-
-    xmajor_ticks = np.arange(500, 4000, 500)
-    xminor_ticks = np.arange(500, 3550, 50)
-    #xmajor_ticks = np.arange(500, 24000, 4000)
-    #minor_ticks = np.arange(500, 21000, 1000)
-    ymajor_ticks = np.arange(-5, 25, 5)
-    yminor_ticks = np.arange(-5, 25, 0.5)
-
-    ax.set_xticks(xmajor_ticks)
-    ax.set_xticks(xminor_ticks, minor = True)
-    ax.set_yticks(ymajor_ticks)
-    ax.set_yticks(yminor_ticks, minor = True)
-
-    ax.legend(loc=2, fancybox=True)
-    pl.text(0.1, 0.65,"$\ theta$ = 0", horizontalalignment='center', verticalalignment = 'center',
-        transform = ax.transAxes)
-
-def doFigure_Eps(wl, epsER, epsOR, epsEI, epsOI):
-    fig = pl.figure()
-    axEps = fig.add_subplot(111)
-    plot_Eps(axEps, wl, epsER, epsOR, epsEI, epsOI)
-    fig.suptitle('Dielectric function of Bi2Se3 using improved EMTi.', fontsize=10)
-    #fig.tight_layout()
-    #fig.savefig('../plots/updateFeb11/Bi2Se3/Eps_EMTi(0.5-3.5um), bulk=48.16.png', dpi=500)
-    return
-
-doFigure_Eps(wl[0], eps_EMTE_i1[0].real, eps_EMTO_i1[0].real, eps_EMTE_i1[0].imag, eps_EMTO_i1[0].imag)
-pl.show()
+for i in range(1):
+    filename =  directory + "bulk=" +str(d_bulk)   + default1
+    filename1 = directory + "bulk=" +str(d_bulk)   + default2
+    #postprocess.doFigure_Eps4(wl[0], eps_EMTE_i1[0].real, eps_EMTO_i1[0].real, eps_EMTE_i1[0].imag, eps_EMTO_i1[0].imag, filename)
+    postprocess.doFigure_RTA(wl[0], T_3[2], T_3[1], T_3[0], filename1)
