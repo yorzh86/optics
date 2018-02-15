@@ -6,13 +6,13 @@ import cmath
 from TMM_aniso import get_A_B
 import postprocess
 
-from Bi2Se3_drude import drude_E_eps
-from Bi2Se3_bulk import  bulk_Wolf
-from Bi2Se3_properties import *
-
-#from Bi2Te3_drude import drude_E_eps
-#from Bi2Te3_bulk import bulk_Wolf
+#from Bi2Se3_drude import drude_E_eps
+#from Bi2Se3_bulk import  bulk_Wolf
 #from Bi2Se3_properties import *
+
+from Bi2Te3_drude import drude_E_eps
+from Bi2Te3_bulk import bulk_Wolf
+from Bi2Se3_properties import *
 
 from ZnSe import eps_ZnSe_Marple
 from sigma_epsilon import eps_conductor
@@ -29,7 +29,7 @@ mu0 = 4*pi*1e-7
 #-------------------------------
 N_periods = 10
 N_layers = 2+N_periods*4
-Plot_resolution = 5
+Plot_resolution = 500
 
 # Permeability
 mu = np.ones((1, N_layers), dtype=float)
@@ -38,7 +38,7 @@ mu = np.ones((1, N_layers), dtype=float)
 d_TMM = np.zeros((1, 4*N_periods+2), dtype = float)
 d_air = 0
 d_cond = d_conduct()
-d_bulk = (50*1E-9-d_cond*2)
+d_bulk = (10*1E-9-d_cond*2)
 d_dielectric = 30*1E-9
 
 aa_ = [d_dielectric, d_cond, d_bulk, d_cond]
@@ -56,8 +56,8 @@ ffd = d_dielectric/(d_cond*2+d_bulk+d_dielectric)
 
 # Setup wavelengths
 wl = np.zeros((1,Plot_resolution), dtype=float)
-wl[0] = np.linspace(500, 3500, Plot_resolution)
-#wl[0] = np.linspace(500, 20000, Plot_resolution)
+#wl[0] = np.linspace(500, 3500, Plot_resolution)
+wl[0] = np.linspace(500, 20000, Plot_resolution)
 
 # Select angles of incidence
 #theta_i= np.zeros((1,180), dtype=float)
@@ -85,8 +85,6 @@ eps_EMTE_i1 = np.zeros((1,len(wl[0])), dtype=complex)
 Rp = np.zeros((len(theta_i[0]),len(wl[0])),dtype=float)
 Tr = np.zeros((len(theta_i[0]),len(wl[0])),dtype=float)
 Ab = np.zeros((len(theta_i[0]),len(wl[0])),dtype=float)
-print Rp
-sys.exit()
 
 RpEMT_st = np.zeros((len(theta_i[0]),len(wl[0])),dtype=float)
 TrEMT_st = np.zeros((len(theta_i[0]),len(wl[0])),dtype=float)
@@ -107,7 +105,6 @@ for i in range(len(theta_i[0])):
         # Setup dielectric fn for each layer at different wavelengths
         eps_dO[0][j] = complex(eps_ZnSe_Marple(wl[0][j])[0],eps_ZnSe_Marple(wl[0][j])[1])
         eps_dE[0][j] = complex(eps_ZnSe_Marple(wl[0][j])[0],eps_ZnSe_Marple(wl[0][j])[1])
-
 
         eps_bulkO[0][j] = bulk_Wolf(wl[0][j])
         eps_bulkE[0][j] = bulk_Wolf(wl[0][j])
@@ -183,8 +180,6 @@ for i in range(len(theta_i[0])):
         AbEMT_i1[i][j] = Ab_EMT_i1
 
 
-
-
 #print('\x1b[6;30;42m' + 'Success!' + '\x1b[0m')
 #add penetration depth
 #for l in range (wl.size):
@@ -195,24 +190,28 @@ for i in range(len(theta_i[0])):
 
 # POST PROCESSING
 #-------------------------------
-print
-print "Material:", material_name()
-print "Overal number of layers:", N_layers
-print "Period number:", N_periods
-
 R_3 = np.zeros((3, Plot_resolution), dtype=float)
 T_3 = np.zeros((3, Plot_resolution), dtype=float)
 
-#fixed angle - many wl:
-for i in range(len(RpEMT_st[0])):
-    R_3[0][i] = RpEMT_st[0][i] #EMT_st
-    T_3[0][i] = TrEMT_st[0][i]
+for i in range(len(Rp[0])):
+    R_3[0][i] = Rp[0][i]          # TMM
+    T_3[0][i] = Tr[0][i]
 
-    R_3[1][i] = RpEMT_i1[0][i] #EMT_i1
-    T_3[1][i] = TrEMT_i1[0][i]
+    R_3[1][i] = RpEMT_st[0][i]    # EMT standard
+    T_3[1][i] = TrEMT_st[0][i]
 
-    R_3[2][i] = Rp[0][i] #TMM
-    T_3[2][i] = Tr[0][i]
+    R_3[2][i] = RpEMT_i1[0][i]    # EMT improved
+    T_3[2][i] = TrEMT_i1[0][i]
+
+emtE_ir = eps_EMTE_i1[0].real
+emtO_ir = eps_EMTO_i1[0].real
+emtE_ii = eps_EMTE_i1[0].imag
+emtO_ii = eps_EMTO_i1[0].imag
+
+emtE_str = eps_EMTE_st[0].real
+emtO_str = eps_EMTO_st[0].real
+emtE_sti = eps_EMTE_st[0].imag
+emtO_sti = eps_EMTO_st[0].imag
 
 #fixed wl - many angles:
 #for i in range(len(RpEMT_st[0])):
@@ -225,12 +224,35 @@ for i in range(len(RpEMT_st[0])):
 #    R_3[2][i] = Rp[i][0] #TMM
 #    T_3[2][i] = Tr[i][0]
 
-default1 = '_eps.png'
-default2 = '_T_T_T.png'
-directory = '../plots/updateFeb16/Bi2Se3/'
+directory = '../plots/updateFeb16/Bi2Te3/'
+prop1 = "Transmittance"
+prop2 = "Reflectance"
 
-for i in range(1):
-    filename =  directory + "bulk=" +str(d_bulk)   + default1
-    filename1 = directory + "bulk=" +str(d_bulk)   + default2
-    #postprocess.doFigure_Eps4(wl[0], eps_EMTE_i1[0].real, eps_EMTO_i1[0].real, eps_EMTE_i1[0].imag, eps_EMTO_i1[0].imag, filename)
-    postprocess.doFigure_RTA(wl[0], T_3[2], T_3[1], T_3[0], filename1)
+EMTi = '_EMTi_eps.png'
+EMTst = '_EMTst_eps.png'
+l1 = "Extraordinary, real"
+l2 = "Ordinary, real"
+l3 = "Extraordinary, imaginary"
+l4 = "Ordinary, imaginary"
+
+fnEMTi =  directory +"diel="  +  str(d_dielectric*1E9)+ "_bulk=" +str(d_bulk*1E9) + EMTi
+fnEMTst =  directory +"diel=" + str(d_dielectric*1E9)+ "_bulk=" +str(d_bulk*1E9) + EMTst
+fn1 = directory +"diel=" + str(d_dielectric*1E9)+ "_bulk=" +str(d_bulk*1E9) + prop1+ ".png"
+fn2 = directory +"diel=" + str(d_dielectric*1E9)+ "_bulk=" +str(d_bulk*1E9) + prop2+ ".png"
+fn3 = directory + "diel=" + str(d_dielectric*1E9)+"bulk_eps.png"
+
+argsEpsI4  = [emtE_ir, emtO_ir, emtE_ii, emtO_ii, fnEMTi, l1, l2, l3, l4, 2]
+argsEpsST4 = [emtE_str, emtO_str, emtE_sti, emtO_sti, fnEMTst, l1, l2, l3, l4, 2]
+argsEpsBulk =[eps_bulkO[0].real, eps_bulkO[0].imag,"Epsilon real","Epsilon imaginary", fn3, 3]
+argsEpsCOND
+
+postprocess.basic_info(material_name(), N_layers, N_periods)
+
+#postprocess.doFigure_Eps4(np.log(wl[0]), argsEpsI4)
+#postprocess.doFigure_Eps4(np.log(wl[0]), argsEpsST4)
+
+#postprocess.doFigure_RTA(np.log(wl[0]), T_3[0], T_3[2], T_3[1], fn1, prop1)
+#postprocess.doFigure_RTA(np.log(wl[0]), R_3[0], R_3[2], R_3[1], fn2, prop2)
+
+postprocess.doFigure_Eps4(np.log(wl[0]), argsEpsCOND)
+#postprocess.doFigure_Eps2(np.log(wl[0]), argsEpsBulk)
