@@ -14,12 +14,12 @@ def plot_Eps4(ax, wl, args):
     ax.set_xlabel('log 'r'$\lambda$')
     #ax.set_xlabel('Wavelength, 'r'$\lambda$ [nm]')
 
-    xmajor_ticks = np.arange(6, 10.5, 0.5)
-    xminor_ticks = np.arange(6, 10.1, 0.1)
+    xmajor_ticks = np.arange(6, 10.0, 0.5)
+    xminor_ticks = np.arange(6, 9.6, 0.1)
     #xmajor_ticks = np.arange(500, 24000, 4000)
     #minor_ticks = np.arange(500, 21000, 1000)
-    ymajor_ticks = np.arange(-5, 20, 5)
-    yminor_ticks = np.arange(-5, 15.5, 0.5)
+    ymajor_ticks = np.arange(-60, 70, 10)
+    yminor_ticks = np.arange(-60, 62, 2)
 
     ax.set_xticks(xmajor_ticks)
     ax.set_xticks(xminor_ticks, minor = True)
@@ -44,12 +44,12 @@ def plot_Eps2(ax, wl, args):
     ax.set_xlabel('log 'r'$\lambda$')
     #ax.set_xlabel('Wavelength, 'r'$\lambda$ [nm]')
 
-    xmajor_ticks = np.arange(6, 10.5, 0.5)
-    xminor_ticks = np.arange(6, 10.1, 0.1)
+    xmajor_ticks = np.arange(6, 10.0, 0.5)
+    xminor_ticks = np.arange(6, 9.6, 0.1)
     #xmajor_ticks = np.arange(500, 24000, 4000)
     #minor_ticks = np.arange(500, 21000, 1000)
-    ymajor_ticks = np.arange(-70, 80, 10)
-    yminor_ticks = np.arange(-70, 72, 2)
+    ymajor_ticks = np.arange(-10, 40, 10)
+    yminor_ticks = np.arange(-10, 32, 2)
 
     ax.set_xticks(xmajor_ticks)
     ax.set_xticks(xminor_ticks, minor = True)

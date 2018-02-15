@@ -6,13 +6,13 @@ import cmath
 from TMM_aniso import get_A_B
 import postprocess
 
-#from Bi2Se3_drude import drude_E_eps
-#from Bi2Se3_bulk import  bulk_Wolf
-#from Bi2Se3_properties import *
-
-from Bi2Te3_drude import drude_E_eps
-from Bi2Te3_bulk import bulk_Wolf
+from Bi2Se3_drude import drude_E_eps
+from Bi2Se3_bulk import  bulk_Wolf
 from Bi2Se3_properties import *
+
+#from Bi2Te3_drude import drude_E_eps
+#from Bi2Te3_bulk import bulk_Wolf
+#from Bi2Te3_properties import *
 
 from ZnSe import eps_ZnSe_Marple
 from sigma_epsilon import eps_conductor
@@ -57,7 +57,8 @@ ffd = d_dielectric/(d_cond*2+d_bulk+d_dielectric)
 # Setup wavelengths
 wl = np.zeros((1,Plot_resolution), dtype=float)
 #wl[0] = np.linspace(500, 3500, Plot_resolution)
-wl[0] = np.linspace(500, 20000, Plot_resolution)
+#wl[0] = np.linspace(500, 20000, Plot_resolution)
+wl[0] = np.linspace(500, 9990, Plot_resolution)
 
 # Select angles of incidence
 #theta_i= np.zeros((1,180), dtype=float)
@@ -213,6 +214,11 @@ emtO_str = eps_EMTO_st[0].real
 emtE_sti = eps_EMTE_st[0].imag
 emtO_sti = eps_EMTO_st[0].imag
 
+condEr = eps_condE[0].real
+condOr = eps_condO[0].real
+condEi = eps_condE[0].imag
+condOi = eps_condO[0].imag
+
 #fixed wl - many angles:
 #for i in range(len(RpEMT_st[0])):
 #    R_3[0][i] = RpEMT_st[i][0] #EMT_st
@@ -224,7 +230,7 @@ emtO_sti = eps_EMTO_st[0].imag
 #    R_3[2][i] = Rp[i][0] #TMM
 #    T_3[2][i] = Tr[i][0]
 
-directory = '../plots/updateFeb16/Bi2Te3/'
+directory = '../plots/updateFeb16/Bi2Se3/'
 prop1 = "Transmittance"
 prop2 = "Reflectance"
 
@@ -240,11 +246,13 @@ fnEMTst =  directory +"diel=" + str(d_dielectric*1E9)+ "_bulk=" +str(d_bulk*1E9)
 fn1 = directory +"diel=" + str(d_dielectric*1E9)+ "_bulk=" +str(d_bulk*1E9) + prop1+ ".png"
 fn2 = directory +"diel=" + str(d_dielectric*1E9)+ "_bulk=" +str(d_bulk*1E9) + prop2+ ".png"
 fn3 = directory + "diel=" + str(d_dielectric*1E9)+"bulk_eps.png"
+fn4 = directory + "diel=" + str(d_dielectric*1E9)+"CONDUCTION_eps.png"
 
 argsEpsI4  = [emtE_ir, emtO_ir, emtE_ii, emtO_ii, fnEMTi, l1, l2, l3, l4, 2]
 argsEpsST4 = [emtE_str, emtO_str, emtE_sti, emtO_sti, fnEMTst, l1, l2, l3, l4, 2]
-argsEpsBulk =[eps_bulkO[0].real, eps_bulkO[0].imag,"Epsilon real","Epsilon imaginary", fn3, 3]
-argsEpsCOND
+
+argsEpsBulk =[eps_bulkO[0].real, eps_bulkO[0].imag,"Epsilon real","Epsilon imaginary", fn3, 2]
+argsEpsCOND = [condEr, condOr, condEi, condOi, fn4, l1, l2, l3, l4, 3]
 
 postprocess.basic_info(material_name(), N_layers, N_periods)
 
@@ -255,4 +263,4 @@ postprocess.basic_info(material_name(), N_layers, N_periods)
 #postprocess.doFigure_RTA(np.log(wl[0]), R_3[0], R_3[2], R_3[1], fn2, prop2)
 
 postprocess.doFigure_Eps4(np.log(wl[0]), argsEpsCOND)
-#postprocess.doFigure_Eps2(np.log(wl[0]), argsEpsBulk)
+postprocess.doFigure_Eps2(np.log(wl[0]), argsEpsBulk)
