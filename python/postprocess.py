@@ -11,15 +11,15 @@ def plot_Eps4(ax, wl, args):
     ax.plot(wl, wl*0, linestyle = '-.', color='grey', linewidth = 0.3)
 
     ax.set_ylabel('Epsilon, 'r'$\epsilon$')
-    ax.set_xlabel('log 'r'$\lambda$')
+    ax.set_xlabel('log10 'r'$\lambda$')
     #ax.set_xlabel('Wavelength, 'r'$\lambda$ [nm]')
 
-    xmajor_ticks = np.arange(6, 10.0, 0.5)
-    xminor_ticks = np.arange(6, 9.6, 0.1)
+    xmajor_ticks = np.arange(2.5, 5.0, 0.5)
+    xminor_ticks = np.arange(2.5, 4.55, 0.05)
     #xmajor_ticks = np.arange(500, 24000, 4000)
     #minor_ticks = np.arange(500, 21000, 1000)
-    ymajor_ticks = np.arange(-60, 70, 10)
-    yminor_ticks = np.arange(-60, 62, 2)
+    ymajor_ticks = np.arange(-20, 30, 5)
+    yminor_ticks = np.arange(-20, 25.5, 0.5)
 
     ax.set_xticks(xmajor_ticks)
     ax.set_xticks(xminor_ticks, minor = True)
@@ -41,15 +41,15 @@ def plot_Eps2(ax, wl, args):
     ax.plot(wl, wl*0, linestyle = '-.', color='grey', linewidth = 0.3)
 
     ax.set_ylabel('Epsilon, 'r'$\epsilon$')
-    ax.set_xlabel('log 'r'$\lambda$')
+    ax.set_xlabel('log10 'r'$\lambda$')
     #ax.set_xlabel('Wavelength, 'r'$\lambda$ [nm]')
 
-    xmajor_ticks = np.arange(6, 10.0, 0.5)
-    xminor_ticks = np.arange(6, 9.6, 0.1)
+    xmajor_ticks = np.arange(2.5, 5.0, 0.5)
+    xminor_ticks = np.arange(2.5, 4.55, 0.05)
     #xmajor_ticks = np.arange(500, 24000, 4000)
     #minor_ticks = np.arange(500, 21000, 1000)
-    ymajor_ticks = np.arange(-10, 40, 10)
-    yminor_ticks = np.arange(-10, 32, 2)
+    ymajor_ticks = np.arange(-5, 25, 5)
+    yminor_ticks = np.arange(-5, 21, 1)
 
     ax.set_xticks(xmajor_ticks)
     ax.set_xticks(xminor_ticks, minor = True)
@@ -65,8 +65,6 @@ def doFigure_Eps2(wl, args):
     fig.savefig(args[4], dpi=500)
     return
 
-
-
 def plot_Rp_Tp(ax, xaxis, TMM, EMTi, EMTst, prop):
     ax.plot(xaxis[:], TMM[:],  label= prop+ ' TMM', color = 'r', linewidth = 0.4)
     ax.plot(xaxis[:], EMTi[:], label= prop+ ' EMTi', color = 'b', linewidth = 0.4)
@@ -75,15 +73,15 @@ def plot_Rp_Tp(ax, xaxis, TMM, EMTi, EMTst, prop):
     ax.set_ylabel(prop +", " + prop[0])
 
     #ax.set_xlabel('Incidence angle theta, 'r'$\theta$')
-    ax.set_xlabel('log 'r'$\lambda$')
-    ax.legend(loc=1, fancybox=True)
+    ax.set_xlabel('log10 'r'$\lambda$')
+    ax.legend(loc=2, fancybox=True)
 
     ymajor_ticks = np.arange(0, 1.2,  0.2)
     yminor_ticks = np.arange(0, 1.02, 0.02)
 
     # 1 angle - many wl:
-    xmajor_ticks = np.arange(6, 10.5, 0.5)
-    xminor_ticks = np.arange(6, 10.1, 0.1)
+    xmajor_ticks = np.arange(2.5, 5.0, 0.5)
+    xminor_ticks = np.arange(2.5, 4.55, 0.05)
     #xmajor_ticks = np.arange(500, 24000, 4000)
     #xminor_ticks = np.arange(500, 21000, 1000)
 
@@ -101,7 +99,6 @@ def plot_Rp_Tp(ax, xaxis, TMM, EMTi, EMTst, prop):
     #pl.text(0.7, 0.7,"$\ theta$ = 0", horizontalalignment = 'center', verticalalignment = 'center',
     #        transform = ax.transAxes)
 
-
 def doFigure_RTA(xaxis, x, y, z, filename, prop):
     fig = pl.figure()
     axR = fig.add_subplot(111)
@@ -115,4 +112,11 @@ def basic_info(name, N_layers, N_periods):
     print "Material:", name
     print "Overal number of layers:", N_layers
     print "Period number:", N_periods
+    return
+
+def writeToFile(fn, text1, text2):
+    f = open(fn, 'w')
+    for i in range(len(text1)):
+        f.write(str(text1[i])+"\t" +str(text2[i])+"\n")
+    f.close
     return
