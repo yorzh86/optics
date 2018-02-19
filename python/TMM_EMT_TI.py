@@ -6,13 +6,13 @@ import cmath
 from TMM_aniso import get_A_B
 import postprocess
 
-#from Bi2Se3_drude import drude_E_eps
-#from Bi2Se3_bulk import  bulk_Wolf
-#from Bi2Se3_properties import *
+from Bi2Se3_drude import drude_E_eps
+from Bi2Se3_bulk import  bulk_Wolf
+from Bi2Se3_properties import *
 
-from Bi2Te3_drude import drude_E_eps
-from Bi2Te3_bulk import bulk_Wolf
-from Bi2Te3_properties import *
+#from Bi2Te3_drude import drude_E_eps
+#from Bi2Te3_bulk import bulk_Wolf
+#from Bi2Te3_properties import *
 
 from ZnSe import eps_ZnSe_Marple
 from sigma_epsilon import eps_conductor
@@ -29,7 +29,7 @@ mu0 = 4*pi*1e-7
 #-------------------------------
 N_periods = 10
 N_layers = 2+N_periods*4
-Plot_resolution = 50
+Plot_resolution = 500
 
 # Permeability
 mu = np.ones((1, N_layers), dtype=float)
@@ -38,8 +38,8 @@ mu = np.ones((1, N_layers), dtype=float)
 d_TMM = np.zeros((1, 4*N_periods+2), dtype = float)
 d_air = 0
 d_cond = d_conduct()
-d_bulk = (50*1E-9-d_cond*2)
-d_dielectric = 100*1E-9
+d_bulk = (10*1E-9-d_cond*2)
+d_dielectric = 30*1E-9
 
 aa_ = [d_dielectric, d_cond, d_bulk, d_cond]
 d_TMM[0] = d_air
@@ -190,7 +190,7 @@ for i in range(len(eps_EMTE_i1[0])):
     ki = ni.imag
     nst = cmath.sqrt(eps_EMTE_st[0][i])
     kst = nst.imag
-    
+
     Pd[0][i] = wl[0][i]/(4.0*pi*ki)  # EMT improved
     Pd[1][i] = wl[0][i]/(4.0*pi*kst) # EMT standard
 
@@ -243,7 +243,7 @@ condOi = eps_condO[0].imag
 #    R_3[2][i] = Rp[i][0] #TMM
 #    T_3[2][i] = Tr[i][0]
 
-directory = '../plots/updateFeb16/Bi2Te3/diel100/'
+directory = '../plots/updateFeb16/Bi2Se3/diel30/'
 prop1 = "Transmittance"
 prop2 = "Reflectance"
 
@@ -267,7 +267,7 @@ argsEpsI4  = [emtE_ir, emtO_ir, emtE_ii, emtO_ii, fnEMTi, l1, l2, l3, l4, 3]
 argsEpsST4 = [emtE_str, emtO_str, emtE_sti, emtO_sti, fnEMTst, l1, l2, l3, l4, 3]
 
 argsEpsCOND = [condEr, condOr, condEi, condOi, fn4, l1, l2, l3, l4, 3]
-argsEpsBulk =[eps_bulkO[0].real, eps_bulkO[0].imag,"Epsilon real","Epsilon imaginary", fn3, 4]
+argsEpsBulk =[eps_bulkO[0].real, eps_bulkO[0].imag,"Epsilon real","Epsilon imaginary", fn3, 2]
 
 postprocess.basic_info(material_name(), N_layers, N_periods)
 
@@ -280,5 +280,7 @@ postprocess.doFigure_RTA(np.log10(wl[0]), R_3[0], R_3[2], R_3[1], fn2, prop2)
 #postprocess.doFigure_Eps4(np.log10(wl[0]), argsEpsCOND)
 #postprocess.doFigure_Eps2(np.log10(wl[0]), argsEpsBulk)
 
-postprocess.writeToFile(fn5+"EMTi.txt",  np.log10(wl[0]), Pd[0])
-postprocess.writeToFile(fn5+"EMTst.txt", np.log10(wl[0]), Pd[1])
+#postprocess.writeToFile(fn5+"EMTi.txt",  np.log10(wl[0]), Pd[0])
+#postprocess.writeToFile(fn5+"EMTst.txt", np.log10(wl[0]), Pd[1])
+
+#pl.show()

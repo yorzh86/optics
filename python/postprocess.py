@@ -1,6 +1,8 @@
 from __future__ import division
 import numpy as np
 import pylab as pl
+import glob, os
+import sys
 
 
 def plot_Eps4(ax, wl, args):
@@ -18,8 +20,8 @@ def plot_Eps4(ax, wl, args):
     xminor_ticks = np.arange(2.5, 4.55, 0.05)
     #xmajor_ticks = np.arange(500, 24000, 4000)
     #minor_ticks = np.arange(500, 21000, 1000)
-    ymajor_ticks = np.arange(-20, 30, 5)
-    yminor_ticks = np.arange(-20, 25.5, 0.5)
+    ymajor_ticks = np.arange(-5, 15, 5)
+    yminor_ticks = np.arange(-5, 11, 1)
 
     ax.set_xticks(xmajor_ticks)
     ax.set_xticks(xminor_ticks, minor = True)
@@ -44,12 +46,12 @@ def plot_Eps2(ax, wl, args):
     ax.set_xlabel('log10 'r'$\lambda$')
     #ax.set_xlabel('Wavelength, 'r'$\lambda$ [nm]')
 
-    xmajor_ticks = np.arange(2.5, 5.0, 0.5)
-    xminor_ticks = np.arange(2.5, 4.55, 0.05)
+    xmajor_ticks = np.arange(2.5, 4.4, 0.2)
+    xminor_ticks = np.arange(2.5, 4.25, 0.05)
     #xmajor_ticks = np.arange(500, 24000, 4000)
     #minor_ticks = np.arange(500, 21000, 1000)
-    ymajor_ticks = np.arange(-5, 25, 5)
-    yminor_ticks = np.arange(-5, 21, 1)
+    ymajor_ticks = np.arange(-10, 40, 10)
+    yminor_ticks = np.arange(-10, 32, 2)
 
     ax.set_xticks(xmajor_ticks)
     ax.set_xticks(xminor_ticks, minor = True)
@@ -74,7 +76,7 @@ def plot_Rp_Tp(ax, xaxis, TMM, EMTi, EMTst, prop):
 
     #ax.set_xlabel('Incidence angle theta, 'r'$\theta$')
     ax.set_xlabel('log10 'r'$\lambda$')
-    ax.legend(loc=2, fancybox=True)
+    ax.legend(loc=1, fancybox=True)
 
     ymajor_ticks = np.arange(0, 1.2,  0.2)
     yminor_ticks = np.arange(0, 1.02, 0.02)
@@ -114,9 +116,71 @@ def basic_info(name, N_layers, N_periods):
     print "Period number:", N_periods
     return
 
+
+#======================Messy Penetration Depth======================
 def writeToFile(fn, text1, text2):
     f = open(fn, 'w')
     for i in range(len(text1)):
         f.write(str(text1[i])+"\t" +str(text2[i])+"\n")
     f.close
     return
+
+def readFile(fn):
+    f = pl.loadtxt(fn, skiprows=0)
+    wl = f[:,0]
+    Pd = f[:,1]
+    return wl, Pd
+
+def plot_PD(ax, wl, PD, fn):
+    ax.plot(wl, PD[0], label= fn[0][0:-12] , color='r')
+    ax.plot(wl, PD[1], label= fn[1][0:-12], color='b')
+    ax.plot(wl, PD[2], label= fn[2][0:-12], color='g')
+    #ax.plot(wl, wl*0, linestyle = '-.', color='grey', linewidth = 0.3)
+
+    ax.set_ylabel('Penetration depth [nm] ')
+    ax.set_xlabel('log10 'r'$\lambda$')
+    #ax.set_xlabel('Wavelength, 'r'$\lambda$ [nm]')
+
+    xmajor_ticks = np.arange(2.5, 4.4, 0.2)
+    xminor_ticks = np.arange(2.5, 4.25, 0.05)
+    #xmajor_ticks = np.arange(500, 24000, 4000)
+    #minor_ticks = np.arange(500, 21000, 1000)
+    ymajor_ticks = np.arange(0, 550000, 50000)
+    yminor_ticks = np.arange(0, 510000, 10000)
+
+    ax.set_xticks(xmajor_ticks)
+    ax.set_xticks(xminor_ticks, minor = True)
+    ax.set_yticks(ymajor_ticks)
+    ax.set_yticks(yminor_ticks, minor = True)
+    ax.legend(loc='best', fancybox=True)
+
+def doFigure_PD(wl, PD, fn):
+    fig = pl.figure()
+    axEps = fig.add_subplot(111)
+    plot_PD(axEps, wl, PD, fn)
+    fig.tight_layout()
+    fig.savefig('PD.png', dpi=500)
+    #fig.savefig(fn[0:-4]+'.png', dpi=500)
+    return
+
+
+def make_pd():
+    directory = '../plots/updateFeb16/Bi2Te3/diel100/'
+
+    wl = np.zeros((1, 500), dtype=float)
+    fn = np.chararray(3, 32)
+    pd = np.zeros((3, 500), dtype=float)
+
+    j = 0
+    os.chdir(directory)
+    for file in glob.glob("*EMTi.txt"):
+        a, b = readFile(file)
+        wl[0] = a
+        pd[j] = b
+        fn[j]= file
+        j=j+1
+
+    doFigure_PD(wl[0], pd, fn)
+    return
+
+#make_pd()
