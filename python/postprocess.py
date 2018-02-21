@@ -3,6 +3,7 @@ import numpy as np
 import pylab as pl
 import glob, os
 import sys
+import math
 
 
 def plot_Eps4(ax, wl, args):
@@ -136,22 +137,22 @@ def readFile(fn):
     return wl, Pd
 
 def plot_PD(ax, wl, PD, fn):
-    ax.plot(wl, PD[0], label= fn[0][0:-12] , color='r')
-    ax.plot(wl, PD[1], label= fn[1][0:-12], color='b')
-    ax.plot(wl, PD[2], label= fn[2][0:-12], color='g')
+    ax.semilogx(wl, PD[0], label= fn[0][0:-12] , color='r')
+    ax.semilogx(wl, PD[1], label= fn[1][0:-12], color='b')
+    ax.semilogx(wl, PD[2], label= fn[2][0:-12], color='g')
     #ax.plot(wl, wl*0, linestyle = '-.', color='grey', linewidth = 0.3)
 
     ax.set_ylabel('Penetration depth [nm] ')
-    ax.set_xlabel('log10 'r'$\lambda$')
+    ax.set_xlabel('Wavelength, 'r'$\lambda$ [nm]')
     #ax.set_xlabel('Wavelength, 'r'$\lambda$ [nm]')
 
-    xmajor_ticks = np.arange(500, 24000, 4000)
-    xminor_ticks = np.arange(500, 21000, 1000)
+    #xmajor_ticks = np.arange(500, 24000, 4000)
+    #xminor_ticks = np.arange(500, 21000, 1000)
     ymajor_ticks = np.arange(0, 550000, 50000)
     yminor_ticks = np.arange(0, 510000, 10000)
 
-    ax.set_xticks(xmajor_ticks)
-    ax.set_xticks(xminor_ticks, minor = True)
+    #ax.set_xticks(xmajor_ticks)
+    #ax.set_xticks(xminor_ticks, minor = True)
     ax.set_yticks(ymajor_ticks)
     ax.set_yticks(yminor_ticks, minor = True)
     ax.legend(loc='best', fancybox=True)
@@ -161,13 +162,13 @@ def doFigure_PD(wl, PD, fn):
     axEps = fig.add_subplot(111)
     plot_PD(axEps, wl, PD, fn)
     fig.tight_layout()
-    fig.savefig('PD.png', dpi=500)
+    fig.savefig('PD_100.png', dpi=500)
     #fig.savefig(fn[0:-4]+'.png', dpi=500)
     return
 
 
 def make_pd():
-    directory = '../plots/updateFeb16/Bi2Te3/diel100/'
+    directory = '../plots/updateFeb21/Bi2Te3/'
 
     wl = np.zeros((1, 500), dtype=float)
     fn = np.chararray(3, 32)
@@ -182,7 +183,10 @@ def make_pd():
         fn[j]= file
         j=j+1
 
+    for i in range(len(wl[0])):
+        wl[0][i] = math.pow(10,wl[0][i])
+        
     doFigure_PD(wl[0], pd, fn)
     return
 
-#make_pd()
+make_pd()
