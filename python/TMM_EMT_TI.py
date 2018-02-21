@@ -6,13 +6,13 @@ import cmath
 from TMM_aniso import get_A_B
 import postprocess
 
-from Bi2Se3_drude import drude_E_eps
-from Bi2Se3_bulk import  bulk_Wolf
-from Bi2Se3_properties import *
+#from Bi2Se3_drude import drude_E_eps
+#from Bi2Se3_bulk import  bulk_Wolf
+#from Bi2Se3_properties import *
 
-#from Bi2Te3_drude import drude_E_eps
-#from Bi2Te3_bulk import bulk_Wolf
-#from Bi2Te3_properties import *
+from Bi2Te3_drude import drude_E_eps
+from Bi2Te3_bulk import bulk_Wolf
+from Bi2Te3_properties import *
 
 from ZnSe import eps_ZnSe_Marple
 from sigma_epsilon import eps_conductor
@@ -27,7 +27,7 @@ mu0 = 4*pi*1e-7
 
 # NANO-STRUCTURE
 #-------------------------------
-N_periods = 10
+N_periods = 50
 N_layers = 2+N_periods*4
 Plot_resolution = 500
 
@@ -243,7 +243,7 @@ condOi = eps_condO[0].imag
 #    R_3[2][i] = Rp[i][0] #TMM
 #    T_3[2][i] = Tr[i][0]
 
-directory = '../plots/updateFeb16/Bi2Se3/diel30/'
+directory = '../plots/updateFeb21/Bi2Te3/diel30/'
 prop1 = "Transmittance"
 prop2 = "Reflectance"
 
@@ -267,20 +267,25 @@ argsEpsI4  = [emtE_ir, emtO_ir, emtE_ii, emtO_ii, fnEMTi, l1, l2, l3, l4, 3]
 argsEpsST4 = [emtE_str, emtO_str, emtE_sti, emtO_sti, fnEMTst, l1, l2, l3, l4, 3]
 
 argsEpsCOND = [condEr, condOr, condEi, condOi, fn4, l1, l2, l3, l4, 3]
-argsEpsBulk =[eps_bulkO[0].real, eps_bulkO[0].imag,"Epsilon real","Epsilon imaginary", fn3, 2]
+argsEpsBulk =[eps_bulkO[0].real, eps_bulkO[0].imag,"Epsilon real","Epsilon imaginary", fn3, 3]
 
 postprocess.basic_info(material_name(), N_layers, N_periods)
 
-postprocess.doFigure_Eps4(np.log10(wl[0]), argsEpsI4)
-postprocess.doFigure_Eps4(np.log10(wl[0]), argsEpsST4)
+#postprocess.doFigure_Eps4(wl[0], argsEpsI4)
+#postprocess.writeToFile4(fnEMTi[:-4] +".txt",  wl[0], emtE_ir, emtO_ir, emtE_ii, emtO_ii)
+#
+##postprocess.doFigure_Eps4(np.log10(wl[0]), argsEpsST4)
+#
+#postprocess.doFigure_RTA(wl[0], T_3[0], T_3[2], T_3[1], fn1, prop1)
+#postprocess.writeToFile3(fn1[:-4] +".txt",  wl[0],  T_3[0], T_3[2], T_3[1] )
+#
+#postprocess.doFigure_RTA(wl[0], R_3[0], R_3[2], R_3[1], fn2, prop2)
+#postprocess.writeToFile3(fn2[:-4] +".txt",  wl[0],  R_3[0], R_3[2], R_3[1] )
 
-postprocess.doFigure_RTA(np.log10(wl[0]), T_3[0], T_3[2], T_3[1], fn1, prop1)
-postprocess.doFigure_RTA(np.log10(wl[0]), R_3[0], R_3[2], R_3[1], fn2, prop2)
+postprocess.doFigure_Eps4(wl[0], argsEpsCOND)
+postprocess.doFigure_Eps2(wl[0], argsEpsBulk)
 
-#postprocess.doFigure_Eps4(np.log10(wl[0]), argsEpsCOND)
-#postprocess.doFigure_Eps2(np.log10(wl[0]), argsEpsBulk)
-
-#postprocess.writeToFile(fn5+"EMTi.txt",  np.log10(wl[0]), Pd[0])
-#postprocess.writeToFile(fn5+"EMTst.txt", np.log10(wl[0]), Pd[1])
+#postprocess.writeToFile2(fn5+"EMTi.txt",  np.log10(wl[0]), Pd[0])
+#postprocess.writeToFile2(fn5+"EMTst.txt", np.log10(wl[0]), Pd[1])
 
 #pl.show()

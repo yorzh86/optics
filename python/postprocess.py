@@ -6,25 +6,23 @@ import sys
 
 
 def plot_Eps4(ax, wl, args):
-    ax.plot(wl, args[0], label= args[5], color='r')
-    ax.plot(wl, args[1], label= args[6], color='b')
-    ax.plot(wl, args[2], label= args[7], color='r', linestyle=':')
-    ax.plot(wl, args[3], label= args[8], color='b', linestyle=':')
-    ax.plot(wl, wl*0, linestyle = '-.', color='grey', linewidth = 0.3)
+    ax.semilogx(wl, args[0], label= args[5], color='r')
+    ax.semilogx(wl, args[1], label= args[6], color='b')
+    ax.semilogx(wl, args[2], label= args[7], color='r', linestyle=':')
+    ax.semilogx(wl, args[3], label= args[8], color='b', linestyle=':')
+    ax.semilogx(wl, wl*0, linestyle = '-.', color='grey', linewidth = 0.3)
 
     ax.set_ylabel('Epsilon, 'r'$\epsilon$')
-    ax.set_xlabel('log10 'r'$\lambda$')
-    #ax.set_xlabel('Wavelength, 'r'$\lambda$ [nm]')
+    ax.set_xlabel('Wavelength, 'r'$\lambda$ [nm]')
 
-    xmajor_ticks = np.arange(2.5, 5.0, 0.5)
-    xminor_ticks = np.arange(2.5, 4.55, 0.05)
-    #xmajor_ticks = np.arange(500, 24000, 4000)
-    #minor_ticks = np.arange(500, 21000, 1000)
-    ymajor_ticks = np.arange(-5, 15, 5)
-    yminor_ticks = np.arange(-5, 11, 1)
+    ymajor_ticks = np.arange(-200, 85, 25)
+    yminor_ticks = np.arange(-200, 80, 5)
 
-    ax.set_xticks(xmajor_ticks)
-    ax.set_xticks(xminor_ticks, minor = True)
+    #ymajor_ticks = np.arange(-300, 75, 25)
+    #yminor_ticks = np.arange(-300, 55, 5)
+
+    #ax.set_xticks(xmajor_ticks)
+    #ax.set_xticks(xminor_ticks, minor = True)
     ax.set_yticks(ymajor_ticks)
     ax.set_yticks(yminor_ticks, minor = True)
     ax.legend(loc=args[9], fancybox=True)
@@ -38,23 +36,20 @@ def doFigure_Eps4(wl, args):
     return
 
 def plot_Eps2(ax, wl, args):
-    ax.plot(wl, args[0], label= args[2], color='r')
-    ax.plot(wl, args[1], label= args[3], color='b')
-    ax.plot(wl, wl*0, linestyle = '-.', color='grey', linewidth = 0.3)
+    ax.semilogx(wl, args[0], label= args[2], color='r')
+    ax.semilogx(wl, args[1], label= args[3], color='b')
+    ax.semilogx(wl, wl*0, linestyle = '-.', color='grey', linewidth = 0.3)
 
     ax.set_ylabel('Epsilon, 'r'$\epsilon$')
-    ax.set_xlabel('log10 'r'$\lambda$')
+    ax.set_xlabel('Wavelength, 'r'$\lambda$ [nm]')
     #ax.set_xlabel('Wavelength, 'r'$\lambda$ [nm]')
 
-    xmajor_ticks = np.arange(2.5, 4.4, 0.2)
-    xminor_ticks = np.arange(2.5, 4.25, 0.05)
+
     #xmajor_ticks = np.arange(500, 24000, 4000)
     #minor_ticks = np.arange(500, 21000, 1000)
-    ymajor_ticks = np.arange(-10, 40, 10)
-    yminor_ticks = np.arange(-10, 32, 2)
+    ymajor_ticks = np.arange(-60, 70, 10)
+    yminor_ticks = np.arange(-60, 62, 2)
 
-    ax.set_xticks(xmajor_ticks)
-    ax.set_xticks(xminor_ticks, minor = True)
     ax.set_yticks(ymajor_ticks)
     ax.set_yticks(yminor_ticks, minor = True)
     ax.legend(loc=args[5], fancybox=True)
@@ -68,24 +63,19 @@ def doFigure_Eps2(wl, args):
     return
 
 def plot_Rp_Tp(ax, xaxis, TMM, EMTi, EMTst, prop):
-    ax.plot(xaxis[:], TMM[:],  label= prop+ ' TMM', color = 'r', linewidth = 0.4)
-    ax.plot(xaxis[:], EMTi[:], label= prop+ ' EMTi', color = 'b', linewidth = 0.4)
-    ax.plot(xaxis[:], EMTst[:],label= prop+ ' EMTst', color = 'g', linestyle=':')
+    ax.semilogx(xaxis[:], TMM[:],  label= prop+ ' TMM', color = 'r', linewidth = 0.4)
+    ax.semilogx(xaxis[:], EMTi[:], label= prop+ ' EMTi', color = 'b', linewidth = 0.4)
+    ax.semilogx(xaxis[:], EMTst[:],label= prop+ ' EMTst', color = 'g', linestyle=':')
     ax.yaxis.tick_left()
     ax.set_ylabel(prop +", " + prop[0])
 
     #ax.set_xlabel('Incidence angle theta, 'r'$\theta$')
-    ax.set_xlabel('log10 'r'$\lambda$')
+    ax.set_xlabel('Wavelength, 'r'$\lambda$ [nm]')
     ax.legend(loc=1, fancybox=True)
 
     ymajor_ticks = np.arange(0, 1.2,  0.2)
     yminor_ticks = np.arange(0, 1.02, 0.02)
 
-    # 1 angle - many wl:
-    xmajor_ticks = np.arange(2.5, 5.0, 0.5)
-    xminor_ticks = np.arange(2.5, 4.55, 0.05)
-    #xmajor_ticks = np.arange(500, 24000, 4000)
-    #xminor_ticks = np.arange(500, 21000, 1000)
 
     # 1 wl - many angles:
     #xmajor_ticks = np.arange(0, 100, 10)
@@ -93,8 +83,8 @@ def plot_Rp_Tp(ax, xaxis, TMM, EMTi, EMTst, prop):
     ax.set_yticks(ymajor_ticks)
     ax.set_yticks(yminor_ticks, minor = True)
 
-    ax.set_xticks(xmajor_ticks)
-    ax.set_xticks(xminor_ticks, minor = True)
+    #ax.set_xticks(xmajor_ticks)!!!
+    #ax.set_xticks(xminor_ticks, minor = True)!!!
 
     #pl.text(0.5, 0.85,"$\lambda$ = 400 nm", horizontalalignment = 'center', verticalalignment = 'center',
     #        transform = ax.transAxes)
@@ -118,10 +108,24 @@ def basic_info(name, N_layers, N_periods):
 
 
 #======================Messy Penetration Depth======================
-def writeToFile(fn, text1, text2):
+def writeToFile2(fn, text1, text2):
     f = open(fn, 'w')
     for i in range(len(text1)):
         f.write(str(text1[i])+"\t" +str(text2[i])+"\n")
+    f.close
+    return
+
+def writeToFile3(fn, text1, text2, text3, text4):
+    f = open(fn, 'w')
+    for i in range(len(text1)):
+        f.write(str(text1[i])+"\t" + str(text2[i])+"\t"+str(text3[i])+"\t" + str(text4[i])+"\n")
+    f.close
+    return
+
+def writeToFile4(fn, text1, text2, text3, text4, text5):
+    f = open(fn, 'w')
+    for i in range(len(text1)):
+        f.write(str(text1[i])+"\t" + str(text2[i])+"\t" +str(text3[i])+"\t"+str(text4[i])+"\t"+ str(text5[i]) + "\n")
     f.close
     return
 
@@ -141,10 +145,8 @@ def plot_PD(ax, wl, PD, fn):
     ax.set_xlabel('log10 'r'$\lambda$')
     #ax.set_xlabel('Wavelength, 'r'$\lambda$ [nm]')
 
-    xmajor_ticks = np.arange(2.5, 4.4, 0.2)
-    xminor_ticks = np.arange(2.5, 4.25, 0.05)
-    #xmajor_ticks = np.arange(500, 24000, 4000)
-    #minor_ticks = np.arange(500, 21000, 1000)
+    xmajor_ticks = np.arange(500, 24000, 4000)
+    xminor_ticks = np.arange(500, 21000, 1000)
     ymajor_ticks = np.arange(0, 550000, 50000)
     yminor_ticks = np.arange(0, 510000, 10000)
 
