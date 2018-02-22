@@ -18,3 +18,7 @@ def muf():
 def tau():
     tau = 54*1E-15 #Yin table 1
     return tau
+
+def eps_dielectric():
+    eps = math.pow(2.8, 2)
+    return [eps,0]
