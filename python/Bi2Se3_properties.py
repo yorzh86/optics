@@ -21,4 +21,5 @@ def tau():
 
 def eps_dielectric():
     eps = math.pow(2.5, 2)
+    #eps = math.sqrt(2.5)
     return [eps,0]

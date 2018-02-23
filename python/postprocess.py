@@ -16,8 +16,8 @@ def plot_Eps4(ax, wl, args):
     ax.set_ylabel('Epsilon, 'r'$\epsilon$')
     ax.set_xlabel('Wavelength, 'r'$\lambda$ [nm]')
 
-    ymajor_ticks = np.arange(-200, 85, 25)
-    yminor_ticks = np.arange(-200, 80, 5)
+    ymajor_ticks = np.arange(-50, 60, 10)
+    yminor_ticks = np.arange(-50, 51, 1.0)
 
     #ymajor_ticks = np.arange(-300, 75, 25)
     #yminor_ticks = np.arange(-300, 55, 5)
@@ -63,7 +63,7 @@ def doFigure_Eps2(wl, args):
     fig.savefig(args[4], dpi=500)
     return
 
-def plot_Rp_Tp(ax, xaxis, TMM, EMTi, EMTst, prop):
+def plot_Rp_Tp(ax, xaxis, TMM, EMTi, EMTst, prop, l):
     ax.semilogx(xaxis[:], TMM[:],  label= prop+ ' TMM', color = 'r', linewidth = 0.4)
     ax.semilogx(xaxis[:], EMTi[:], label= prop+ ' EMTi', color = 'b', linewidth = 0.4)
     ax.semilogx(xaxis[:], EMTst[:],label= prop+ ' EMTst', color = 'g', linestyle=':')
@@ -72,7 +72,7 @@ def plot_Rp_Tp(ax, xaxis, TMM, EMTi, EMTst, prop):
 
     #ax.set_xlabel('Incidence angle theta, 'r'$\theta$')
     ax.set_xlabel('Wavelength, 'r'$\lambda$ [nm]')
-    ax.legend(loc=1, fancybox=True)
+    ax.legend(loc=l, fancybox=True)
 
     ymajor_ticks = np.arange(0, 1.2,  0.2)
     yminor_ticks = np.arange(0, 1.02, 0.02)
@@ -91,10 +91,10 @@ def plot_Rp_Tp(ax, xaxis, TMM, EMTi, EMTst, prop):
     #pl.text(0.7, 0.7,"$\ theta$ = 0", horizontalalignment = 'center', verticalalignment = 'center',
     #        transform = ax.transAxes)
 
-def doFigure_RTA(xaxis, x, y, z, filename, prop):
+def doFigure_RTA(xaxis, x, y, z, filename, prop, loc='best'):
     fig = pl.figure()
     axR = fig.add_subplot(111)
-    plot_Rp_Tp(axR,xaxis, x, y, z, prop)
+    plot_Rp_Tp(axR,xaxis, x, y, z, prop, loc)
     fig.tight_layout()
     fig.savefig(filename, dpi=500)
     return

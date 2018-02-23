@@ -6,13 +6,13 @@ import cmath
 from TMM_aniso import get_A_B
 import postprocess
 
-from Bi2Se3_drude import drude_E_eps
-from Bi2Se3_bulk import  bulk_Wolf
-from Bi2Se3_properties import *
+#from Bi2Se3_drude import drude_E_eps
+#from Bi2Se3_bulk import  bulk_Wolf
+#from Bi2Se3_properties import *
 
-#from Bi2Te3_drude import drude_E_eps
-#from Bi2Te3_bulk import bulk_Wolf
-#from Bi2Te3_properties import *
+from Bi2Te3_drude import drude_E_eps
+from Bi2Te3_bulk import bulk_Wolf
+from Bi2Te3_properties import *
 
 from ZnSe import eps_ZnSe_Marple
 from sigma_epsilon import eps_conductor
@@ -27,9 +27,9 @@ mu0 = 4*pi*1e-7
 
 # NANO-STRUCTURE
 #-------------------------------
-N_periods = 18
+N_periods = 33
 N_layers = 2+N_periods*4
-Plot_resolution = 5
+Plot_resolution = 500
 
 # Permeability
 mu = np.ones((1, N_layers), dtype=float)
@@ -38,8 +38,8 @@ mu = np.ones((1, N_layers), dtype=float)
 d_TMM = np.zeros((1, 4*N_periods+2), dtype = float)
 d_air = 0
 d_cond = d_conduct()
-d_bulk = (10*1E-9-d_cond*2)
-d_dielectric = 100*1E-9
+d_bulk = (30*1E-9-d_cond*2)
+d_dielectric = 30*1E-9
 
 aa_ = [d_dielectric, d_cond, d_bulk, d_cond]
 d_TMM[0] = d_air
@@ -241,7 +241,7 @@ condOi = eps_condO[0].imag
 #    R_3[2][i] = Rp[i][0] #TMM
 #    T_3[2][i] = Tr[i][0]
 
-directory = '../plots/updateFeb23/Bi2Se3/diel100/'
+directory = '../plots/updateFeb23/Bi2Te3/diel30/'
 prop1 = "Transmittance"
 prop2 = "Reflectance"
 prop3 = "Absorbtance"
@@ -272,12 +272,12 @@ argsEpsBulk =[eps_bulkO[0].real, eps_bulkO[0].imag,"Epsilon real","Epsilon imagi
 
 postprocess.basic_info(material_name(), N_layers, N_periods)
 
-#postprocess.doFigure_Eps4(wl[0], argsEpsI4)
+postprocess.doFigure_Eps4(wl[0], argsEpsI4)
 #postprocess.doFigure_Eps4(wl[0], argsEpsST4)
 
-#postprocess.doFigure_RTA(wl[0], T_3[0], T_3[2], T_3[1], fn1, prop1)
-#postprocess.doFigure_RTA(wl[0], R_3[0], R_3[2], R_3[1], fn2, prop2)
-#postprocess.doFigure_RTA(wl[0], A_3[0], A_3[2], A_3[1], fn1, prop3)
+postprocess.doFigure_RTA(wl[0], T_3[0], T_3[2], T_3[1], fn1, prop1,1)
+postprocess.doFigure_RTA(wl[0], R_3[0], R_3[2], R_3[1], fn2, prop2,2)
+postprocess.doFigure_RTA(wl[0], A_3[0], A_3[2], A_3[1], fn21, prop3,1)
 
 #postprocess.doFigure_Eps4(wl[0], argsEpsCOND)
 #postprocess.doFigure_Eps2(wl[0], argsEpsBulk)
