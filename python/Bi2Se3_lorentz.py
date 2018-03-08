@@ -7,7 +7,7 @@ import math
 #Red   - through plane (ordinary)
 
 #for red line (through plane) works for [0.6...4.2 eV]
-def drude_E_eps(w1, w0=1.0585527, wp=2.63263661, eps_inf=2.55029383, gamma=0.13258352):
+def lorentz_E_eps(w1, w0=1.0585527, wp=2.63263661, eps_inf=2.55029383, gamma=0.13258352):
     #Calculates epsilon, given energy[nm]. Other parameters w0,wp,etc can also be changed
     #a = drude_O_eps(500, w0=1.0585527, eps_inf=1.0)
     #print a
@@ -22,18 +22,18 @@ def drude_E_eps(w1, w0=1.0585527, wp=2.63263661, eps_inf=2.55029383, gamma=0.132
 
 
 #for black line (in plane) works for [0.6...4.2 eV]
-def drude_O_eps(w1, w0=1.7211499, wp=8.46042266, eps_inf=0.18658023, gamma=0.98665155):
-    #Calculates epsilon, given energy[nm]. Other parameters w0,wp,etc can also be changed
-    #a = drude_E_eps(500, eps_inf=1.0, gamma = 0.05)
-    #print a
-    
-    #convert [nm] to [eV] #WIKI correct!!
-    w = 1.2398/w1*1E3
-    eps_r = (math.pow(wp,2)*(math.pow(w0,2) - math.pow(w,2))) / \
-        ((math.pow(w0,2) - math.pow(w,2))**2 + math.pow(w*gamma, 2))+eps_inf
-    eps_i = math.pow(wp,2)*gamma*w/((math.pow(w0,2) - math.pow(w,2))**2 + \
-        math.pow(w*gamma, 2))
-    return [eps_r, eps_i]
+#def lorentz_O_eps(w1, w0=1.7211499, wp=8.46042266, eps_inf=0.18658023, gamma=0.98665155):
+#    #Calculates epsilon, given energy[nm]. Other parameters w0,wp,etc can also be changed
+#    #a = drude_E_eps(500, eps_inf=1.0, gamma = 0.05)
+#    #print a
+#    
+#    #convert [nm] to [eV] #WIKI correct!!
+#    w = 1.2398/w1*1E3
+#    eps_r = (math.pow(wp,2)*(math.pow(w0,2) - math.pow(w,2))) / \
+#        ((math.pow(w0,2) - math.pow(w,2))**2 + math.pow(w*gamma, 2))+eps_inf
+#    eps_i = math.pow(wp,2)*gamma*w/((math.pow(w0,2) - math.pow(w,2))**2 + \
+#        math.pow(w*gamma, 2))
+#    return [eps_r, eps_i]
 
 # ========Optimization part:===========
 #Black - in plane (ordinary)

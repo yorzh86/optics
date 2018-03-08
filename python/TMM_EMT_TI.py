@@ -6,15 +6,15 @@ import cmath
 from TMM_aniso import get_A_B
 import postprocess
 
-#from Bi2Se3_drude import drude_E_eps
+#from Bi2Se3_lorentz import lorentz_E_eps
 #from Bi2Se3_bulk import  bulk_Wolf
 #from Bi2Se3_properties import *
 
-from Bi2Te3_drude import drude_E_eps
+from Bi2Te3_lorentz import lorentz_E_eps
 from Bi2Te3_bulk import bulk_Wolf
 from Bi2Te3_properties import *
 
-from ZnSe import eps_ZnSe_Marple
+#from ZnSe import eps_ZnSe_Marple
 from sigma_epsilon import eps_conductor
 import pylab as pl
 

@@ -46,7 +46,6 @@ def eps_conductor(wl, d, tau, mu, T = 300):
 
         Int_term[0][i] = (G[0][i]-G_hom2)/((heV*om)**2-4*xi[0][i]**2)
 
-    #Integration = np.trapz(xi[0],Int_term[0])
     Integration = np.trapz(Int_term[0],xi[0])
     Second_Inter = 4.0*heV*om/pi*Integration
     sigma_Inter = (ee**2)/(4*h)*(G_hom2+1j*Second_Inter)
@@ -55,3 +54,8 @@ def eps_conductor(wl, d, tau, mu, T = 300):
     epsilon = 1+1j*sigma/(om*ep0*d)
 
     return epsilon
+
+# 30 chunks
+#total 24.3
+#without sigma_inter: 0.0
+#without sigma_Drude:24.5

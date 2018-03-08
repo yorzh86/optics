@@ -5,7 +5,7 @@ import scipy.optimize as opt
 import math
 
 #for red line (through plane)
-def drude_E_eps(w1):
+def lorentz_E_eps(w1):
     #Calculates epsilon, given energy[nm]. Other parameters w0,wp,etc can also be changed
     #a = drude_E_eps(500)
     #print a
