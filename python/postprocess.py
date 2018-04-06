@@ -114,8 +114,8 @@ def writeToFile(fn, title, data):
 
     f.write(title+"\n")
 
-    for k in data:
-        print k
+#    for k in data:
+#        print k
 
     for j in range(len(data[0])):
         for i in range(len(data)):

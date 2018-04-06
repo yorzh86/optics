@@ -6,13 +6,13 @@ import cmath
 from TMM_aniso import get_A_B
 import postprocess
 
-#from Bi2Se3_lorentz import lorentz_E_eps
-#from Bi2Se3_bulk import  bulk_Wolf
-#from Bi2Se3_properties import *
+from Bi2Se3_lorentz import lorentz_E_eps
+from Bi2Se3_bulk import  bulk_Wolf
+from Bi2Se3_properties import *
 
-from Bi2Te3_lorentz import lorentz_E_eps
-from Bi2Te3_bulk import bulk_Wolf
-from Bi2Te3_properties import *
+#from Bi2Te3_lorentz import lorentz_E_eps
+#from Bi2Te3_bulk import bulk_Wolf
+#from Bi2Te3_properties import *
 
 #from ZnSe import eps_ZnSe_Marple
 from sigma_epsilon import eps_conductor
@@ -27,9 +27,9 @@ mu0 = 4*pi*1e-7
 
 # NANO-STRUCTURE
 #-------------------------------
-N_periods = 33
+N_periods = 10
 N_layers = 2+N_periods*4
-Plot_resolution = 500
+Plot_resolution = 50
 
 # Permeability
 mu = np.ones((1, N_layers), dtype=float)
@@ -38,8 +38,8 @@ mu = np.ones((1, N_layers), dtype=float)
 d_TMM = np.zeros((1, 4*N_periods+2), dtype = float)
 d_air = 0
 d_cond = d_conduct()
-d_bulk = (30*1E-9-d_cond*2)
-d_dielectric = 30*1E-9
+d_bulk = (100*1E-9-d_cond*2)
+d_dielectric = 100*1E-9
 
 aa_ = [d_dielectric, d_cond, d_bulk, d_cond]
 d_TMM[0] = d_air
@@ -114,7 +114,7 @@ for i in range(len(theta_i[0])):
         eps_bulkE[0][j] = bulk_Wolf(wl[0][j])
 
         eps_condO[0][j] = eps_conductor(wl[0][j], d_cond, tau(), muf()) + eps_bulkO[0][j]
-        eps_condE[0][j] = complex(drude_E_eps(wl[0][j])[0],drude_E_eps(wl[0][j])[1])
+        eps_condE[0][j] = complex(lorentz_E_eps(wl[0][j])[0],lorentz_E_eps(wl[0][j])[1])
 
         eps_EMTO_st[0][j] = ff*eps_bulkO[0][j]+(1.0-ff)*eps_dO[0][j]
         eps_EMTE_st[0][j] = eps_bulkE[0][j]*eps_dE[0][j]/(ff*eps_dE[0][j]+(1-ff)*eps_bulkE[0][j])
@@ -241,7 +241,7 @@ condOi = eps_condO[0].imag
 #    R_3[2][i] = Rp[i][0] #TMM
 #    T_3[2][i] = Tr[i][0]
 
-directory = '../plots/updateFeb23/Bi2Te3/diel30/'
+directory = '../plots/April/BiSe3000/'
 prop1 = "Transmittance"
 prop2 = "Reflectance"
 prop3 = "Absorbtance"
@@ -272,17 +272,37 @@ argsEpsBulk =[eps_bulkO[0].real, eps_bulkO[0].imag,"Epsilon real","Epsilon imagi
 
 postprocess.basic_info(material_name(), N_layers, N_periods)
 
-postprocess.doFigure_Eps4(wl[0], argsEpsI4)
+#postprocess.doFigure_Eps4(wl[0], argsEpsI4)
 #postprocess.doFigure_Eps4(wl[0], argsEpsST4)
 
-postprocess.doFigure_RTA(wl[0], T_3[0], T_3[2], T_3[1], fn1, prop1,1)
-postprocess.doFigure_RTA(wl[0], R_3[0], R_3[2], R_3[1], fn2, prop2,2)
-postprocess.doFigure_RTA(wl[0], A_3[0], A_3[2], A_3[1], fn21, prop3,1)
+#postprocess.doFigure_RTA(wl[0], T_3[0], T_3[2], T_3[1], fn1, prop1,1)
+#postprocess.doFigure_RTA(wl[0], R_3[0], R_3[2], R_3[1], fn2, prop2,2)
+#postprocess.doFigure_RTA(wl[0], A_3[0], A_3[2], A_3[1], fn21, prop3,1)
 
 #postprocess.doFigure_Eps4(wl[0], argsEpsCOND)
 #postprocess.doFigure_Eps2(wl[0], argsEpsBulk)
 
-# ======== How to write to a file:============
-#args = [wl[0], emtE_ir, emtO_ir, emtE_ii, emtO_ii]
-#title = 'EMT improved: Wavelength,[nm]; emtE_real; emtO_real; emtE_imag; emtO_imag;'
-#postprocess.writeToFile(fnEMTi[:-4] +".txt", title, args )
+# ======== Write to a file:============
+args = [wl[0], emtE_ir, emtO_ir, emtE_ii, emtO_ii]
+argsA = [wl[0],A_3[0], A_3[2], A_3[1]]
+argsR = [wl[0],R_3[0], R_3[2], R_3[1]]
+
+argsB = [wl[0], eps_bulkO[0].real, eps_bulkO[0].imag]
+argsC = [wl[0], condEr, condOr, condEi, condOi]
+
+titleAR = 'Wavelength,[nm]'+ '\t'+'TMM'+ '\t'+ "EMTi"+ '\t'+"EMTst"
+titleEPSi = 'Wavelength,[nm]'+ '\t'+'ExtraO_real'+ '\t'+ "Ordinary_real"+ '\t'+"ExtraO_imag" \
+ + '\t'+"Ordinary_imag"
+titleBULK = 'Wavelength,[nm]'+ '\t'+'EPS_real'+ '\t'+ "EPS_imag"
+titleCOND = 'Wavelength,[nm]'+ '\t'+'ExtraO_real'+ '\t'+ "Ordinary_real"+ '\t'+"ExtraO_imag" \
+ + '\t'+"Ordinary_imag"
+postprocess.writeToFile(fn3[:-4] +".xls", titleBULK, argsB) #FIG2 - BULK
+postprocess.writeToFile(fn4[:-4] +".xls", titleCOND, argsC) #FIG2 - COND
+
+postprocess.writeToFile(fnEMTi[:-4] +".xls", titleEPSi, args)    #FIG3 -6
+postprocess.writeToFile(fn2[:-4] +".xls", titleAR, argsR)        #FIG4 -7
+postprocess.writeToFile(fn21[:-4] +".xls", titleAR, argsA)       #FIG5 -8
+
+
+
+
