@@ -16,8 +16,8 @@ def plot_Eps4(ax, wl, args):
     ax.set_ylabel('Epsilon, 'r'$\epsilon$')
     ax.set_xlabel('Wavelength, 'r'$\lambda$ [nm]')
 
-    ymajor_ticks = np.arange(-50, 60, 10)
-    yminor_ticks = np.arange(-50, 51, 1.0)
+    #ymajor_ticks = np.arange(-50, 60, 10)
+    #yminor_ticks = np.arange(-50, 51, 1.0)
 
     #ymajor_ticks = np.arange(-300, 75, 25)
     #yminor_ticks = np.arange(-300, 55, 5)
@@ -28,6 +28,7 @@ def plot_Eps4(ax, wl, args):
     ax.set_yticks(yminor_ticks, minor = True)
     ax.legend(loc=args[9], fancybox=True)
 
+
 def doFigure_Eps4(wl, args):
     fig = pl.figure()
     axEps = fig.add_subplot(111)
@@ -37,22 +38,22 @@ def doFigure_Eps4(wl, args):
     return
 
 def plot_Eps2(ax, wl, args):
-    ax.semilogx(wl, args[0], label= args[2], color='r')
-    ax.semilogx(wl, args[1], label= args[3], color='b')
+    ax.semilogx(wl, args[0], label= args[2], color='black')
+    ax.semilogx(wl, args[1], label= args[3], color='black', linestyle='--')
     ax.semilogx(wl, wl*0, linestyle = '-.', color='grey', linewidth = 0.3)
 
     ax.set_ylabel('Epsilon, 'r'$\epsilon$')
     ax.set_xlabel('Wavelength, 'r'$\lambda$ [nm]')
     #ax.set_xlabel('Wavelength, 'r'$\lambda$ [nm]')
-
+    ax.minorticks_on()
 
     #xmajor_ticks = np.arange(500, 24000, 4000)
     #minor_ticks = np.arange(500, 21000, 1000)
-    ymajor_ticks = np.arange(-60, 70, 10)
-    yminor_ticks = np.arange(-60, 62, 2)
+    #ymajor_ticks = np.arange(-5, 25, 5)
+    #yminor_ticks = np.arange(-5, 26, 1)
 
-    ax.set_yticks(ymajor_ticks)
-    ax.set_yticks(yminor_ticks, minor = True)
+    #ax.set_yticks(ymajor_ticks)
+    #ax.set_yticks(yminor_ticks, minor = True)
     ax.legend(loc=args[5], fancybox=True)
 
 def doFigure_Eps2(wl, args):
@@ -107,7 +108,7 @@ def basic_info(name, N_layers, N_periods):
     return
 
 
-#==================Write to file/ Read from file section ======================#
+#================== Write to file ======================#
 
 def writeToFile(fn, title, data):
     f = open(fn, 'w')
@@ -125,4 +126,107 @@ def writeToFile(fn, title, data):
         f.close
     return
 
-#TODO readFile(fn)  #read from text into array. Then can use fn above to plot
+#================== Read from file =====================#
+
+def readBulk(fn):
+    D = pl.loadtxt(fn,skiprows=1)
+    wl = D[:,0]
+    er = D[:,1]
+    ei = D[:,2]
+    return wl, er, ei
+
+def readCond(fn):
+    D = pl.loadtxt(fn,skiprows=1)
+    wl = D[:,0]
+    er = D[:,1]
+    o_r = D[:,2]
+    ei = D[:,3]
+    o_i= D[:,4]
+    return wl, er, o_r, ei, o_i
+
+
+def plot_Fig2Bulk(ax, wl, er, ei, loc1, num):
+    ax.semilogx(wl, er, label= "Epsilon real", color='r')
+    ax.semilogx(wl, ei, label= "Epsilon real", color='r', linestyle=':')
+    ax.semilogx(wl, wl*0, linestyle = '-.', color='grey', linewidth = 0.3)
+
+    ax.set_ylabel('Epsilon, 'r'$\epsilon$')
+    ax.set_xlabel('Wavelength, 'r'$\lambda$ [nm]')
+
+    ymajor_ticks = np.arange(-10, 30, 5)
+    yminor_ticks = np.arange(-10, 26, 1)
+
+    ax.set_yticks(ymajor_ticks)
+    ax.set_yticks(yminor_ticks, minor = True)
+    ax.legend(loc=loc1, fancybox=True, fontsize='xx-small')
+
+    ax.text(180,25, num)
+
+    for item in ([ax.title, ax.xaxis.label, ax.yaxis.label] +
+             ax.get_xticklabels() + ax.get_yticklabels()):
+        item.set_fontsize('x-small')
+
+def plot_Fig2Cond(ax, wl, er, o_r, ei, o_i, loc1, num):
+    ax.semilogx(wl, er, label="Extraordinary, real", color='r')
+    ax.semilogx(wl, o_r, label= "Ordinary, real", color='b')
+    ax.semilogx(wl, ei, label= "Extraordinary, imaginary", color='r', linestyle=':')
+    ax.semilogx(wl, o_i, label= "Ordinary, imaginary", color='b', linestyle=':')
+    ax.semilogx(wl, wl*0, linestyle = '-.', color='grey', linewidth = 0.3)
+
+    ax.set_ylabel('Epsilon, 'r'$\epsilon$')
+    ax.set_xlabel('Wavelength, 'r'$\lambda$ [nm]')
+
+    ymajor_ticks = np.arange(-280, 120, 40)
+    yminor_ticks = np.arange(-280, 90, 10)
+
+    ax.set_yticks(ymajor_ticks)
+    ax.set_yticks(yminor_ticks, minor = True)
+    ax.legend(loc=loc1, fancybox=True, fontsize='xx-small')
+
+    ax.text(180, 75, num)
+
+    for item in ([ax.title, ax.xaxis.label, ax.yaxis.label] +
+             ax.get_xticklabels() + ax.get_yticklabels()):
+        item.set_fontsize('x-small')
+
+def doFigure2(BiSe_B, BiTe_B, BiSe_C, BiTe_C):
+
+    wl,er,ei = readBulk(BiSe_B)
+    wl1,er1,ei1 = readBulk(BiTe_B)
+
+    wl2,er2,o_r2,ei2,o_i2 = readCond(BiSe_C)
+    wl3,er3,o_r3,ei3,o_i3 = readCond(BiTe_C)
+
+    fig = pl.figure()
+
+    bulk_BiSe = fig.add_subplot(221)
+    plot_Fig2Bulk(bulk_BiSe, wl, er, ei, 2, '(a)')
+
+    bulk_BiTe = fig.add_subplot(223)
+    plot_Fig2Bulk(bulk_BiTe, wl, er, ei, 2, '(c)')
+
+    cond_BiSe = fig.add_subplot(222)
+    plot_Fig2Cond(cond_BiSe,wl2,er2,o_r2,ei2,o_i2, 3, '(b)')
+
+    cond_BiTe = fig.add_subplot(224)
+    plot_Fig2Cond(cond_BiTe,wl3,er3,o_r3,ei3,o_i3, 3, '(d)')
+
+
+    fig.tight_layout()
+    fig.savefig('../plots/April/Fig2/test.png',dpi=1000)
+    return
+
+directory = '../plots/April/Fig2/'
+BiSe_B = directory + 'BiSe_Bulk.xls'
+BiTe_B = directory + 'BiTe_Bulk.xls'
+
+BiSe_C = directory + 'BiSe_Cond.xls'
+BiTe_C = directory + 'BiTe_Cond.xls'
+
+#doFigure2(BiSe_B, BiTe_B, BiSe_C, BiTe_C)
+
+
+#args=[er, ei,"Epsilon real","Epsilon imaginary", title, 3]
+
+
+

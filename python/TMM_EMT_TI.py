@@ -241,7 +241,7 @@ condOi = eps_condO[0].imag
 #    R_3[2][i] = Rp[i][0] #TMM
 #    T_3[2][i] = Tr[i][0]
 
-directory = '../plots/April/BiSe3000/'
+directory = '../plots/April/'
 prop1 = "Transmittance"
 prop2 = "Reflectance"
 prop3 = "Absorbtance"
@@ -260,7 +260,7 @@ fn1 = directory +"diel=" + str(d_dielectric*1E9)+ "_bulk=" +str(d_bulk*1E9) + pr
 fn2 = directory +"diel=" + str(d_dielectric*1E9)+ "_bulk=" +str(d_bulk*1E9) + prop2+ ".png"
 fn21= directory +"diel=" + str(d_dielectric*1E9)+ "_bulk=" +str(d_bulk*1E9) + prop3+ ".png"
 
-fn3 = directory + "diel=" + str(d_dielectric*1E9)+"bulk_eps.png"
+fn3 = directory + "diel=" + str(d_dielectric*1E9)+"bulk_eps_test1111.png"
 fn4 = directory + "diel=" + str(d_dielectric*1E9)+"CONDUCTION_eps.png"
 fn5 = directory +"diel="+str(d_dielectric*1E9)+"_bulk=" +str(d_bulk*1E9)+"_Pd_"
 
@@ -296,12 +296,12 @@ titleEPSi = 'Wavelength,[nm]'+ '\t'+'ExtraO_real'+ '\t'+ "Ordinary_real"+ '\t'+"
 titleBULK = 'Wavelength,[nm]'+ '\t'+'EPS_real'+ '\t'+ "EPS_imag"
 titleCOND = 'Wavelength,[nm]'+ '\t'+'ExtraO_real'+ '\t'+ "Ordinary_real"+ '\t'+"ExtraO_imag" \
  + '\t'+"Ordinary_imag"
-postprocess.writeToFile(fn3[:-4] +".xls", titleBULK, argsB) #FIG2 - BULK
-postprocess.writeToFile(fn4[:-4] +".xls", titleCOND, argsC) #FIG2 - COND
+#postprocess.writeToFile(fn3[:-4] +".xls", titleBULK, argsB) #FIG2 - BULK
+#postprocess.writeToFile(fn4[:-4] +".xls", titleCOND, argsC) #FIG2 - COND
 
-postprocess.writeToFile(fnEMTi[:-4] +".xls", titleEPSi, args)    #FIG3 -6
-postprocess.writeToFile(fn2[:-4] +".xls", titleAR, argsR)        #FIG4 -7
-postprocess.writeToFile(fn21[:-4] +".xls", titleAR, argsA)       #FIG5 -8
+#postprocess.writeToFile(fnEMTi[:-4] +".xls", titleEPSi, args)    #FIG3 -6
+#postprocess.writeToFile(fn2[:-4] +".xls", titleAR, argsR)        #FIG4 -7
+#postprocess.writeToFile(fn21[:-4] +".xls", titleAR, argsA)       #FIG5 -8
 
 
 

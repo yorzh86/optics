@@ -135,14 +135,19 @@ def bulk_Wolf(x1):
     gamma = np.array([ [17.5, 10, 3920.5] ])
 
     eps1 = eps_inf - math.pow(wpD,2)/(math.pow(x,2)+1j*gammaD*x)
+    eps0 = math.pow(wpD,2)/(math.pow(x,2)+1j*gammaD*x)
     eps2 = 0.0+0.0j
 
     # Attention - I do not divide by 4pi to get correct results
     for i in range(len(wp[0])):
          eps2 += math.pow(wp[0][i],2)/(math.pow(w0[0][i],2)-math.pow(x,2)-1j*gamma[0][i]*x)
+#    print "Drude:", np.abs(eps0)
+#    print "Lorentz:", np.abs(eps2)
     return eps1+eps2
 
-
+#for i in range (10):
+#    print "lambda:", 500+i*500
+#    bulk_Wolf(500+i*500)
 #========
 # Uncomment to test. Compare with figure 5.12 300K drude (page 62)
 # Attention, change fn to work with cm^-1(delete all unit conversion(w,x) and change
