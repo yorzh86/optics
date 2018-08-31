@@ -29,7 +29,8 @@ mu0 = 4*pi*1e-7
 #-------------------------------
 N_periods = 10
 N_layers = 2+N_periods*4
-Plot_resolution = 50
+Wavelength_resolution = 10
+Angle_resolution = 18
 
 # Permeability
 mu = np.ones((1, N_layers), dtype=float)
@@ -55,15 +56,20 @@ ffm = d_bulk/(d_cond*2+d_bulk+d_dielectric)
 ffd = d_dielectric/(d_cond*2+d_bulk+d_dielectric)
 
 # Setup wavelengths
-wl = np.zeros((1,Plot_resolution), dtype=float)
-#wl[0] = np.linspace(500, 3500, Plot_resolution)
-wl[0] = np.linspace(500, 20000, Plot_resolution)
-#wl[0] = np.linspace(500, 13360, Plot_resolution)
+wl = np.zeros((1,Wavelength_resolution), dtype=float)
+#wl[0] = np.linspace(500, 3500, Wavelength_resolution)
+wl[0] = np.linspace(500, 20000, Wavelength_resolution)
+#wl[0] = np.linspace(500, 13360, Wavelength_resolution)
 
 # Select angles of incidence
-#theta_i= np.zeros((1,180), dtype=float)
-#theta_i[0] = np.linspace(0,89.9,180) # or:
-theta_i= np.array([[0]])
+theta_i= np.zeros((1,Angle_resolution), dtype=float)
+theta_i[0] = np.linspace(0,89.9,Angle_resolution) # or:
+#theta_i= np.array([[0]])
+
+
+kx = np.zeros((len(theta_i[0]),len(wl[0])), dtype=complex)
+kz_air = np.zeros((len(theta_i[0]),len(wl[0])), dtype=complex)
+kz_end = np.zeros((len(theta_i[0]),len(wl[0])), dtype=complex)
 
 # Setup dielectric fn for each layer at different wavelengths
 eps_air = np.array([[1.0]])
@@ -148,19 +154,21 @@ for i in range(len(theta_i[0])):
         eps_TMM_E = np.append(eps_TMM_E, eps_air)
         eps_TMM_E = np.array([eps_TMM_E])
 
-        om = 2*pi*c0/wl[0][j]*1E9
-        k0 = float(om/c0)
-        kx = k0*sin(theta_i[0][i]*pi/180)
-        kz_air = cmath.sqrt(pow(k0,2)-pow(kx,2))
-        kz_end = cmath.sqrt(pow(k0,2)*eps_TMM_O[0][-1]-pow(kx,2)*eps_TMM_O[0][-1]/eps_TMM_E[0][-1])
+        om = 2*pi*c0/wl[0]*1E9 #wl[0][j]
+        k0 = om/c0
+        kx[i][j] = k0[j]*sin(theta_i[0][i]*pi/180)
+        kz_air[i][j] = cmath.sqrt(pow(k0[j],2)-pow(kx[i][j],2))
+        kz_end[i][j] = cmath.sqrt(pow(k0[j],2)*eps_TMM_O[0][-1]-pow(kx[i][j],2)*eps_TMM_O[0][-1]/eps_TMM_E[0][-1])
 
-        Ap, Bp = get_A_B(d_TMM, N_layers, wl[0][j], eps_TMM_O, eps_TMM_E, kx, mu)
+        Ap, Bp = get_A_B(d_TMM, N_layers, wl[0][j], eps_TMM_O, eps_TMM_E, kx[i][j], mu)
+        
+        
 
-        ApEMT_st, BpEMT_st = get_A_B(d_EMT, 3, wl[0][j], eps_EMT_O_st, eps_EMT_E_st, kx, mu)
-        ApEMT_i1, BpEMT_i1 = get_A_B(d_EMT, 3, wl[0][j], eps_EMT_O_i1, eps_EMT_E_i1, kx, mu)
+        ApEMT_st, BpEMT_st = get_A_B(d_EMT, 3, wl[0][j], eps_EMT_O_st, eps_EMT_E_st, kx[i][j], mu)
+        ApEMT_i1, BpEMT_i1 = get_A_B(d_EMT, 3, wl[0][j], eps_EMT_O_i1, eps_EMT_E_i1, kx[i][j], mu)
 
         Rp_TM = pow(np.abs(Bp[0][0]/Ap[0][0]),2)
-        Tr_TM = np.real(kz_end/eps_TMM_O[-1][0])/np.real(kz_air/eps_TMM_O[0][0])*pow(np.abs(Ap[0][-1]/Ap[0][0]), 2)
+        Tr_TM = np.real(kz_end[i][j]/eps_TMM_O[-1][0])/np.real(kz_air[i][j]/eps_TMM_O[0][0])*pow(np.abs(Ap[0][-1]/Ap[0][0]), 2)
         Ab_TM = 1 - Rp_TM - Tr_TM
 
         Rp_EMT_st = pow(np.abs(BpEMT_st[0][0]/ApEMT_st[0][0]),2)
@@ -174,6 +182,7 @@ for i in range(len(theta_i[0])):
         Rp[i][j] = Rp_TM
         Tr[i][j] = Tr_TM
         Ab[i][j] = Ab_TM
+        
 
         RpEMT_st[i][j] = Rp_EMT_st
         TrEMT_st[i][j] = Tr_EMT_st
@@ -182,25 +191,35 @@ for i in range(len(theta_i[0])):
         RpEMT_i1[i][j] = Rp_EMT_i1
         TrEMT_i1[i][j] = Tr_EMT_i1
         AbEMT_i1[i][j] = Ab_EMT_i1
+#print "==="
+#print
+#print "Rp:"
+#print Rp
+#print "Wavelength:"
+#print wl[0]
+#print "Theta_i"
+#print theta_i[0]
+#print
+#print "==="
 
-
-for i in range(len(eps_EMTE_i1[0])):
-    ni = cmath.sqrt(eps_EMTE_i1[0][i])
-    ki = ni.imag
-    nst = cmath.sqrt(eps_EMTE_st[0][i])
-    kst = nst.imag
-
-    Pd[0][i] = wl[0][i]/(4.0*pi*ki)  # EMT improved
-    Pd[1][i] = wl[0][i]/(4.0*pi*kst) # EMT standard
+#for i in range(len(eps_EMTE_i1[0])):
+#    ni = cmath.sqrt(eps_EMTE_i1[0][i])
+#    ki = ni.imag
+#    nst = cmath.sqrt(eps_EMTE_st[0][i])
+#    kst = nst.imag
+#
+#    Pd[0][i] = wl[0][i]/(4.0*pi*ki)  # EMT improved
+#    Pd[1][i] = wl[0][i]/(4.0*pi*kst) # EMT standard
 
 
 #-------------------------------
 
 # POST PROCESSING
 #-------------------------------
-R_3 = np.zeros((3, Plot_resolution), dtype=float)
-T_3 = np.zeros((3, Plot_resolution), dtype=float)
-A_3 = np.zeros((3, Plot_resolution), dtype=float)
+#for 2d plots
+R_3 = np.zeros((3, Wavelength_resolution), dtype=float)
+T_3 = np.zeros((3, Wavelength_resolution), dtype=float)
+A_3 = np.zeros((3, Wavelength_resolution), dtype=float)
 
 for i in range(len(Rp[0])):
     R_3[0][i] = Rp[0][i]          # TMM
@@ -241,9 +260,9 @@ condOi = eps_condO[0].imag
 #    R_3[2][i] = Rp[i][0] #TMM
 #    T_3[2][i] = Tr[i][0]
 
-directory = '../plots/April/'
+directory = '../plots/September/2/'
 prop1 = "Transmittance"
-prop2 = "Reflectance"
+prop2 = "Reflectance_Contour"
 prop3 = "Absorbtance"
 
 EMTi = '_EMTi_eps.png'
@@ -276,7 +295,7 @@ postprocess.basic_info(material_name(), N_layers, N_periods)
 #postprocess.doFigure_Eps4(wl[0], argsEpsST4)
 
 #postprocess.doFigure_RTA(wl[0], T_3[0], T_3[2], T_3[1], fn1, prop1,1)
-#postprocess.doFigure_RTA(wl[0], R_3[0], R_3[2], R_3[1], fn2, prop2,2)
+#postprocess.doFigure_RTA(wl[0], R_3[0], R_3[2], R_3[1], fn2, prop2,1)
 #postprocess.doFigure_RTA(wl[0], A_3[0], A_3[2], A_3[1], fn21, prop3,1)
 
 #postprocess.doFigure_Eps4(wl[0], argsEpsCOND)
@@ -304,5 +323,7 @@ titleCOND = 'Wavelength,[nm]'+ '\t'+'ExtraO_real'+ '\t'+ "Ordinary_real"+ '\t'+"
 #postprocess.writeToFile(fn21[:-4] +".xls", titleAR, argsA)       #FIG5 -8
 
 
-
+postprocess.doContourPlot(wl[0], theta_i[0], Rp, 'Contour_Rp_100&100nm_10x18_semilog')
+postprocess.doContourPlot(wl[0], theta_i[0], Tr, 'Contour_Tr_100&100nm_10x18_semilog')
+#postprocess.doContourPlot(wl[0], theta_i[0], Ab, 'Contour_Ab_1001')
 

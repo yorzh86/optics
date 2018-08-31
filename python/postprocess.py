@@ -4,6 +4,8 @@ import pylab as pl
 import glob, os
 import sys
 import math
+import matplotlib.pyplot as plt
+import matplotlib.colors as colors
 
 
 def plot_Eps4(ax, wl, args):
@@ -107,6 +109,36 @@ def basic_info(name, N_layers, N_periods):
     print "Period number:", N_periods
     return
 
+def doContourPlot(wl, theta_i, R, filename):
+    fig = pl.figure()
+    ax = fig.add_subplot(111)
+    x,y = np.meshgrid(wl, theta_i)
+    #pl.yscale("log")
+    ax.set_yscale("log")
+    p = ax.contourf(y,x,R)
+    pl.xlabel('Angle, 'r'$\Theta$')
+    pl.ylabel('Wavelength, 'r'$\lambda$ [nm]')
+    pl.title(filename)
+    #plt.colobar(p,shrink=0.8, extend='both')
+    plt.colorbar(p)
+    #ax.set_ybound(0, 20000)
+    
+    xmajor_ticks = np.arange(0, 105, 15)
+    xminor_ticks = np.arange(0, 95, 5)
+    ax.set_xticks(xmajor_ticks)
+    ax.set_xticks(xminor_ticks, minor = True)
+    
+    #ymajor_ticks = np.arange(0, 25000, 5000)
+    #yminor_ticks = np.arange(0, 95, 5)
+    #ax.set_yticks(ymajor_ticks)
+    #ax.set_xticks(yminor_ticks, minor = True)
+    ax.axes.text(-12,18000, r'$2\cdot 10^{4}$', fontsize=10, transform = ax.transData)
+    ax.axes.text(-8,470, '500', fontsize=10, transform = ax.transData)
+    fig.savefig('../plots/September/2/'+filename, dpi=500)
+    pl.show()
+    return
+    
+    
 
 #================== Write to file ======================#
 

@@ -1,7 +1,7 @@
 from __future__ import division
 import numpy as np
 from math import *
-#import sys
+import sys
 
 #Constants
 h = 1.054571596e-34           #Planck's constant over 2*pi [J-s]
@@ -30,10 +30,12 @@ def eps_conductor(wl, d, tau, mu, T = 300):
         sigma_Drude = 1j/(om+1j/tau)*(ee**2)/(pi*(h**2))*np.abs(ee*mu)
 
     # Interband contribution
-    xi         = np.zeros((1,100001), dtype = float)
-    xi[0]      = np.linspace(0, 20, 100001)
-    G          = np.zeros((1,100001), dtype = float)
-    Int_term   = np.zeros((1,100001), dtype = float)
+    #Number = 100001
+    Number = 1001
+    xi         = np.zeros((1,Number), dtype = float)
+    xi[0]      = np.linspace(0, 20, Number)
+    G          = np.zeros((1,Number), dtype = float)
+    Int_term   = np.zeros((1,Number), dtype = float)
 
     G_hom2 = sinh(heV*om/2/(kbeV*T))/(cosh(mu/(kbeV*T))+cosh(heV*om/2/(kbeV*T)))
 
@@ -59,3 +61,36 @@ def eps_conductor(wl, d, tau, mu, T = 300):
 #total 24.3
 #without sigma_inter: 0.0
 #without sigma_Drude:24.5
+
+#short_a = np.array([(1.00180835548+1.98390538809j),
+#(3.71916749239+9.05739127151j),
+#(-5.73377169041+2.50681381753j),
+#(-26.5972134526+3.09562902637j),
+#(-53.6900467224+6.00715100738j),
+#(-87.424325322+10.934160654j),
+#(-127.783212587+18.1831782369j),
+#(-174.616623561+28.1192797305j),
+#(-227.714938556+41.1026855134j),
+#(-286.831068849+57.4744527732j)])
+#
+#long_a = np.array([(1.00180662058+1.98390538809j),
+#(3.71911818008+9.05739127151j),
+#(-5.73393342334+2.50681381753j),
+#(-26.5975518539+3.09562902637j),
+#(-53.6906251071+6.00715100738j),
+#(-87.4252058163+10.934160654j),
+#(-127.784455916+18.1831782369j),
+#(-174.618288888+28.1192797305j),
+#(-227.71708337+41.1026855134j),
+#(-286.833748887+57.4744527732j)])
+#
+#  
+#for i in range(len(long_a)):
+#    print (short_a[i]-long_a[i])/long_a[i]*100
+#sys.exit()
+#
+#wl = np.zeros((1,10), dtype=float)
+#wl[0] = np.linspace(500, 20000, 10)
+#for i in range(len(wl[0])):
+#    print eps_conductor(wl[0][i], 0.92*1E-9, 55*1E-15, 0.189)
+#    short_a[0][i] = eps_conductor(wl[0][i], 0.92*1E-9, 55*1E-15, 0.189)

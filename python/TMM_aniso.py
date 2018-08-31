@@ -71,5 +71,7 @@ def get_A_B(d, N_layers, wl, eps_O, eps_E, kx, mu):
     for l in range (N_layers-1, -1, -1):
         Ap[0][l] = Mp[l][0][0]*Ap[0][N_layers-1]
         Bp[0][l] = Mp[l][1][0]*Ap[0][N_layers-1]
-
+    
+    
     return Ap, Bp
+
