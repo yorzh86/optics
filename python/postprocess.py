@@ -1,11 +1,13 @@
 from __future__ import division
-import numpy as np
-import pylab as pl
 import glob, os
 import sys
 import math
+import numpy as np
+import pylab as pl
 import matplotlib.pyplot as plt
 import matplotlib.colors as colors
+import matplotlib.ticker as ticker
+
 
 
 def plot_Eps4(ax, wl, args):
@@ -109,36 +111,41 @@ def basic_info(name, N_layers, N_periods):
     print "Period number:", N_periods
     return
 
-def doContourPlot(wl, theta_i, R, filename):
+def doContourPlot(wl, theta_i, R, filename, style):
     fig = pl.figure()
     ax = fig.add_subplot(111)
-    x,y = np.meshgrid(wl, theta_i)
-    #pl.yscale("log")
+    x,y = np.meshgrid(wl[:]/1000,theta_i)
+
     ax.set_yscale("log")
-    p = ax.contourf(y,x,R)
+
+    #p = ax.pcolormesh(y,x,R, cmap=style, shading='goaround' )
+    p = ax.contourf(y,x,R, cmap=style)
+    norm = colors.Normalize(vmin=0, vmax=p.cvalues.max())
+
+    sm = plt.cm.ScalarMappable(norm=norm, cmap=p.cmap)
+    sm.set_array([])
+    l1 = np.linspace(0, p.cvalues.max(), num=7, endpoint=True)
+    plt.colorbar(sm, ticks=l1, format = '%.2f')
+    #plt.colorbar(sm, ticks=p.levels)
+    #plt.colorbar(sm,  ticks=ticker.MaxNLocator())
+
     pl.xlabel('Angle, 'r'$\Theta$')
-    pl.ylabel('Wavelength, 'r'$\lambda$ [nm]')
+    pl.ylabel('Wavelength, 'r'$\lambda$ [$\mu$m]')
     pl.title(filename)
-    #plt.colobar(p,shrink=0.8, extend='both')
-    plt.colorbar(p)
-    #ax.set_ybound(0, 20000)
-    
+
     xmajor_ticks = np.arange(0, 105, 15)
     xminor_ticks = np.arange(0, 95, 5)
     ax.set_xticks(xmajor_ticks)
     ax.set_xticks(xminor_ticks, minor = True)
-    
-    #ymajor_ticks = np.arange(0, 25000, 5000)
-    #yminor_ticks = np.arange(0, 95, 5)
-    #ax.set_yticks(ymajor_ticks)
-    #ax.set_xticks(yminor_ticks, minor = True)
-    ax.axes.text(-12,18000, r'$2\cdot 10^{4}$', fontsize=10, transform = ax.transData)
-    ax.axes.text(-8,470, '500', fontsize=10, transform = ax.transData)
-    fig.savefig('../plots/September/2/'+filename, dpi=500)
-    pl.show()
+
+    ax.axes.text(-12,18, r'$2\cdot 10^{1}$', fontsize=10, transform = ax.transData)
+    ax.axes.text(-8,0.47, '0.5', fontsize=10, transform = ax.transData)
+
+    #fig.savefig('../plots/September/2/'+filename, dpi=600)
+    plt.show()
     return
-    
-    
+
+
 
 #================== Write to file ======================#
 

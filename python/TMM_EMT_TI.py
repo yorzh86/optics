@@ -27,6 +27,9 @@ mu0 = 4*pi*1e-7
 
 # NANO-STRUCTURE
 #-------------------------------
+
+
+
 N_periods = 10
 N_layers = 2+N_periods*4
 Wavelength_resolution = 10
@@ -38,9 +41,11 @@ mu = np.ones((1, N_layers), dtype=float)
 # Thickness of layers for TMM
 d_TMM = np.zeros((1, 4*N_periods+2), dtype = float)
 d_air = 0
+d_dielectric = 100*1E-9
 d_cond = d_conduct()
 d_bulk = (100*1E-9-d_cond*2)
-d_dielectric = 100*1E-9
+
+
 
 aa_ = [d_dielectric, d_cond, d_bulk, d_cond]
 d_TMM[0] = d_air
@@ -57,19 +62,11 @@ ffd = d_dielectric/(d_cond*2+d_bulk+d_dielectric)
 
 # Setup wavelengths
 wl = np.zeros((1,Wavelength_resolution), dtype=float)
-#wl[0] = np.linspace(500, 3500, Wavelength_resolution)
 wl[0] = np.linspace(500, 20000, Wavelength_resolution)
-#wl[0] = np.linspace(500, 13360, Wavelength_resolution)
 
 # Select angles of incidence
 theta_i= np.zeros((1,Angle_resolution), dtype=float)
 theta_i[0] = np.linspace(0,89.9,Angle_resolution) # or:
-#theta_i= np.array([[0]])
-
-
-kx = np.zeros((len(theta_i[0]),len(wl[0])), dtype=complex)
-kz_air = np.zeros((len(theta_i[0]),len(wl[0])), dtype=complex)
-kz_end = np.zeros((len(theta_i[0]),len(wl[0])), dtype=complex)
 
 # Setup dielectric fn for each layer at different wavelengths
 eps_air = np.array([[1.0]])
@@ -104,8 +101,12 @@ AbEMT_i1 = np.zeros((len(theta_i[0]),len(wl[0])),dtype=float)
 # Penetration depth array
 Pd = np.zeros((2, len(wl[0])), dtype=float)
 
-#-------------------------------
+# Auxiliary arrays to calculate A,B coefficients
+kx = np.zeros((len(theta_i[0]),len(wl[0])), dtype=complex)
+kz_air = np.zeros((len(theta_i[0]),len(wl[0])), dtype=complex)
+kz_end = np.zeros((len(theta_i[0]),len(wl[0])), dtype=complex)
 
+#-------------------------------
 # TESTING
 #-------------------------------
 # 1. Loop through all angles of incidence
@@ -161,8 +162,8 @@ for i in range(len(theta_i[0])):
         kz_end[i][j] = cmath.sqrt(pow(k0[j],2)*eps_TMM_O[0][-1]-pow(kx[i][j],2)*eps_TMM_O[0][-1]/eps_TMM_E[0][-1])
 
         Ap, Bp = get_A_B(d_TMM, N_layers, wl[0][j], eps_TMM_O, eps_TMM_E, kx[i][j], mu)
-        
-        
+
+
 
         ApEMT_st, BpEMT_st = get_A_B(d_EMT, 3, wl[0][j], eps_EMT_O_st, eps_EMT_E_st, kx[i][j], mu)
         ApEMT_i1, BpEMT_i1 = get_A_B(d_EMT, 3, wl[0][j], eps_EMT_O_i1, eps_EMT_E_i1, kx[i][j], mu)
@@ -182,7 +183,7 @@ for i in range(len(theta_i[0])):
         Rp[i][j] = Rp_TM
         Tr[i][j] = Tr_TM
         Ab[i][j] = Ab_TM
-        
+
 
         RpEMT_st[i][j] = Rp_EMT_st
         TrEMT_st[i][j] = Tr_EMT_st
@@ -191,16 +192,7 @@ for i in range(len(theta_i[0])):
         RpEMT_i1[i][j] = Rp_EMT_i1
         TrEMT_i1[i][j] = Tr_EMT_i1
         AbEMT_i1[i][j] = Ab_EMT_i1
-#print "==="
-#print
-#print "Rp:"
-#print Rp
-#print "Wavelength:"
-#print wl[0]
-#print "Theta_i"
-#print theta_i[0]
-#print
-#print "==="
+
 
 #for i in range(len(eps_EMTE_i1[0])):
 #    ni = cmath.sqrt(eps_EMTE_i1[0][i])
@@ -322,8 +314,31 @@ titleCOND = 'Wavelength,[nm]'+ '\t'+'ExtraO_real'+ '\t'+ "Ordinary_real"+ '\t'+"
 #postprocess.writeToFile(fn2[:-4] +".xls", titleAR, argsR)        #FIG4 -7
 #postprocess.writeToFile(fn21[:-4] +".xls", titleAR, argsA)       #FIG5 -8
 
+cfg = 'cfg.'+str(d_dielectric*1E9)[:3]+'x'+str(d_bulk*1E9)[:5]+'nm_'
+rsl = 'res.'+str(Wavelength_resolution)+'x'+str(Angle_resolution)
 
-postprocess.doContourPlot(wl[0], theta_i[0], Rp, 'Contour_Rp_100&100nm_10x18_semilog')
-postprocess.doContourPlot(wl[0], theta_i[0], Tr, 'Contour_Tr_100&100nm_10x18_semilog')
-#postprocess.doContourPlot(wl[0], theta_i[0], Ab, 'Contour_Ab_1001')
 
+styles = ['viridis', 'plasma', 'inferno', 'magma',
+          'Greys', 'Purples', 'Blues', 'Greens', 'Oranges', 'Reds',
+            'YlOrBr', 'YlOrRd', 'OrRd', 'PuRd', 'RdPu', 'BuPu',
+            'GnBu', 'PuBu', 'YlGnBu', 'PuBuGn', 'BuGn', 'YlGn',
+            'binary', 'gist_yarg', 'gist_gray', 'gray', 'bone', 'pink',
+            'spring', 'summer', 'autumn', 'winter', 'cool', 'Wistia',
+            'hot', 'afmhot', 'gist_heat', 'copper',
+            'PiYG', 'PRGn', 'BrBG', 'PuOr', 'RdGy', 'RdBu',
+            'RdYlBu', 'RdYlGn', 'Spectral', 'coolwarm', 'bwr', 'seismic',
+            'Pastel1', 'Pastel2', 'Paired', 'Accent',
+            'Dark2', 'Set1', 'Set2', 'Set3',
+            'tab10', 'tab20', 'tab20b', 'tab20c',
+            'flag', 'prism', 'ocean', 'gist_earth', 'terrain', 'gist_stern',
+            'gnuplot', 'gnuplot2', 'CMRmap', 'cubehelix', 'brg', 'hsv',
+            'gist_rainbow', 'rainbow', 'jet', 'nipy_spectral', 'gist_ncar']
+
+#for element in styles:
+#    postprocess.doContourPlot(wl[0], theta_i[0], Rp, element+'_'+rsl+'.png', element)
+
+
+postprocess.doContourPlot(wl[0], theta_i[0], Rp, str(material_name()[:6])+'_Rp_'+
+                          cfg +rsl +'_hot_um.png', 'hot')
+postprocess.doContourPlot(wl[0], theta_i[0], Tr, str(material_name()[:6])+'_Tr_'+
+                          cfg +rsl +'_hot_um.png', 'hot')
