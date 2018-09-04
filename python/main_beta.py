@@ -17,8 +17,7 @@ cfg = np.array(pl.loadtxt('Bi2Se3.configs',skiprows=3))
 #3     100     10     2000
 #4     12     10     2000
 
-print cfg
 #2. Setup which configurations to run and what resolution to use
 for i in range(len(cfg[0])):
-    calculateRpTrAb(cfg[i][1], cfg[i][2], cfg[i][3], 200, 180)
+    calculateRpTrAb(cfg[i][1], cfg[i][2], cfg[i][3], 10, 18)
     # (substrate, ti, total, wl_reso, angle_reso - optional)

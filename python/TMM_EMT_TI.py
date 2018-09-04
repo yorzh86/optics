@@ -335,10 +335,12 @@ def calculateRpTrAb(substrate, ti, total, wl_r=10, angle_r=18):
                 'gist_rainbow', 'rainbow', 'jet', 'nipy_spectral', 'gist_ncar']
 
 #    for element in styles:
-#        postprocess.doContourPlot(wl[0], theta_i[0], Rp, element+'_'+rsl+'.png', element)
+#        doContourPlot(wl[0], theta_i[0], Rp, element+'_'+rsl+'.png', element)
 
     doContourPlot(wl[0], theta_i[0], Rp, str(material_name()[:6])+'_Rp_'+
                               cfg +rsl, 'hot')
     doContourPlot(wl[0], theta_i[0], Tr, str(material_name()[:6])+'_Tr_'+
                               cfg +rsl, 'hot')
     return
+
+calculateRpTrAb(100, 100, 2000, 10, 18)

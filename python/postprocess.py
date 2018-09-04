@@ -7,7 +7,7 @@ import pylab as pl
 import matplotlib.pyplot as plt
 import matplotlib.colors as colors
 import matplotlib.ticker as ticker
-
+import matplotlib
 
 
 def plot_Eps4(ax, wl, args):
@@ -115,37 +115,43 @@ def doContourPlot(wl, theta_i, R, filename, style):
     fig = pl.figure()
     ax = fig.add_subplot(111)
     x,y = np.meshgrid(wl[:]/1000,theta_i)
-
     ax.set_yscale("log")
-
-    #p = ax.pcolormesh(y,x,R, cmap=style, shading='goaround' )
+    
     p = ax.contourf(y,x,R, cmap=style)
     norm = colors.Normalize(vmin=0, vmax=p.cvalues.max())
+    #norm = colors.Normalize(vmin=0, vmax=1.0)
+
+    l1 = np.linspace(0.0, p.cvalues.max(), num=7, endpoint=True)
+    l2 = np.linspace(0.0, 1.0, 6)
+    list1 = [0.0, 0.2, 0.4, 0.6, 0.8, 1.0]
 
     sm = plt.cm.ScalarMappable(norm=norm, cmap=p.cmap)
     sm.set_array([])
-    l1 = np.linspace(0, p.cvalues.max(), num=7, endpoint=True)
-    plt.colorbar(sm, ticks=l1, format = '%.2f')
-    #plt.colorbar(sm, ticks=p.levels)
-    #plt.colorbar(sm,  ticks=ticker.MaxNLocator())
+    
+    plt.colorbar(sm, ticks=l2, format ='%.2f')
+    #plt.colorbar(sm, ticks=list1)
+    #plt.colorbar(sm,  ticks=ticker.LinearLocator(7))
 
-    pl.xlabel('Angle, 'r'$\Theta$')
-    pl.ylabel('Wavelength, 'r'$\lambda$ [$\mu$m]')
+    pl.xlabel('Angle, 'r'$\Theta$ (deg)')
+    #pl.ylabel('Wavelength, 'r'$\lambda$ ($\mu$m)') #sits on 5*10^0
+    pl.text(-16.5, 3.2, 'Wavelength, 'r'$\lambda$ ($\mu$m)', horizontalalignment='left', 
+            verticalalignment='center', transform=ax.transData, rotation = 'vertical')
     pl.title(filename[:-11])
 
     xmajor_ticks = np.arange(0, 105, 15)
     xminor_ticks = np.arange(0, 95, 5)
     ax.set_xticks(xmajor_ticks)
     ax.set_xticks(xminor_ticks, minor = True)
+    #ax.set_yticklabels([])
 
-    ax.axes.text(-12,18, r'$2\cdot 10^{1}$', fontsize=10, transform = ax.transData)
+    ax.axes.text(-12,18, r'$2\cdot10^{1}$', fontsize=10, transform = ax.transData)
     ax.axes.text(-8,0.47, '0.5', fontsize=10, transform = ax.transData)
-
-    fig.savefig('../plots/September/4/Bi2Te3/'+filename+'.png', dpi=600)
+    ax.axes.text(-12,4.7, r'$5\cdot10^{0}$', fontsize=10, transform = ax.transData)
+    
+    fig.savefig('../plots/September/4/test/'+filename+'.png', dpi=600)
+    #pl.tight_layout(True)
     plt.show()
     return
-
-
 
 #================== Write to file ======================#
 
