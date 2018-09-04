@@ -131,7 +131,7 @@ def doContourPlot(wl, theta_i, R, filename, style):
 
     pl.xlabel('Angle, 'r'$\Theta$')
     pl.ylabel('Wavelength, 'r'$\lambda$ [$\mu$m]')
-    pl.title(filename)
+    pl.title(filename[:-11])
 
     xmajor_ticks = np.arange(0, 105, 15)
     xminor_ticks = np.arange(0, 95, 5)
@@ -141,7 +141,7 @@ def doContourPlot(wl, theta_i, R, filename, style):
     ax.axes.text(-12,18, r'$2\cdot 10^{1}$', fontsize=10, transform = ax.transData)
     ax.axes.text(-8,0.47, '0.5', fontsize=10, transform = ax.transData)
 
-    #fig.savefig('../plots/September/2/'+filename, dpi=600)
+    fig.savefig('../plots/September/4/Bi2Te3/'+filename+'.png', dpi=600)
     plt.show()
     return
 
