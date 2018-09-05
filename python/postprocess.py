@@ -111,7 +111,7 @@ def basic_info(name, N_layers, N_periods):
     print "Period number:", N_periods
     return
 
-def doContourPlot(wl, theta_i, R, filename, style):
+def doContourPlot(wl, theta_i, R, foldername, filename, prop, style='gray'):
     fig = pl.figure()
     ax = fig.add_subplot(111)
     x,y = np.meshgrid(wl[:]/1000,theta_i)
@@ -121,34 +121,45 @@ def doContourPlot(wl, theta_i, R, filename, style):
     norm = colors.Normalize(vmin=0, vmax=p.cvalues.max())
     #norm = colors.Normalize(vmin=0, vmax=1.0)
 
-    l1 = np.linspace(0.0, p.cvalues.max(), num=7, endpoint=True)
-    l2 = np.linspace(0.0, 1.0, 6)
-    list1 = [0.0, 0.2, 0.4, 0.6, 0.8, 1.0]
-
+    l1 = np.linspace(0.0, p.cvalues.max(), num=6, endpoint=True)
+    
+    if (p.cvalues.max() < 1.0):
+        l2 = np.linspace(0.0, p.cvalues.max(), num=p.cvalues.max()*10+1)
+    if (p.cvalues.max() < 0.20):
+        l2 = np.linspace(0.0, p.cvalues.max(), num=p.cvalues.max()*100/3.0+1)
+    if (p.cvalues.max() < 0.1):
+        l2 = np.linspace(0.0, p.cvalues.max(), num=p.cvalues.max()*100+2)
+    
     sm = plt.cm.ScalarMappable(norm=norm, cmap=p.cmap)
     sm.set_array([])
-    
-    plt.colorbar(sm, ticks=l2, format ='%.2f')
-    #plt.colorbar(sm, ticks=list1)
-    #plt.colorbar(sm,  ticks=ticker.LinearLocator(7))
+    # We either have always same step (e.g. 0.1) or same number of steps.
+    if prop ==1: # 1 - Rp, 2 - Tr
+        plt.colorbar(sm, ticks=l1, format ='%.2f')
+    else:
+        #plt.colorbar(sm, format ='%.2f')
+        plt.colorbar(sm, ticks = l2, format = "%.2f")
 
-    pl.xlabel('Angle, 'r'$\Theta$ (deg)')
+    plt.xlabel('Angle, 'r'$\Theta$ (deg)')
     #pl.ylabel('Wavelength, 'r'$\lambda$ ($\mu$m)') #sits on 5*10^0
-    pl.text(-16.5, 3.2, 'Wavelength, 'r'$\lambda$ ($\mu$m)', horizontalalignment='left', 
+    plt.text(-11.4, 3.2, 'Wavelength, 'r'$\lambda$ ($\mu$m)', horizontalalignment='left', 
             verticalalignment='center', transform=ax.transData, rotation = 'vertical')
-    pl.title(filename[:-11])
+    plt.title(filename[:-11])
 
     xmajor_ticks = np.arange(0, 105, 15)
     xminor_ticks = np.arange(0, 95, 5)
     ax.set_xticks(xmajor_ticks)
     ax.set_xticks(xminor_ticks, minor = True)
-    #ax.set_yticklabels([])
+    ax.set_yticklabels([])
 
-    ax.axes.text(-12,18, r'$2\cdot10^{1}$', fontsize=10, transform = ax.transData)
-    ax.axes.text(-8,0.47, '0.5', fontsize=10, transform = ax.transData)
-    ax.axes.text(-12,4.7, r'$5\cdot10^{0}$', fontsize=10, transform = ax.transData)
+    ax.axes.text(-5.8, 18.6, '20', fontsize=10, transform = ax.transData)
+    ax.axes.text(-5.8, 9.4, '10', fontsize=10, transform = ax.transData)
+    ax.axes.text(-4.9, 4.72, '5', fontsize=10, transform = ax.transData)
+    ax.axes.text(-4.9, 0.94, '1', fontsize=10, transform = ax.transData)
+    ax.axes.text(-7,  0.47, '0.5', fontsize=10, transform = ax.transData)
+    #ax.axes.text(-12,4.7, r'$5\cdot10^{0}$', fontsize=10, transform = ax.transData)
     
-    fig.savefig('../plots/September/4/test/'+filename+'.png', dpi=600)
+    
+    fig.savefig(foldername+filename+'.png', dpi=600)
     #pl.tight_layout(True)
     plt.show()
     return

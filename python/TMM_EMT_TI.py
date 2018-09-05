@@ -6,13 +6,13 @@ import cmath
 from TMM_aniso import get_A_B
 from postprocess import *
 
-from Bi2Se3_lorentz import lorentz_E_eps
-from Bi2Se3_bulk import  bulk_Wolf
-from Bi2Se3_properties import *
+#from Bi2Se3_lorentz import lorentz_E_eps
+#from Bi2Se3_bulk import  bulk_Wolf
+#from Bi2Se3_properties import *
 
-#from Bi2Te3_lorentz import lorentz_E_eps
-#from Bi2Te3_bulk import bulk_Wolf
-#from Bi2Te3_properties import *
+from Bi2Te3_lorentz import lorentz_E_eps
+from Bi2Te3_bulk import bulk_Wolf
+from Bi2Te3_properties import *
 
 #from ZnSe import eps_ZnSe_Marple
 from sigma_epsilon import eps_conductor
@@ -333,14 +333,16 @@ def calculateRpTrAb(substrate, ti, total, wl_r=10, angle_r=18):
                 'flag', 'prism', 'ocean', 'gist_earth', 'terrain', 'gist_stern',
                 'gnuplot', 'gnuplot2', 'CMRmap', 'cubehelix', 'brg', 'hsv',
                 'gist_rainbow', 'rainbow', 'jet', 'nipy_spectral', 'gist_ncar']
-
+    
+    foldername = '../plots/September/5/test/'
 #    for element in styles:
 #        doContourPlot(wl[0], theta_i[0], Rp, element+'_'+rsl+'.png', element)
 
-    doContourPlot(wl[0], theta_i[0], Rp, str(material_name()[:6])+'_Rp_'+
-                              cfg +rsl, 'hot')
-    doContourPlot(wl[0], theta_i[0], Tr, str(material_name()[:6])+'_Tr_'+
-                              cfg +rsl, 'hot')
+    doContourPlot(wl[0], theta_i[0], Rp, foldername, str(material_name()[:6])+'_Rp_'+
+                              cfg +rsl, 1)
+    doContourPlot(wl[0], theta_i[0], Tr, foldername, str(material_name()[:6])+'_Tr_'+
+                              cfg +rsl, 2)
     return
 
-calculateRpTrAb(100, 100, 2000, 10, 18)
+#testing
+calculateRpTrAb(12, 10, 2000, 10, 18)
