@@ -5,6 +5,8 @@ from math import *
 import cmath
 from TMM_aniso import get_A_B
 from postprocess import *
+import datetime
+import os
 
 #from Bi2Se3_lorentz import lorentz_E_eps
 #from Bi2Se3_bulk import  bulk_Wolf
@@ -60,7 +62,7 @@ def calculateRpTrAb(substrate, ti, total, wl_r=10, angle_r=18):
 
     # Setup wavelengths
     wl = np.zeros((1,Wavelength_resolution), dtype=float)
-    wl[0] = np.linspace(500, 20000, Wavelength_resolution)
+    wl[0] = np.logspace(np.log10(500), np.log10(20000), Wavelength_resolution)
     #wl= np.array([[0]])
 
     # Select angles of incidence
@@ -334,16 +336,24 @@ def calculateRpTrAb(substrate, ti, total, wl_r=10, angle_r=18):
                 'gnuplot', 'gnuplot2', 'CMRmap', 'cubehelix', 'brg', 'hsv',
                 'gist_rainbow', 'rainbow', 'jet', 'nipy_spectral', 'gist_ncar']
 
-    foldername = '../plots/September/9/BiTe/'
+    today = datetime.date.today()
+    month_day = today.strftime('%b')+'/'+ today.strftime('%d')+'/'
+    
+    #create folder
+    path = '../plots/'+month_day
+    if (os.path.isdir(path) == False):
+        os.makedirs(path)
+    
+    foldername = '../plots/'+month_day
 #    for element in styles:
 #        doContourPlot(wl[0], theta_i[0], Rp, element+'_'+rsl+'.png', element)
 
-    #doContourPlot(wl[0], theta_i[0], Rp, foldername, str(material_name()[:6])+'_Rp_'+
-    #                          cfg +rsl, 1)
+    doContourPlot(wl[0], theta_i[0], Rp, foldername, str(material_name()[:6])+'_Rp_'+
+                              cfg +rsl, 1)
     doContourPlot(wl[0], theta_i[0], Tr, foldername, str(material_name()[:6])+'_Tr_'+
                               cfg +rsl, 2)
 
     return
 
 #testing
-calculateRpTrAb(12, 10, 2000, 200, 180)
+#calculateRpTrAb(12, 10, 2000, 10, 10)
