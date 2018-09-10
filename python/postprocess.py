@@ -116,34 +116,50 @@ def doContourPlot(wl, theta_i, R, foldername, filename, prop, style='gray'):
     ax = fig.add_subplot(111)
     x,y = np.meshgrid(wl[:]/1000,theta_i)
     ax.set_yscale("log")
-    
+
     p = ax.contourf(y,x,R, cmap=style)
     norm = colors.Normalize(vmin=0, vmax=p.cvalues.max())
-    #norm = colors.Normalize(vmin=0, vmax=1.0)
 
     l1 = np.linspace(0.0, p.cvalues.max(), num=6, endpoint=True)
-    
-    if (p.cvalues.max() < 1.0):
-        l2 = np.linspace(0.0, p.cvalues.max(), num=p.cvalues.max()*10+1)
-    if (p.cvalues.max() < 0.20):
-        l2 = np.linspace(0.0, p.cvalues.max(), num=p.cvalues.max()*100/3.0+1)
-    if (p.cvalues.max() < 0.1):
-        l2 = np.linspace(0.0, p.cvalues.max(), num=p.cvalues.max()*100+2)
-    
+
     sm = plt.cm.ScalarMappable(norm=norm, cmap=p.cmap)
     sm.set_array([])
+
     # We either have always same step (e.g. 0.1) or same number of steps.
-    if prop ==1: # 1 - Rp, 2 - Tr
-        plt.colorbar(sm, ticks=l1, format ='%.2f')
+    if prop ==1: # Reflectance is always up to 100%
+        num_ticks = 6
+        ticks_labels = ['0.00', '0.20', '0.40', '0.60', '0.80', '1.00']
     else:
-        #plt.colorbar(sm, format ='%.2f')
-        plt.colorbar(sm, ticks = l2, format = "%.2f")
+        a = round(p.cvalues.max(), 2)
+        if (int(repr(a)[-1])%2 == 1):
+            a = a - 1.0/pow(10,len(repr(a))-2)
+
+        if (int(repr(a)[-1]) < 5):
+            num_ticks = int(repr(a)[-1])+6 #ATTENTION!!!!!!!!!!!!!!!!
+        else:
+            num_ticks = int(repr(a)[-1])+1
+        labels = np.linspace(0, a, num= num_ticks)
+        ticks_labels = [[] for _ in range(num_ticks)]
+        for i in range(len(labels)):
+            labels[i] = round(labels[i], 2)
+            ticks_labels[i] = "%.2f" % labels[i]
+        #ticks_labels = [repr(i) for i in labels]
+
+
+# Creating colobar with 6 ticks and applying user-created labels
+    cbar = fig.colorbar(sm)
+    tick_locator = ticker.LinearLocator(num_ticks)
+    cbar.locator = tick_locator
+    cbar.ax.set_yticklabels([''])
+    cbar.update_ticks()
+    cbar.ax.set_yticklabels(ticks_labels)
+
 
     plt.xlabel('Angle, 'r'$\Theta$ (deg)')
     #pl.ylabel('Wavelength, 'r'$\lambda$ ($\mu$m)') #sits on 5*10^0
-    plt.text(-11.4, 3.2, 'Wavelength, 'r'$\lambda$ ($\mu$m)', horizontalalignment='left', 
+    plt.text(-11.4, 3.2, 'Wavelength, 'r'$\lambda$ ($\mu$m)', horizontalalignment='left',
             verticalalignment='center', transform=ax.transData, rotation = 'vertical')
-    plt.title(filename[:-11])
+    #plt.title(filename[:-11])
 
     xmajor_ticks = np.arange(0, 105, 15)
     xminor_ticks = np.arange(0, 95, 5)
@@ -157,10 +173,9 @@ def doContourPlot(wl, theta_i, R, foldername, filename, prop, style='gray'):
     ax.axes.text(-4.9, 0.94, '1', fontsize=10, transform = ax.transData)
     ax.axes.text(-7,  0.47, '0.5', fontsize=10, transform = ax.transData)
     #ax.axes.text(-12,4.7, r'$5\cdot10^{0}$', fontsize=10, transform = ax.transData)
-    
-    
+
+
     fig.savefig(foldername+filename+'.png', dpi=600)
-    #pl.tight_layout(True)
     plt.show()
     return
 

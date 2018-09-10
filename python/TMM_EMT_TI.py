@@ -333,16 +333,17 @@ def calculateRpTrAb(substrate, ti, total, wl_r=10, angle_r=18):
                 'flag', 'prism', 'ocean', 'gist_earth', 'terrain', 'gist_stern',
                 'gnuplot', 'gnuplot2', 'CMRmap', 'cubehelix', 'brg', 'hsv',
                 'gist_rainbow', 'rainbow', 'jet', 'nipy_spectral', 'gist_ncar']
-    
-    foldername = '../plots/September/5/test/'
+
+    foldername = '../plots/September/9/BiTe/'
 #    for element in styles:
 #        doContourPlot(wl[0], theta_i[0], Rp, element+'_'+rsl+'.png', element)
 
-    doContourPlot(wl[0], theta_i[0], Rp, foldername, str(material_name()[:6])+'_Rp_'+
-                              cfg +rsl, 1)
+    #doContourPlot(wl[0], theta_i[0], Rp, foldername, str(material_name()[:6])+'_Rp_'+
+    #                          cfg +rsl, 1)
     doContourPlot(wl[0], theta_i[0], Tr, foldername, str(material_name()[:6])+'_Tr_'+
                               cfg +rsl, 2)
+
     return
 
 #testing
-calculateRpTrAb(12, 10, 2000, 10, 18)
+calculateRpTrAb(12, 10, 2000, 200, 180)

@@ -4,6 +4,7 @@ import sys
 from math import *
 import cmath
 from TMM_EMT_TI import calculateRpTrAb
+import pylab as pl
 #import postprocess
 
 
@@ -28,5 +29,5 @@ cfg = np.array(pl.loadtxt('Bi2Se3.configs',skiprows=3))
 #2. Setup which configurations to run and what resolution to use
 for i in range(len(cfg[0])):
     if (i== 2 or i == 3):
-        calculateRpTrAb(cfg[i][1], cfg[i][2], cfg[i][3], 10, 18)
+        calculateRpTrAb(cfg[i][1], cfg[i][2], cfg[i][3], 200, 180)
     # (substrate, ti, total, wl_reso, angle_reso - optional)
