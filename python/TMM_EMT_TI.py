@@ -5,16 +5,17 @@ from math import *
 import cmath
 from TMM_aniso import get_A_B
 from postprocess import *
+#from Poynting import calcPoynting
 import datetime
 import os
 
-#from Bi2Se3_lorentz import lorentz_E_eps
-#from Bi2Se3_bulk import  bulk_Wolf
-#from Bi2Se3_properties import *
+from Bi2Se3_lorentz import lorentz_E_eps
+from Bi2Se3_bulk import  bulk_Wolf
+from Bi2Se3_properties import *
 
-from Bi2Te3_lorentz import lorentz_E_eps
-from Bi2Te3_bulk import bulk_Wolf
-from Bi2Te3_properties import *
+#from Bi2Te3_lorentz import lorentz_E_eps
+#from Bi2Te3_bulk import bulk_Wolf
+#from Bi2Te3_properties import *
 
 #from ZnSe import eps_ZnSe_Marple
 from sigma_epsilon import eps_conductor
@@ -29,7 +30,7 @@ mu0 = 4*pi*1e-7
 
 # NANO-STRUCTURE
 #-------------------------------
-def calculateRpTrAb(substrate, ti, total, wl_r=10, angle_r=18):
+def calculateRpTrAb(substrate, ti, total, wl_r=10, angle_r=10):
 
     N_periods = int(round(total/(substrate+ti)))
     N_layers = int(2+N_periods*4)
@@ -52,6 +53,8 @@ def calculateRpTrAb(substrate, ti, total, wl_r=10, angle_r=18):
     aa_ = np.tile(aa_, N_periods)
     for i in range(len(d_TMM[0])-2):
         d_TMM[0][i+1] = aa_[i]
+    
+    diff_norm = np.cumsum(d_TMM[0])/total
 
     # Thickness of layers for EMT
     d_EMT = np.array([ [d_air, (d_cond+d_bulk+d_dielectric+d_cond)*N_periods, d_air]  ])
@@ -67,8 +70,8 @@ def calculateRpTrAb(substrate, ti, total, wl_r=10, angle_r=18):
 
     # Select angles of incidence
     theta_i= np.zeros((1,Angle_resolution), dtype=float)
-    theta_i[0] = np.linspace(0,89.9,Angle_resolution)
-    ##theta_i= np.array([[0]])
+    #theta_i[0] = np.linspace(0,89.9,Angle_resolution)
+    theta_i= np.array([[0]])
 
     # Setup dielectric fn for each layer at different wavelengths
     eps_air = np.array([[1.0]])
@@ -107,6 +110,23 @@ def calculateRpTrAb(substrate, ti, total, wl_r=10, angle_r=18):
     kx = np.zeros((len(theta_i[0]),len(wl[0])), dtype=complex)
     kz_air = np.zeros((len(theta_i[0]),len(wl[0])), dtype=complex)
     kz_end = np.zeros((len(theta_i[0]),len(wl[0])), dtype=complex)
+    
+    # what is this?
+    step = 100
+    z_min = -0.5
+    z_max = 2
+    slab = total
+    z_range = np.zeros((len(d_TMM), step), dtype = float)
+    z_range[0] = np.linspace(z_min,-1.0/step,step)
+    print z_range[0]
+    ii = 1
+    for ii in range(len(d_TMM)):
+        z_range[ii] = np.linspace()
+#   for zz = 2:length(diff)
+#       z_range{zz} = linspace(sum(diff(1:(zz-1)))/slab,sum(diff(1:zz))/slab-(diff(zz)/slab)/step,step)
+#
+#   z_range{length(diff)+1} = linspace(1,z_max,step)
+#   z_norm = [z_range{1:end}]
 
     #-------------------------------
     # TESTING
@@ -164,20 +184,15 @@ def calculateRpTrAb(substrate, ti, total, wl_r=10, angle_r=18):
             kz_end[i][j] = cmath.sqrt(pow(k0[j],2)*eps_TMM_O[0][-1]-pow(kx[i][j],2)*eps_TMM_O[0][-1]/eps_TMM_E[0][-1])
 
             Ap, Bp = get_A_B(d_TMM, N_layers, wl[0][j], eps_TMM_O, eps_TMM_E, kx[i][j], mu)
-
-
-
             ApEMT_st, BpEMT_st = get_A_B(d_EMT, 3, wl[0][j], eps_EMT_O_st, eps_EMT_E_st, kx[i][j], mu)
             ApEMT_i1, BpEMT_i1 = get_A_B(d_EMT, 3, wl[0][j], eps_EMT_O_i1, eps_EMT_E_i1, kx[i][j], mu)
 
             Rp_TM = pow(np.abs(Bp[0][0]/Ap[0][0]),2)
             Tr_TM = np.real(kz_end[i][j]/eps_TMM_O[-1][0])/np.real(kz_air[i][j]/eps_TMM_O[0][0])*pow(np.abs(Ap[0][-1]/Ap[0][0]), 2)
             Ab_TM = 1 - Rp_TM - Tr_TM
-
             Rp_EMT_st = pow(np.abs(BpEMT_st[0][0]/ApEMT_st[0][0]),2)
             Tr_EMT_st = pow(np.abs(ApEMT_st[0][-1]/ApEMT_st[0][0]),2)
             Ab_EMT_st = 1 - Rp_EMT_st - Tr_EMT_st
-
             Rp_EMT_i1 = pow(np.abs(BpEMT_i1[0][0]/ApEMT_i1[0][0]),2)
             Tr_EMT_i1 = pow(np.abs(ApEMT_i1[0][-1]/ApEMT_i1[0][0]),2)
             Ab_EMT_i1 = 1 - Rp_EMT_i1 - Tr_EMT_i1
@@ -185,15 +200,15 @@ def calculateRpTrAb(substrate, ti, total, wl_r=10, angle_r=18):
             Rp[i][j] = Rp_TM
             Tr[i][j] = Tr_TM
             Ab[i][j] = Ab_TM
-
-
             RpEMT_st[i][j] = Rp_EMT_st
             TrEMT_st[i][j] = Tr_EMT_st
             AbEMT_st[i][j] = Ab_EMT_st
-
             RpEMT_i1[i][j] = Rp_EMT_i1
             TrEMT_i1[i][j] = Tr_EMT_i1
             AbEMT_i1[i][j] = Ab_EMT_i1
+            
+            #a[][],b[][],c[][],d[][],e[][],f[][] = calcPoynting(z_norm, d_norm, total_d, kx[i][j], eps_TMM_O, eps_TMM_E, wl[0][j], A_TE=0, B_TE=0, A_TM =0, B_TM=0)
+            
 
 
     #for i in range(len(eps_EMTE_i1[0])):
@@ -207,7 +222,6 @@ def calculateRpTrAb(substrate, ti, total, wl_r=10, angle_r=18):
 
 
     #-------------------------------
-
     # POST PROCESSING
     #-------------------------------
     #for 2d plots
@@ -347,11 +361,11 @@ def calculateRpTrAb(substrate, ti, total, wl_r=10, angle_r=18):
     foldername = '../plots/'+month_day
 #    for element in styles:
 #        doContourPlot(wl[0], theta_i[0], Rp, element+'_'+rsl+'.png', element)
-
-    doContourPlot(wl[0], theta_i[0], Rp, foldername, str(material_name()[:6])+'_Rp_'+
-                              cfg +rsl, 1)
-    doContourPlot(wl[0], theta_i[0], Tr, foldername, str(material_name()[:6])+'_Tr_'+
-                              cfg +rsl, 2)
+    print Rp
+#    doContourPlot(wl[0], theta_i[0], Rp, foldername, str(material_name()[:6])+'_Rp_'+
+#                              cfg +rsl, 1)
+#    doContourPlot(wl[0], theta_i[0], Tr, foldername, str(material_name()[:6])+'_Tr_'+
+#                              cfg +rsl, 2)
 
     return
 

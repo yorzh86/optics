@@ -3,9 +3,8 @@ import sys
 import cmath
 import numpy as np
 import cmath
-f
 
-def Poynting(z_norm, d, d_norm, kx, eps_O, eps_E, wl, theta_i, A_TM =0, B_TM=0, A_TE=0, B_TE=0):
+def calcPoynting(z_norm, d, d_norm, total_d, kx, eps_O, eps_E, wl, A_TE=0, B_TE=0, A_TM =0, B_TM=0):
     #fn returns S_xTE, S_zTE, S_xTM, S_zTM, Tr_TM, E_TMmag
     c0 = 2.99792458E8
     eps0 =8.854187817e-12
@@ -14,8 +13,8 @@ def Poynting(z_norm, d, d_norm, kx, eps_O, eps_E, wl, theta_i, A_TM =0, B_TM=0, 
     om = 2.0*np.pi*c0/wl/1E9   #wl in nanometers
     k0 = om/c0
     
-    z = z_norm*d
-    z_0 = np.zeros((0, d*d_norm), dtype=float)
+    z = z_norm*total_d
+    z_0 = np.zeros((0, total_d*d_norm), dtype=float)
     
     #some loop for indexing that I dont undestand
     # is it to find the number of layers?or number of last layer?
@@ -85,9 +84,11 @@ def Poynting(z_norm, d, d_norm, kx, eps_O, eps_E, wl, theta_i, A_TM =0, B_TM=0, 
         S_xTE = 0.5*np.real(Ey*Hz_conj)   # return this
         S_zTE = -0.5*np.real(Ey*Hx_conj)  # return this
         
-        Ey0 = (A_TE(1)+B_TE(1))*exp(1i*k_x)
-        E_TEmag = Ey^2/Ey0^2           # return this
+        Ey0 = (A_TE[i]+B_TE[i])*np.exp(1j*kx)
+        E_TEmag = Ey**2/Ey0**2           # return this
+
         
-    return A_TM, B_TM, A_TE, B_TE, 
+    return S_xTE, S_zTE, S_xTM, S_zTM, Tr_TM, E_TMmag
+
 
     
