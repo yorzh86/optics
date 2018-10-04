@@ -45,14 +45,14 @@ def calculateRpTrAb(substrate, ti, total, wl_r=10, angle_r=10):
     d_air = 0
     d_dielectric = substrate*1E-9
     d_cond = d_conduct()
-    d_bulk = (ti*1E-9-d_cond*2)
+    d_bulk = (ti*1E-9-d_cond*2) #should be 43 layers instead of 42 
 
 
     aa_ = [d_dielectric, d_cond, d_bulk, d_cond]
     d_TMM[0] = d_air
     aa_ = np.tile(aa_, N_periods)
     for i in range(len(d_TMM[0])-2):
-        d_TMM[0][i+1] = aa_[i]
+        d_TMM[0][i+1] = aa_[i]  # + dielectric before air
     
     diff_norm = np.cumsum(d_TMM[0])/total
 
@@ -65,13 +65,13 @@ def calculateRpTrAb(substrate, ti, total, wl_r=10, angle_r=10):
 
     # Setup wavelengths
     wl = np.zeros((1,Wavelength_resolution), dtype=float)
-    wl[0] = np.logspace(np.log10(500), np.log10(20000), Wavelength_resolution)
-    #wl= np.array([[0]])
+    #wl[0] = np.logspace(np.log10(500), np.log10(20000), Wavelength_resolution)
+    wl= np.array([[500]])
 
     # Select angles of incidence
     theta_i= np.zeros((1,Angle_resolution), dtype=float)
     #theta_i[0] = np.linspace(0,89.9,Angle_resolution)
-    theta_i= np.array([[0]])
+    theta_i= np.array([[10, 30, 50, 70]])
 
     # Setup dielectric fn for each layer at different wavelengths
     eps_air = np.array([[1.0]])
@@ -112,16 +112,16 @@ def calculateRpTrAb(substrate, ti, total, wl_r=10, angle_r=10):
     kz_end = np.zeros((len(theta_i[0]),len(wl[0])), dtype=complex)
     
     # what is this?
-    step = 100
-    z_min = -0.5
-    z_max = 2
-    slab = total
-    z_range = np.zeros((len(d_TMM), step), dtype = float)
-    z_range[0] = np.linspace(z_min,-1.0/step,step)
-    print z_range[0]
-    ii = 1
-    for ii in range(len(d_TMM)):
-        z_range[ii] = np.linspace()
+#    step = 100
+#    z_min = -0.5
+#    z_max = 2
+#    slab = total
+#    z_range = np.zeros((len(d_TMM), step*2.5), dtype = float)
+#    z_range[0] = np.linspace(z_min,-1.0/step,step*2.5)
+#    
+#    ii = 1
+#    for ii in range(len(d_TMM)):
+#        z_range[ii] = np.linspace()
 #   for zz = 2:length(diff)
 #       z_range{zz} = linspace(sum(diff(1:(zz-1)))/slab,sum(diff(1:zz))/slab-(diff(zz)/slab)/step,step)
 #
@@ -361,7 +361,13 @@ def calculateRpTrAb(substrate, ti, total, wl_r=10, angle_r=10):
     foldername = '../plots/'+month_day
 #    for element in styles:
 #        doContourPlot(wl[0], theta_i[0], Rp, element+'_'+rsl+'.png', element)
-    print Rp
+    print "RP_TM:", Rp
+    print
+    print
+    
+    
+    print "correct layers mofo!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+    
 #    doContourPlot(wl[0], theta_i[0], Rp, foldername, str(material_name()[:6])+'_Rp_'+
 #                              cfg +rsl, 1)
 #    doContourPlot(wl[0], theta_i[0], Tr, foldername, str(material_name()[:6])+'_Tr_'+
@@ -370,4 +376,4 @@ def calculateRpTrAb(substrate, ti, total, wl_r=10, angle_r=10):
     return
 
 #testing
-#calculateRpTrAb(12, 10, 2000, 10, 10)
+calculateRpTrAb(12, 10, 2000, 1, 4)

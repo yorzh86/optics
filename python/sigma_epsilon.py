@@ -52,9 +52,8 @@ def eps_conductor(wl, d, tau, mu, T = 300):
     Second_Inter = 4.0*heV*om/pi*Integration
     sigma_Inter = (ee**2)/(4*h)*(G_hom2+1j*Second_Inter)
     sigma = sigma_Drude + sigma_Inter
-
     epsilon = 1+1j*sigma/(om*ep0*d)
-
+    
     return epsilon
 
 # 30 chunks
