@@ -11,7 +11,7 @@ ep0 = 8.854187817e-12;
 mu0 = 4*pi*1e-7;
 
 %@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-wl = [0.5]; %1.5, 2.5
+wl = [1.5]; % 1.0, 1.5
 %wl = logspace(log10(0.4),log10(20),50); %need
 %wl = linspace(0.4,20,50);
 nu = 1e4./wl;
@@ -20,10 +20,10 @@ om = 2*pi*c0./wl.*1e6;
 k0 = om./c0;
 d_theta = 0.5;
 %theta_i = 0:d_theta:90; %degrees %need
-theta_i = [10, 30, 50, 70];
+theta_i = [70];
 
-d_c = 0.92e-9;          %BiSe charge thickness
-% d_c = 1.90e-9;        %BiTe charge thickness
+%d_c = 0.92e-9;          %BiSe charge thickness
+d_c = 1.90e-9;        %BiTe charge thickness
 d_d = 12e-9;
 d_b = 10e-9-2*d_c;
 per = 91;               %period add manually!!!
@@ -67,8 +67,8 @@ f_b = d_b/(d_b+d_d+2*d_c);
 
 %@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 T = 300;
-mu = 0.189;
-% mu = 0.194;
+%mu = 0.189;
+mu = 0.194;
 
     %------------------------------------------
 % poolobj = gcp('nocreate');  
@@ -85,23 +85,23 @@ for ii = 1:length(wl)
         ep_ZnSe(ii) = 2.5^2;
         ep_ZnTe(ii) = 2.8^2;
         
-        ep_dO(ii) = ep_ZnSe(ii);
-        ep_dE(ii) = ep_ZnSe(ii);
+        ep_dO(ii) = ep_ZnTe(ii);
+        ep_dE(ii) = ep_ZnTe(ii);
 
-        [Re_ep_TI, Im_ep_TI] = epsilon_BiSe(om(ii));
-%         [Re_ep_TI, Im_ep_TI] = epsilon_BiTe(om(ii));
+        %[Re_ep_TI, Im_ep_TI] = epsilon_BiSe(om(ii));
+        [Re_ep_TI, Im_ep_TI] = epsilon_BiTe(om(ii));
         ep_bO(ii) = Re_ep_TI+1i*Im_ep_TI;
         ep_bE(ii) = Re_ep_TI+1i*Im_ep_TI;
 
         %-METAL EPSILON-----------------------------------
-        [sigma(ii),~]=BiSe_conductivity(om(ii),T,mu);
-%         [sigma(ii),~]=BiTe_conductivity(om(ii),T,mu);
+%        [sigma(ii),~]=BiSe_conductivity(om(ii),T,mu);
+        [sigma(ii),~]=BiTe_conductivity(om(ii),T,mu);
         %[sigma(ii),~]=Graphene_conductivity(om(ii),T,mu);
 
-        [ep_Ec(ii)] = epsilon_AY_BiSe(om(ii));  
-%         [ep_Ec(ii)] = epsilon_AY_BiTe(om(ii));  
+%        [ep_Ec(ii)] = epsilon_AY_BiSe(om(ii));  
+        [ep_Ec(ii)] = epsilon_AY_BiTe(om(ii));  
 
-        ep_c(ii)=1+1i*sigma(ii)/(om(ii)*ep0*d_c); %changed to 1+ 1i...
+        ep_c(ii)=1i*sigma(ii)/(om(ii)*ep0*d_c); %changed to 1+ 1i...
 
         ep_cO(ii) = ep_c(ii)+ep_bO(ii);
         ep_cE(ii) = ep_Ec(ii);

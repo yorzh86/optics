@@ -1,4 +1,4 @@
-function [sigma, epsilon] = BiSe_conductivity(om, T, mu)
+function [sigma, epsilon] = BiTe_conductivity(om, T, mu)
 
 h = 1.054571596e-34;           %Planck's constant over 2*pi [J-s]
 hh = h*2*pi;
@@ -13,8 +13,8 @@ om_Oph=3.0386e+14;      %Optical phonon frequency
 % MATERIAL DEFINITIONS AND DOMAIN
 wl = 2*pi*c0/om*1e6;
 
-thickness = 0.92e-9;
-tau = 100e-15;  %Qu et al 2010 Science
+thickness = 1.9e-9;
+tau = 54e-15;  %Qu et al 2010 Science
 
 sigma_Drude = 1i/(om+1i/tau)*ee^2/(pi*h^2)*abs(ee*mu);
 
