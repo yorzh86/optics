@@ -9,13 +9,13 @@ from postprocess import *
 import datetime
 import os
 
-from Bi2Se3_lorentz import lorentz_E_eps
-from Bi2Se3_bulk import  bulk_Wolf
-from Bi2Se3_properties import *
+#from Bi2Se3_lorentz import lorentz_E_eps
+#from Bi2Se3_bulk import  bulk_Wolf
+#from Bi2Se3_properties import *
 
-#from Bi2Te3_lorentz import lorentz_E_eps
-#from Bi2Te3_bulk import bulk_Wolf
-#from Bi2Te3_properties import *
+from Bi2Te3_lorentz import lorentz_E_eps
+from Bi2Te3_bulk import bulk_Wolf
+from Bi2Te3_properties import *
 
 #from ZnSe import eps_ZnSe_Marple
 from sigma_epsilon import eps_conductor
@@ -33,7 +33,7 @@ mu0 = 4*pi*1e-7
 def calculateRpTrAb(substrate, ti, total, wl_r=10, angle_r=10):
 
     N_periods = int(round(total/(substrate+ti)))
-    N_layers = int(2+N_periods*4)
+    N_layers = int(3+N_periods*4)
     Wavelength_resolution = wl_r
     Angle_resolution = angle_r
 
@@ -51,8 +51,10 @@ def calculateRpTrAb(substrate, ti, total, wl_r=10, angle_r=10):
     aa_ = [d_dielectric, d_cond, d_bulk, d_cond]
     d_TMM[0] = d_air
     aa_ = np.tile(aa_, N_periods)
-    for i in range(len(d_TMM[0])-2):
+    for i in range(len(d_TMM[0])-3):
         d_TMM[0][i+1] = aa_[i]  # + dielectric before air
+    d_TMM[0][-2] = d_dielectric
+        
     
     diff_norm = np.cumsum(d_TMM[0])/total
 
@@ -66,12 +68,13 @@ def calculateRpTrAb(substrate, ti, total, wl_r=10, angle_r=10):
     # Setup wavelengths
     wl = np.zeros((1,Wavelength_resolution), dtype=float)
     #wl[0] = np.logspace(np.log10(500), np.log10(20000), Wavelength_resolution)
-    wl= np.array([[500]])
+    wl[0] = np.linspace(500, 2000, Wavelength_resolution)
+    #wl= np.array([[500]])
 
     # Select angles of incidence
     theta_i= np.zeros((1,Angle_resolution), dtype=float)
     #theta_i[0] = np.linspace(0,89.9,Angle_resolution)
-    theta_i= np.array([[10, 30, 50, 70]])
+    theta_i= np.array([[0]])
 
     # Setup dielectric fn for each layer at different wavelengths
     eps_air = np.array([[1.0]])
@@ -169,11 +172,13 @@ def calculateRpTrAb(substrate, ti, total, wl_r=10, angle_r=10):
             # 4. change shape to match the rest of the code
             eps_period_O = np.tile(eps_period_O, N_periods)
             eps_TMM_O = np.append(eps_air, eps_period_O)
+            eps_TMM_O = np.append(eps_TMM_O, eps_dO[0][j])
             eps_TMM_O = np.append(eps_TMM_O, eps_air)
             eps_TMM_O = np.array([eps_TMM_O])
 
             eps_period_E = np.tile(eps_period_E, N_periods)
             eps_TMM_E = np.append(eps_air, eps_period_E)
+            eps_TMM_E = np.append(eps_TMM_E, eps_dE[0][j])
             eps_TMM_E = np.append(eps_TMM_E, eps_air)
             eps_TMM_E = np.array([eps_TMM_E])
 
@@ -268,7 +273,19 @@ def calculateRpTrAb(substrate, ti, total, wl_r=10, angle_r=10):
     #    R_3[2][i] = Rp[i][0] #TMM
     #    T_3[2][i] = Tr[i][0]
 
-    directory = '../plots/September/2/'
+
+    today = datetime.date.today()
+    month_day = today.strftime('%b')+'/'+ today.strftime('%d')+'/'
+    
+    #create folder
+    path = '../plots/'+month_day
+    if (os.path.isdir(path) == False):
+        os.makedirs(path)
+    
+    foldername = '../plots/'+month_day
+
+
+    directory = foldername
     prop1 = "Transmittance"
     prop2 = "Reflectance_Contour"
     prop3 = "Absorbtance"
@@ -326,7 +343,7 @@ def calculateRpTrAb(substrate, ti, total, wl_r=10, angle_r=10):
     #postprocess.writeToFile(fn3[:-4] +".xls", titleBULK, argsB) #FIG2 - BULK
     #postprocess.writeToFile(fn4[:-4] +".xls", titleCOND, argsC) #FIG2 - COND
 
-    #postprocess.writeToFile(fnEMTi[:-4] +".xls", titleEPSi, args)    #FIG3 -6
+    writeToFile(fnEMTi[:-4] +".xls", titleEPSi, args)    #FIG3 -6
     #postprocess.writeToFile(fn2[:-4] +".xls", titleAR, argsR)        #FIG4 -7
     #postprocess.writeToFile(fn21[:-4] +".xls", titleAR, argsA)       #FIG5 -8
 
@@ -350,23 +367,9 @@ def calculateRpTrAb(substrate, ti, total, wl_r=10, angle_r=10):
                 'gnuplot', 'gnuplot2', 'CMRmap', 'cubehelix', 'brg', 'hsv',
                 'gist_rainbow', 'rainbow', 'jet', 'nipy_spectral', 'gist_ncar']
 
-    today = datetime.date.today()
-    month_day = today.strftime('%b')+'/'+ today.strftime('%d')+'/'
-    
-    #create folder
-    path = '../plots/'+month_day
-    if (os.path.isdir(path) == False):
-        os.makedirs(path)
-    
-    foldername = '../plots/'+month_day
+
 #    for element in styles:
 #        doContourPlot(wl[0], theta_i[0], Rp, element+'_'+rsl+'.png', element)
-    print "RP_TM:", Rp
-    print
-    print
-    
-    
-    print "correct layers mofo!!!!!!!!!!!!!!!!!!!!!!!!!!!"
     
 #    doContourPlot(wl[0], theta_i[0], Rp, foldername, str(material_name()[:6])+'_Rp_'+
 #                              cfg +rsl, 1)
@@ -376,4 +379,4 @@ def calculateRpTrAb(substrate, ti, total, wl_r=10, angle_r=10):
     return
 
 #testing
-calculateRpTrAb(12, 10, 2000, 1, 4)
+calculateRpTrAb(12, 10, 2000, 3000, 1)
