@@ -9,13 +9,13 @@ from postprocess import *
 import datetime
 import os
 
-#from Bi2Se3_lorentz import lorentz_E_eps
-#from Bi2Se3_bulk import  bulk_Wolf
-#from Bi2Se3_properties import *
+from Bi2Se3_lorentz import lorentz_E_eps
+from Bi2Se3_bulk import  bulk_Wolf
+from Bi2Se3_properties import *
 
-from Bi2Te3_lorentz import lorentz_E_eps
-from Bi2Te3_bulk import bulk_Wolf
-from Bi2Te3_properties import *
+#from Bi2Te3_lorentz import lorentz_E_eps
+#from Bi2Te3_bulk import bulk_Wolf
+#from Bi2Te3_properties import *
 
 #from ZnSe import eps_ZnSe_Marple
 from sigma_epsilon import eps_conductor
@@ -68,7 +68,7 @@ def calculateRpTrAb(substrate, ti, total, wl_r=10, angle_r=10):
     # Setup wavelengths
     wl = np.zeros((1,Wavelength_resolution), dtype=float)
     #wl[0] = np.logspace(np.log10(500), np.log10(20000), Wavelength_resolution)
-    wl[0] = np.linspace(500, 2000, Wavelength_resolution)
+    wl[0] = np.linspace(500, 20000, Wavelength_resolution)
     #wl= np.array([[500]])
 
     # Select angles of incidence

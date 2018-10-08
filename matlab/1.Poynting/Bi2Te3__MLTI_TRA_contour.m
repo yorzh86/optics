@@ -1,6 +1,7 @@
 % Calculation of radiative coefficients of multilayer, and Poynting vector
-% 
-% To change from Bi2Se3 to Bi2Te3 follow steps:
+% for ============== Bi2Te3=============
+
+% To change(don't do it) to Bi2Se3 follow steps:
 % 1. switch d_c = 0.92e-9;
 % 2. change mu = 0.189;
 % 3. change ep_dO(ii) = ep_ZnSe(ii);
@@ -29,11 +30,10 @@ d_theta = 0.5;
 %theta_i = 0:d_theta:90; %degrees %need
 theta_i = [10];
 
-d_c = 0.92e-9;          %BiSe charge thickness   % CHANGE HERE TO BI2TE3
-%d_c = 1.90e-9;        %BiTe charge thickness
+d_c = 1.90e-9;
 d_d = 12e-9;
 d_b = 10e-9-2*d_c;
-per = 91;               %period add manually!!!
+per = 91;
 
 diff = zeros(1,4*per+2);
 diff(2:4:end) = d_d;
@@ -73,26 +73,20 @@ f_d = d_d/(d_b+d_d+2*d_c);
 f_b = d_b/(d_b+d_d+2*d_c);
 
 T = 300;
-mu = 0.189; % CHANGE HERE TO BI2TE3
-%mu = 0.194;
+mu = 0.194;
 
 for ii = 1:length(wl)
-        ep_ZnSe(ii) = 2.5^2;  
-        %ep_ZnTe(ii) = 2.8^2;
+        ep_ZnTe(ii) = 2.8^2;
         
-        ep_dO(ii) = ep_ZnSe(ii);   %change here
-        ep_dE(ii) = ep_ZnSe(ii);   %change here
+        ep_dO(ii) = ep_ZnTe(ii);   
+        ep_dE(ii) = ep_ZnTe(ii);   
 
-        [Re_ep_TI, Im_ep_TI] = epsilon_BiSe(om(ii)); % CHANGE HERE TO BI2TE3
-        %[Re_ep_TI, Im_ep_TI] = epsilon_BiTe(om(ii));
+        [Re_ep_TI, Im_ep_TI] = epsilon_BiTe(om(ii));
         
-        [sigma(ii),~]=BiSe_conductivity(om(ii),T,mu); % CHANGE HERE TO BI2TE3
-        %[sigma(ii),~]=BiTe_conductivity(om(ii),T,mu);
+        [sigma(ii),~]=BiTe_conductivity(om(ii),T,mu);
         
-        [ep_Ec(ii)] = epsilon_AY_BiSe(om(ii));  % CHANGE HERE TO BI2TE3
-        %[ep_Ec(ii)] = epsilon_AY_BiTe(om(ii));  
+        [ep_Ec(ii)] = epsilon_AY_BiTe(om(ii));  
 
-        
         ep_bO(ii) = Re_ep_TI+1i*Im_ep_TI;
         ep_bE(ii) = Re_ep_TI+1i*Im_ep_TI;      
 
