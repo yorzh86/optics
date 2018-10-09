@@ -129,6 +129,8 @@ def doContourPlot(wl, theta_i, R, foldername, filename, prop, style='gray'):
     if prop ==1: # Reflectance is always up to 100%
         num_ticks = 6
         ticks_labels = ['0.00', '0.20', '0.40', '0.60', '0.80', '1.00']
+        #num_ticks = 9
+        #ticks_labels = ['0.00', '0.01', '0.02', '0.03', '0.04', '0.05',  '0.06', '0.07', '0.08'] # for Bi2Se3 Tr 12-10
     else:
         a = round(p.cvalues.max(), 2)
         if (int(repr(a)[-1])%2 == 1):

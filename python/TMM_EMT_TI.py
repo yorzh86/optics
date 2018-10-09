@@ -67,14 +67,14 @@ def calculateRpTrAb(substrate, ti, total, wl_r=10, angle_r=10):
 
     # Setup wavelengths
     wl = np.zeros((1,Wavelength_resolution), dtype=float)
-    #wl[0] = np.logspace(np.log10(500), np.log10(20000), Wavelength_resolution)
-    wl[0] = np.linspace(500, 20000, Wavelength_resolution)
+    wl[0] = np.logspace(np.log10(500), np.log10(20000), Wavelength_resolution)
+    #wl[0] = np.linspace(500, 2000, Wavelength_resolution)
     #wl= np.array([[500]])
 
     # Select angles of incidence
     theta_i= np.zeros((1,Angle_resolution), dtype=float)
-    #theta_i[0] = np.linspace(0,89.9,Angle_resolution)
-    theta_i= np.array([[0]])
+    theta_i[0] = np.linspace(0,89.9,Angle_resolution)
+    #theta_i= np.array([[0]])
 
     # Setup dielectric fn for each layer at different wavelengths
     eps_air = np.array([[1.0]])
@@ -297,7 +297,7 @@ def calculateRpTrAb(substrate, ti, total, wl_r=10, angle_r=10):
     l3 = "Extraordinary, imaginary"
     l4 = "Ordinary, imaginary"
 
-    fnEMTi =  directory +"diel="  +  str(d_dielectric*1E9)+ "_bulk=" +str(d_bulk*1E9) + EMTi
+    fnEMTi =  directory +str(material_name()[:6])+"_diel="  +  str(d_dielectric*1E9)+ "_bulk=" +str(d_bulk*1E9) + EMTi
     fnEMTst =  directory +"diel=" + str(d_dielectric*1E9)+ "_bulk=" +str(d_bulk*1E9) + EMTst
 
     fn1 = directory +"diel=" + str(d_dielectric*1E9)+ "_bulk=" +str(d_bulk*1E9) + prop1+ ".png"
@@ -343,7 +343,7 @@ def calculateRpTrAb(substrate, ti, total, wl_r=10, angle_r=10):
     #postprocess.writeToFile(fn3[:-4] +".xls", titleBULK, argsB) #FIG2 - BULK
     #postprocess.writeToFile(fn4[:-4] +".xls", titleCOND, argsC) #FIG2 - COND
 
-    writeToFile(fnEMTi[:-4] +".xls", titleEPSi, args)    #FIG3 -6
+    #writeToFile(fnEMTi[:-4] +".xls", titleEPSi, args)    #FIG3 -6
     #postprocess.writeToFile(fn2[:-4] +".xls", titleAR, argsR)        #FIG4 -7
     #postprocess.writeToFile(fn21[:-4] +".xls", titleAR, argsA)       #FIG5 -8
 
@@ -373,10 +373,10 @@ def calculateRpTrAb(substrate, ti, total, wl_r=10, angle_r=10):
     
 #    doContourPlot(wl[0], theta_i[0], Rp, foldername, str(material_name()[:6])+'_Rp_'+
 #                              cfg +rsl, 1)
-#    doContourPlot(wl[0], theta_i[0], Tr, foldername, str(material_name()[:6])+'_Tr_'+
-#                              cfg +rsl, 2)
+    doContourPlot(wl[0], theta_i[0], Tr, foldername, str(material_name()[:6])+'_Tr_'+
+                              cfg +rsl, 2)
 
     return
 
 #testing
-calculateRpTrAb(12, 10, 2000, 3000, 1)
+#calculateRpTrAb(12, 10, 2000, 3000, 1)

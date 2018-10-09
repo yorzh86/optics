@@ -19,7 +19,7 @@ c0 = 2.99792458e+8;            %speed of light in vacuum
 ep0 = 8.854187817e-12;
 mu0 = 4*pi*1e-7;
 
-wl = [0.50]; % 0.5, 1.404, 3.341
+wl = [3.341]; % 0.5, 1.404, 3.341
 %wl = logspace(log10(0.4),log10(20),50); %need
 %wl = linspace(0.4,20,50);
 nu = 1e4./wl;
@@ -28,7 +28,7 @@ om = 2*pi*c0./wl.*1e6;
 k0 = om./c0;
 d_theta = 0.5;
 %theta_i = 0:d_theta:90; %degrees %need
-theta_i = [10];
+theta_i = [70];
 
 d_c = 0.92e-9;
 d_d = 12e-9;
