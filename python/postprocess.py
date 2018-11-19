@@ -128,7 +128,8 @@ def doContourPlot(wl, theta_i, R, foldername, filename, prop, style='gray'):
     # We either have always same step (e.g. 0.1) or same number of steps.
     if prop ==3:
         num_ticks = 11
-        ticks_labels = ['0.0', '100', '200', '300', '400', '500', '600', '700', '800', '900', '1000']
+        #ticks_labels = ['0.0', '100', '200', '300', '400', '500', '600', '700', '800', '900', '1000']
+        ticks_labels = ['0.0', '20', '40', '60', '80', '100', '120', '140', '160', '180', '200']
     
     if prop ==1: # Reflectance is always up to 100%
         num_ticks = 6
