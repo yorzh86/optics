@@ -69,12 +69,12 @@ def calculateRpTrAb(substrate, ti, total, wl_r=10, angle_r=10):
     wl = np.zeros((1,Wavelength_resolution), dtype=float)
     #wl[0] = np.logspace(np.log10(500), np.log10(20000), Wavelength_resolution)
     #wl[0] = np.linspace(500, 2000, Wavelength_resolution)
-    wl= np.array([[500]])
+    wl= np.array([[500, 1000]])
 
     # Select angles of incidence
     theta_i= np.zeros((1,Angle_resolution), dtype=float)
     #theta_i[0] = np.linspace(0,89.9,Angle_resolution)
-    theta_i= np.array([[00]])
+    theta_i= np.array([[0, 60]])
 
     # Setup dielectric fn for each layer at different wavelengths
     eps_air = np.array([[1.0]])
@@ -182,13 +182,16 @@ def calculateRpTrAb(substrate, ti, total, wl_r=10, angle_r=10):
             eps_TMM_E = np.append(eps_TMM_E, eps_dE[0][j])
             eps_TMM_E = np.append(eps_TMM_E, eps_air)
             eps_TMM_E = np.array([eps_TMM_E])
-
+            
+            #print eps_EMTO_i1[0]
+            #sys.exit()
+            
             om = 2*pi*c0/wl[0]*1E9 #wl[0][j]
             k0 = om/c0
             kx[i][j] = k0[j]*sin(theta_i[0][i]*pi/180)
             kz_air[i][j] = cmath.sqrt(pow(k0[j],2)-pow(kx[i][j],2))
             kz_end[i][j] = cmath.sqrt(pow(k0[j],2)*eps_TMM_O[0][-1]-pow(kx[i][j],2)*eps_TMM_O[0][-1]/eps_TMM_E[0][-1])
-            kz_EMT[i][j] = cmath.sqrt(pow(k0[j],2)*eps_EMT_O_i1[i][1]-pow(kx[i][j],2)*eps_EMT_O_i1[i][1]/eps_EMT_E_i1[i][1])
+            kz_EMT[i][j] = cmath.sqrt(pow(k0[j],2)*eps_EMTO_i1[0][j]-pow(kx[i][j],2)*eps_EMTO_i1[0][j]/eps_EMTE_i1[0][j])         
             
             Ap, Bp = get_A_B(d_TMM, N_layers, wl[0][j], eps_TMM_O, eps_TMM_E, kx[i][j], mu)
             ApEMT_st, BpEMT_st = get_A_B(d_EMT, 3, wl[0][j], eps_EMT_O_st, eps_EMT_E_st, kx[i][j], mu)
@@ -381,8 +384,10 @@ def calculateRpTrAb(substrate, ti, total, wl_r=10, angle_r=10):
 #                              cfg +rsl, 1)
 #    doContourPlot(wl[0], theta_i[0], Tr, foldername, str(material_name()[:6])+'_Tr_'+
 #                              cfg +rsl, 2)
+#    doContourPlot(wl[0], theta_i[0], Pd, foldername, str(material_name()[:6])+'_Pd_'+
+#                             cfg +rsl, 3)
 
     return
 
 #testing
-calculateRpTrAb(12, 10, 2000, 1, 1)
+calculateRpTrAb(12, 10, 2000, 2, 2)
