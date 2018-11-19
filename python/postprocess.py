@@ -126,12 +126,16 @@ def doContourPlot(wl, theta_i, R, foldername, filename, prop, style='gray'):
     sm.set_array([])
 
     # We either have always same step (e.g. 0.1) or same number of steps.
+    if prop ==3:
+        num_ticks = 11
+        ticks_labels = ['0.0', '100', '200', '300', '400', '500', '600', '700', '800', '900', '1000']
+    
     if prop ==1: # Reflectance is always up to 100%
         num_ticks = 6
         ticks_labels = ['0.00', '0.20', '0.40', '0.60', '0.80', '1.00']
         #num_ticks = 9
         #ticks_labels = ['0.00', '0.01', '0.02', '0.03', '0.04', '0.05',  '0.06', '0.07', '0.08'] # for Bi2Se3 Tr 12-10
-    else:
+    if prop==2:
         a = round(p.cvalues.max(), 2)
         if (int(repr(a)[-1])%2 == 1):
             a = a - 1.0/pow(10,len(repr(a))-2)
@@ -149,13 +153,20 @@ def doContourPlot(wl, theta_i, R, foldername, filename, prop, style='gray'):
 
 
 # Creating colobar with 6 ticks and applying user-created labels
+#    if prop ==3:
+#        cbar = fig.colorbar(sm)
+#        tick_locator = ticker.LinearLocator(9)
+#        cbar.locator = tick_locator
+#        cbar.ax.set_yticklabels([''])
+#        cbar.update_ticks()
+        
+        
     cbar = fig.colorbar(sm)
     tick_locator = ticker.LinearLocator(num_ticks)
     cbar.locator = tick_locator
     cbar.ax.set_yticklabels([''])
     cbar.update_ticks()
     cbar.ax.set_yticklabels(ticks_labels)
-
 
     plt.xlabel('Angle, 'r'$\Theta$ (deg)')
     #pl.ylabel('Wavelength, 'r'$\lambda$ ($\mu$m)') #sits on 5*10^0

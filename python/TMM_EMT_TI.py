@@ -67,14 +67,14 @@ def calculateRpTrAb(substrate, ti, total, wl_r=10, angle_r=10):
 
     # Setup wavelengths
     wl = np.zeros((1,Wavelength_resolution), dtype=float)
-    #wl[0] = np.logspace(np.log10(500), np.log10(20000), Wavelength_resolution)
+    wl[0] = np.logspace(np.log10(500), np.log10(20000), Wavelength_resolution)
     #wl[0] = np.linspace(500, 2000, Wavelength_resolution)
-    wl= np.array([[500, 1000]])
+    #wl= np.array([[500, 1000]])
 
     # Select angles of incidence
     theta_i= np.zeros((1,Angle_resolution), dtype=float)
-    #theta_i[0] = np.linspace(0,89.9,Angle_resolution)
-    theta_i= np.array([[0, 60]])
+    theta_i[0] = np.linspace(0,89.9,Angle_resolution)
+    #theta_i= np.array([[0, 60]])
 
     # Setup dielectric fn for each layer at different wavelengths
     eps_air = np.array([[1.0]])
@@ -220,21 +220,8 @@ def calculateRpTrAb(substrate, ti, total, wl_r=10, angle_r=10):
             Pd[i][j] = 1/(2*np.imag(kz_EMT[i][j]))*1e9
             
             #a[][],b[][],c[][],d[][],e[][],f[][] = calcPoynting(z_norm, d_norm, total_d, kx[i][j], eps_TMM_O, eps_TMM_E, wl[0][j], A_TE=0, B_TE=0, A_TM =0, B_TM=0)
-            
 
-
-    for i in range(len(eps_EMTE_i1[0])):
-        ni = cmath.sqrt(eps_EMTE_i1[0][i])
-        ki = ni.imag
-        nst = cmath.sqrt(eps_EMTE_st[0][i])
-        kst = nst.imag
-        
-    #
-        #Pd[0][i] = wl[0][i]/(4.0*pi*ki)  # EMT improved
-        #Pd[1][i] = wl[0][i]/(4.0*pi*kst) # EMT standard
-    print Pd
-
-
+    
     #-------------------------------
     # POST PROCESSING
     #-------------------------------
@@ -390,4 +377,4 @@ def calculateRpTrAb(substrate, ti, total, wl_r=10, angle_r=10):
     return
 
 #testing
-calculateRpTrAb(12, 10, 2000, 2, 2)
+#calculateRpTrAb(12, 10, 2000, 200, 180)

@@ -9,7 +9,7 @@ import pylab as pl
 
 
 #1. Read configurations ('Bi2Se3.configs' or 'Bi2Te3.configs')
-cfg = np.array(pl.loadtxt('Bi2Te3.configs',skiprows=3))
+cfg = np.array(pl.loadtxt('Bi2Se3.configs',skiprows=3))
 #============Bi2Se3=================
 #N| d_Bulk| d_Substr| d_Total|
 #=============================
