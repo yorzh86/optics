@@ -221,7 +221,6 @@ def calculateRpTrAb(substrate, ti, total, wl_r=10, angle_r=10):
             
             #a[][],b[][],c[][],d[][],e[][],f[][] = calcPoynting(z_norm, d_norm, total_d, kx[i][j], eps_TMM_O, eps_TMM_E, wl[0][j], A_TE=0, B_TE=0, A_TM =0, B_TM=0)
 
-    
     #-------------------------------
     # POST PROCESSING
     #-------------------------------
@@ -303,6 +302,8 @@ def calculateRpTrAb(substrate, ti, total, wl_r=10, angle_r=10):
     fn3 = directory + "diel=" + str(d_dielectric*1E9)+"bulk_eps_test1111.png"
     fn4 = directory + "diel=" + str(d_dielectric*1E9)+"CONDUCTION_eps.png"
     fn5 = directory +"diel="+str(d_dielectric*1E9)+"_bulk=" +str(d_bulk*1E9)+"_Pd_"
+    fn6 = directory +"diel="+str(d_dielectric*1E9)+"_bulk=" +str(d_bulk*1E9)+"_Rp_"
+    fn7 = directory +"diel="+str(d_dielectric*1E9)+"_bulk=" +str(d_bulk*1E9)+"_Tr_"
 
     argsEpsI4  = [emtE_ir, emtO_ir, emtE_ii, emtO_ii, fnEMTi, l1, l2, l3, l4, 3]
     argsEpsST4 = [emtE_str, emtO_str, emtE_sti, emtO_sti, fnEMTst, l1, l2, l3, l4, 3]
@@ -329,11 +330,16 @@ def calculateRpTrAb(substrate, ti, total, wl_r=10, angle_r=10):
 
     argsB = [wl[0], eps_bulkO[0].real, eps_bulkO[0].imag]
     argsC = [wl[0], condEr, condOr, condEi, condOi]
+    argsRP =[wl[0], theta_i[0], Rp] 
+    argsTr =[wl[0], theta_i[0], Tr] 
 
     titleAR = 'Wavelength,[nm]'+ '\t'+'TMM'+ '\t'+ "EMTi"+ '\t'+"EMTst"
     titleEPSi = 'Wavelength,[nm]'+ '\t'+'ExtraO_real'+ '\t'+ "Ordinary_real"+ '\t'+"ExtraO_imag" \
      + '\t'+"Ordinary_imag"
     titleBULK = 'Wavelength,[nm]'+ '\t'+'EPS_real'+ '\t'+ "EPS_imag"
+    titleRP = " Structure of the file: 1. all theta_i, 2. all wl, 3. each row has values of Rp for single angle for each wl " 
+    titleTr = " Structure of the file: 1. all theta_i, 2. all wl, 3. each row has values of Tr for single angle for each wl " 
+    
     titleCOND = 'Wavelength,[nm]'+ '\t'+'ExtraO_real'+ '\t'+ "Ordinary_real"+ '\t'+"ExtraO_imag" \
      + '\t'+"Ordinary_imag"
     #postprocess.writeToFile(fn3[:-4] +".xls", titleBULK, argsB) #FIG2 - BULK
@@ -367,14 +373,16 @@ def calculateRpTrAb(substrate, ti, total, wl_r=10, angle_r=10):
 #    for element in styles:
 #        doContourPlot(wl[0], theta_i[0], Rp, element+'_'+rsl+'.png', element)
     
-#    doContourPlot(wl[0], theta_i[0], Rp, foldername, str(material_name()[:6])+'_Rp_'+
-#                              cfg +rsl, 1)
-#    doContourPlot(wl[0], theta_i[0], Tr, foldername, str(material_name()[:6])+'_Tr_'+
-#                              cfg +rsl, 2)
+    doContourPlot(wl[0], theta_i[0], Rp, foldername, str(material_name()[:6])+'_Rp_'+
+                              cfg +rsl, 1, style = 'jet')
+    doContourPlot(wl[0], theta_i[0], Tr, foldername, str(material_name()[:6])+'_Tr_'+
+                              cfg +rsl, 2, style = 'jet')
 #    doContourPlot(wl[0], theta_i[0], Pd, foldername, str(material_name()[:6])+'_Pd_'+
 #                             cfg +rsl, 3)
-
+    
+    writeToFile_Contour(fn6[:-1]+ ".xls", titleRP, argsRP)
+    writeToFile_Contour(fn7[:-1]+ ".xls", titleTr, argsTr)
     return
 
 #testing
-#calculateRpTrAb(12, 10, 2000, 200, 180)
+calculateRpTrAb(100, 100, 2000, 200 , 180)

@@ -126,30 +126,33 @@ def doContourPlot(wl, theta_i, R, foldername, filename, prop, style='gray'):
     sm.set_array([])
 
     # We either have always same step (e.g. 0.1) or same number of steps.
-    if prop ==3:
-        num_ticks = 11
-        #ticks_labels = ['0.0', '100', '200', '300', '400', '500', '600', '700', '800', '900', '1000']
-        ticks_labels = ['0.0', '20', '40', '60', '80', '100', '120', '140', '160', '180', '200']
+#    if prop ==3:
+#        num_ticks = 11
+#        #ticks_labels = ['0.0', '100', '200', '300', '400', '500', '600', '700', '800', '900', '1000']
+#        ticks_labels = ['0.0', '20', '40', '60', '80', '100', '120', '140', '160', '180', '200']
     
-    if prop ==1: # Reflectance is always up to 100%
+    if prop == 1: # Reflectance is always up to 100%
         num_ticks = 6
         ticks_labels = ['0.00', '0.20', '0.40', '0.60', '0.80', '1.00']
         #num_ticks = 9
         #ticks_labels = ['0.00', '0.01', '0.02', '0.03', '0.04', '0.05',  '0.06', '0.07', '0.08'] # for Bi2Se3 Tr 12-10
     if prop==2:
-        a = round(p.cvalues.max(), 2)
-        if (int(repr(a)[-1])%2 == 1):
-            a = a - 1.0/pow(10,len(repr(a))-2)
-
-        if (int(repr(a)[-1]) < 5):
-            num_ticks = int(repr(a)[-1])+6 #ATTENTION!!!!!!!!!!!!!!!!
-        else:
-            num_ticks = int(repr(a)[-1])+1
-        labels = np.linspace(0, a, num= num_ticks)
-        ticks_labels = [[] for _ in range(num_ticks)]
-        for i in range(len(labels)):
-            labels[i] = round(labels[i], 2)
-            ticks_labels[i] = "%.2f" % labels[i]
+        num_ticks = 6
+        ticks_labels = ['0.00', '0.04', '0.08', '0.12', '0.16', '0.20']
+#        a = round(p.cvalues.max(), 2)
+#        if (int(repr(a)[-1])%2 == 1):
+#            a = a - 1.0/pow(10,len(repr(a))-2)
+#
+#        if (int(repr(a)[-1]) < 5):
+#            num_ticks = int(repr(a)[-1])+6 #ATTENTION!!!!!!!!!!!!!!!!
+#        else:
+#            num_ticks = int(repr(a)[-1])+1
+#        labels = np.linspace(0, a, num= num_ticks)
+#        ticks_labels = [[] for _ in range(num_ticks)]
+#        for i in range(len(labels)):
+#            labels[i] = round(labels[i], 2)
+#            ticks_labels[i] = "%.2f" % labels[i]
+        
         #ticks_labels = [repr(i) for i in labels]
 
 
@@ -173,6 +176,25 @@ def doContourPlot(wl, theta_i, R, foldername, filename, prop, style='gray'):
     #pl.ylabel('Wavelength, 'r'$\lambda$ ($\mu$m)') #sits on 5*10^0
     plt.text(-11.4, 3.2, 'Wavelength, 'r'$\lambda$ ($\mu$m)', horizontalalignment='left',
             verticalalignment='center', transform=ax.transData, rotation = 'vertical')
+    
+    if prop ==1:
+        plt.text(68.0, 14.7, 'R', color='white', fontsize=20)
+        plt.text(58.0, 8.0, r'$d_d = 100nm$' + '\n' + r'$d_{TI} = 100nm$', color='white', fontsize=13) 
+        
+        #plt.text(10.5, 2.5, 'R', color='white', fontsize=20)
+        #plt.text(3.5, 1.3, r'$d_d = 100nm$' + '\n' + r'$d_{TI} = 100nm$', color='white', fontsize=13) 
+        #plt.text(10.5, 13.0, 'R', color='white', fontsize=20)
+        #plt.text(3.5, 7.3, r'$d_d = 100nm$' + '\n' + r'$d_{TI} = 10nm$', color='white', fontsize=13) 
+        
+        
+    if prop ==2:
+        plt.text(72.0, 1.1, 'T', color='white', fontsize=20)
+        plt.text(62.0, 0.6, r'$d_d = 100nm$' + '\n' + r'$d_{TI} = 100nm$', color='white', fontsize=13) 
+        
+#                 bbox={'facecolor':'red', 'alpha':0.0, 'pad':10})
+        #plt.text(65.0, 0.7, r'$d_{TI} = 100nm$', color='white', fontsize=12, 
+        #                 bbox={'facecolor':'red', 'alpha':0.0, 'pad':10}))
+        
     #plt.title(filename[:-11])
 
     xmajor_ticks = np.arange(0, 105, 15)
@@ -209,6 +231,32 @@ def writeToFile(fn, title, data):
             if (i == len(data)-1):
                 f.write('\n')
         f.close
+    return
+
+
+#================== Write to file ======================#
+
+def writeToFile_Contour(fn, title, data):
+    f = open(fn, 'w')
+
+    f.write(title+"\n")
+    
+    for i in range(len(data[1])):
+        f.write(str(data[1][i]) + '\t')
+    f.write('\n')
+    
+    for i in range(len(data[0])):
+        f.write(str(data[0][i]) + '\t')
+    f.write('\n')
+    f.write('\n')
+    
+    for i in range(len(data[1])):
+        for j in range(len(data[0])):
+            f.write(str(data[2][i][j]) + '\t')
+        f.write('\n')        
+    
+    f.close()
+      
     return
 
 #================== Read from file =====================#
