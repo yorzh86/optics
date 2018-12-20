@@ -33,7 +33,8 @@ mu0 = 4*pi*1e-7
 def calculateRpTrAb(substrate, ti, total, wl_r=10, angle_r=10):
 
     N_periods = int(round(total/(substrate+ti)))
-    N_layers = int(3+N_periods*4)
+    #N_layers = int(3+N_periods*4) #43 layers
+    N_layers = int(2+N_periods*4) #42 layers
     Wavelength_resolution = wl_r
     Angle_resolution = angle_r
 
@@ -45,15 +46,16 @@ def calculateRpTrAb(substrate, ti, total, wl_r=10, angle_r=10):
     d_air = 0
     d_dielectric = substrate*1E-9
     d_cond = d_conduct()
-    d_bulk = (ti*1E-9-d_cond*2) #should be 43 layers instead of 42 
+    d_bulk = (ti*1E-9-d_cond*2)
 
 
     aa_ = [d_dielectric, d_cond, d_bulk, d_cond]
     d_TMM[0] = d_air
     aa_ = np.tile(aa_, N_periods)
-    for i in range(len(d_TMM[0])-3):
-        d_TMM[0][i+1] = aa_[i]  # + dielectric before air
-    d_TMM[0][-2] = d_dielectric
+    #for i in range(len(d_TMM[0])-3): #43 layers
+    for i in range(len(d_TMM[0])-2): #42 layes
+        d_TMM[0][i+1] = aa_[i]
+    #d_TMM[0][-2] = d_dielectric  #uncomment for 43 layers
         
     
     diff_norm = np.cumsum(d_TMM[0])/total
@@ -173,18 +175,16 @@ def calculateRpTrAb(substrate, ti, total, wl_r=10, angle_r=10):
             # 4. change shape to match the rest of the code
             eps_period_O = np.tile(eps_period_O, N_periods)
             eps_TMM_O = np.append(eps_air, eps_period_O)
-            eps_TMM_O = np.append(eps_TMM_O, eps_dO[0][j])
+            #eps_TMM_O = np.append(eps_TMM_O, eps_dO[0][j])  #uncomment for 43 layers
             eps_TMM_O = np.append(eps_TMM_O, eps_air)
             eps_TMM_O = np.array([eps_TMM_O])
 
             eps_period_E = np.tile(eps_period_E, N_periods)
             eps_TMM_E = np.append(eps_air, eps_period_E)
-            eps_TMM_E = np.append(eps_TMM_E, eps_dE[0][j])
+            #eps_TMM_E = np.append(eps_TMM_E, eps_dE[0][j])  #uncomment for 43 layers
             eps_TMM_E = np.append(eps_TMM_E, eps_air)
             eps_TMM_E = np.array([eps_TMM_E])
             
-            #print eps_EMTO_i1[0]
-            #sys.exit()
             
             om = 2*pi*c0/wl[0]*1E9 #wl[0][j]
             k0 = om/c0
@@ -372,7 +372,7 @@ def calculateRpTrAb(substrate, ti, total, wl_r=10, angle_r=10):
 
 #    for element in styles:
 #        doContourPlot(wl[0], theta_i[0], Rp, element+'_'+rsl+'.png', element)
-    
+#    
     doContourPlot(wl[0], theta_i[0], Rp, foldername, str(material_name()[:6])+'_Rp_'+
                               cfg +rsl, 1, style = 'jet')
     doContourPlot(wl[0], theta_i[0], Tr, foldername, str(material_name()[:6])+'_Tr_'+
@@ -380,9 +380,9 @@ def calculateRpTrAb(substrate, ti, total, wl_r=10, angle_r=10):
 #    doContourPlot(wl[0], theta_i[0], Pd, foldername, str(material_name()[:6])+'_Pd_'+
 #                             cfg +rsl, 3)
     
-    writeToFile_Contour(fn6[:-1]+ ".xls", titleRP, argsRP)
-    writeToFile_Contour(fn7[:-1]+ ".xls", titleTr, argsTr)
+#    writeToFile_Contour(fn6[:-1]+ ".xls", titleRP, argsRP)
+#    writeToFile_Contour(fn7[:-1]+ ".xls", titleTr, argsTr)
     return
 
 #testing
-calculateRpTrAb(100, 100, 2000, 200 , 180)
+calculateRpTrAb(100, 10, 2000, 200 , 180)
