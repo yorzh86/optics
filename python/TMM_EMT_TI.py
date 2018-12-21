@@ -9,13 +9,13 @@ from postprocess import *
 import datetime
 import os
 
-from Bi2Se3_lorentz import lorentz_E_eps
-from Bi2Se3_bulk import  bulk_Wolf
-from Bi2Se3_properties import *
+#from Bi2Se3_lorentz import lorentz_E_eps
+#from Bi2Se3_bulk import  bulk_Wolf
+#from Bi2Se3_properties import *
 
-#from Bi2Te3_lorentz import lorentz_E_eps
-#from Bi2Te3_bulk import bulk_Wolf
-#from Bi2Te3_properties import *
+from Bi2Te3_lorentz import lorentz_E_eps
+from Bi2Te3_bulk import bulk_Wolf
+from Bi2Te3_properties import *
 
 #from ZnSe import eps_ZnSe_Marple
 from sigma_epsilon import eps_conductor
@@ -56,8 +56,8 @@ def calculateRpTrAb(substrate, ti, total, wl_r=10, angle_r=10):
     for i in range(len(d_TMM[0])-2): #42 layes
         d_TMM[0][i+1] = aa_[i]
     #d_TMM[0][-2] = d_dielectric  #uncomment for 43 layers
-        
-    
+
+
     diff_norm = np.cumsum(d_TMM[0])/total
 
     # Thickness of layers for EMT
@@ -116,7 +116,7 @@ def calculateRpTrAb(substrate, ti, total, wl_r=10, angle_r=10):
     kz_air = np.zeros((len(theta_i[0]),len(wl[0])), dtype=complex)
     kz_end = np.zeros((len(theta_i[0]),len(wl[0])), dtype=complex)
     kz_EMT = np.zeros((len(theta_i[0]),len(wl[0])), dtype=complex)
-    
+
     # what is this?
 #    step = 100
 #    z_min = -0.5
@@ -124,7 +124,7 @@ def calculateRpTrAb(substrate, ti, total, wl_r=10, angle_r=10):
 #    slab = total
 #    z_range = np.zeros((len(d_TMM), step*2.5), dtype = float)
 #    z_range[0] = np.linspace(z_min,-1.0/step,step*2.5)
-#    
+#
 #    ii = 1
 #    for ii in range(len(d_TMM)):
 #        z_range[ii] = np.linspace()
@@ -184,15 +184,15 @@ def calculateRpTrAb(substrate, ti, total, wl_r=10, angle_r=10):
             #eps_TMM_E = np.append(eps_TMM_E, eps_dE[0][j])  #uncomment for 43 layers
             eps_TMM_E = np.append(eps_TMM_E, eps_air)
             eps_TMM_E = np.array([eps_TMM_E])
-            
-            
+
+
             om = 2*pi*c0/wl[0]*1E9 #wl[0][j]
             k0 = om/c0
             kx[i][j] = k0[j]*sin(theta_i[0][i]*pi/180)
             kz_air[i][j] = cmath.sqrt(pow(k0[j],2)-pow(kx[i][j],2))
             kz_end[i][j] = cmath.sqrt(pow(k0[j],2)*eps_TMM_O[0][-1]-pow(kx[i][j],2)*eps_TMM_O[0][-1]/eps_TMM_E[0][-1])
-            kz_EMT[i][j] = cmath.sqrt(pow(k0[j],2)*eps_EMTO_i1[0][j]-pow(kx[i][j],2)*eps_EMTO_i1[0][j]/eps_EMTE_i1[0][j])         
-            
+            kz_EMT[i][j] = cmath.sqrt(pow(k0[j],2)*eps_EMTO_i1[0][j]-pow(kx[i][j],2)*eps_EMTO_i1[0][j]/eps_EMTE_i1[0][j])
+
             Ap, Bp = get_A_B(d_TMM, N_layers, wl[0][j], eps_TMM_O, eps_TMM_E, kx[i][j], mu)
             ApEMT_st, BpEMT_st = get_A_B(d_EMT, 3, wl[0][j], eps_EMT_O_st, eps_EMT_E_st, kx[i][j], mu)
             ApEMT_i1, BpEMT_i1 = get_A_B(d_EMT, 3, wl[0][j], eps_EMT_O_i1, eps_EMT_E_i1, kx[i][j], mu)
@@ -216,9 +216,9 @@ def calculateRpTrAb(substrate, ti, total, wl_r=10, angle_r=10):
             RpEMT_i1[i][j] = Rp_EMT_i1
             TrEMT_i1[i][j] = Tr_EMT_i1
             AbEMT_i1[i][j] = Ab_EMT_i1
-            
+
             Pd[i][j] = 1/(2*np.imag(kz_EMT[i][j]))*1e9
-            
+
             #a[][],b[][],c[][],d[][],e[][],f[][] = calcPoynting(z_norm, d_norm, total_d, kx[i][j], eps_TMM_O, eps_TMM_E, wl[0][j], A_TE=0, B_TE=0, A_TM =0, B_TM=0)
 
     #-------------------------------
@@ -271,12 +271,12 @@ def calculateRpTrAb(substrate, ti, total, wl_r=10, angle_r=10):
 
     today = datetime.date.today()
     month_day = today.strftime('%b')+'/'+ today.strftime('%d')+'/'
-    
+
     #create folder
     path = '../plots/'+month_day
     if (os.path.isdir(path) == False):
         os.makedirs(path)
-    
+
     foldername = '../plots/'+month_day
 
 
@@ -330,16 +330,16 @@ def calculateRpTrAb(substrate, ti, total, wl_r=10, angle_r=10):
 
     argsB = [wl[0], eps_bulkO[0].real, eps_bulkO[0].imag]
     argsC = [wl[0], condEr, condOr, condEi, condOi]
-    argsRP =[wl[0], theta_i[0], Rp] 
-    argsTr =[wl[0], theta_i[0], Tr] 
+    argsRP =[wl[0], theta_i[0], Rp]
+    argsTr =[wl[0], theta_i[0], Tr]
 
     titleAR = 'Wavelength,[nm]'+ '\t'+'TMM'+ '\t'+ "EMTi"+ '\t'+"EMTst"
     titleEPSi = 'Wavelength,[nm]'+ '\t'+'ExtraO_real'+ '\t'+ "Ordinary_real"+ '\t'+"ExtraO_imag" \
      + '\t'+"Ordinary_imag"
     titleBULK = 'Wavelength,[nm]'+ '\t'+'EPS_real'+ '\t'+ "EPS_imag"
-    titleRP = " Structure of the file: 1. all theta_i, 2. all wl, 3. each row has values of Rp for single angle for each wl " 
-    titleTr = " Structure of the file: 1. all theta_i, 2. all wl, 3. each row has values of Tr for single angle for each wl " 
-    
+    titleRP = " Structure of the file: 1. all theta_i, 2. all wl, 3. each row has values of Rp for single angle for each wl "
+    titleTr = " Structure of the file: 1. all theta_i, 2. all wl, 3. each row has values of Tr for single angle for each wl "
+
     titleCOND = 'Wavelength,[nm]'+ '\t'+'ExtraO_real'+ '\t'+ "Ordinary_real"+ '\t'+"ExtraO_imag" \
      + '\t'+"Ordinary_imag"
     #postprocess.writeToFile(fn3[:-4] +".xls", titleBULK, argsB) #FIG2 - BULK
@@ -372,14 +372,14 @@ def calculateRpTrAb(substrate, ti, total, wl_r=10, angle_r=10):
 
 #    for element in styles:
 #        doContourPlot(wl[0], theta_i[0], Rp, element+'_'+rsl+'.png', element)
-#    
+#
     doContourPlot(wl[0], theta_i[0], Rp, foldername, str(material_name()[:6])+'_Rp_'+
                               cfg +rsl, 1, style = 'jet')
     doContourPlot(wl[0], theta_i[0], Tr, foldername, str(material_name()[:6])+'_Tr_'+
                               cfg +rsl, 2, style = 'jet')
 #    doContourPlot(wl[0], theta_i[0], Pd, foldername, str(material_name()[:6])+'_Pd_'+
 #                             cfg +rsl, 3)
-    
+
 #    writeToFile_Contour(fn6[:-1]+ ".xls", titleRP, argsRP)
 #    writeToFile_Contour(fn7[:-1]+ ".xls", titleTr, argsTr)
     return

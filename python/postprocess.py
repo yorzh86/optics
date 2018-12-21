@@ -130,7 +130,7 @@ def doContourPlot(wl, theta_i, R, foldername, filename, prop, style='gray'):
 #        num_ticks = 11
 #        #ticks_labels = ['0.0', '100', '200', '300', '400', '500', '600', '700', '800', '900', '1000']
 #        ticks_labels = ['0.0', '20', '40', '60', '80', '100', '120', '140', '160', '180', '200']
-    
+
     if prop == 1: # Reflectance is always up to 100%
         num_ticks = 6
         ticks_labels = ['0.00', '0.20', '0.40', '0.60', '0.80', '1.00']
@@ -152,7 +152,7 @@ def doContourPlot(wl, theta_i, R, foldername, filename, prop, style='gray'):
         for i in range(len(labels)):
             labels[i] = round(labels[i], 2)
             ticks_labels[i] = "%.2f" % labels[i]
-#        
+#
         #ticks_labels = [repr(i) for i in labels]
 
 
@@ -163,38 +163,39 @@ def doContourPlot(wl, theta_i, R, foldername, filename, prop, style='gray'):
         cbar.locator = tick_locator
         cbar.ax.set_yticklabels([''])
         cbar.update_ticks()
-        
-        
+
+
     cbar = fig.colorbar(sm)
     tick_locator = ticker.LinearLocator(num_ticks)
     cbar.locator = tick_locator
     cbar.ax.set_yticklabels([''])
     cbar.update_ticks()
+    cbar.ax.tick_params(direction = 'in')
     cbar.ax.set_yticklabels(ticks_labels)
 
     plt.xlabel('Angle, 'r'$\mathrm{\theta}$ (deg)')
     #pl.ylabel('Wavelength, 'r'$\lambda$ ($\mu$m)') #sits on 5*10^0
     plt.text(-11.4, 3.2, 'Wavelength, 'r'$\mathrm{\lambda \, (\mu m)}$', horizontalalignment='left',
             verticalalignment='center', transform=ax.transData, rotation = 'vertical')
-    
+
     if prop ==1:
         plt.text(102, 13, r'$\mathrm{R_{\lambda, \theta}}$', color='black', fontsize=14)
         plt.text(-13, 17.6, '(b)', color='black', fontsize=14)
-        #plt.text(60.5, 8, r'$\mathrm{d_d = 100nm}$' + '\n' + r'$\mathrm{d_{TI} = 10nm}$', color='white', fontsize=10) #Bi2Te3 100-10
+        plt.text(60.5, 8, r'$\mathrm{d_d = 100nm}$' + '\n' + r'$\mathrm{d_{TI} = 10nm}$', color='white', fontsize=10) #Bi2Te3 100-10
         #plt.text(63, 8, r'$\mathrm{d_d = 12nm}$' + '\n' + r'$\mathrm{d_{TI} = 10nm}$', color='white', fontsize=10)    #Bi2Te3 12-10
         #plt.text(60.5, 12, r'$\mathrm{d_d = 100nm}$' + '\n' + r'$\mathrm{d_{TI} = 100nm}$', color='white', fontsize=10) #Bi2Se3 100-100
-        plt.text(50, 12, r'$\mathrm{d_d = 100nm}$' + '\n' + r'$\mathrm{d_{TI} = 10nm}$', color='white', fontsize=10) #Bi2Se3 100-10
-        
-       
+        #plt.text(50, 12, r'$\mathrm{d_d = 100nm}$' + '\n' + r'$\mathrm{d_{TI} = 10nm}$', color='white', fontsize=10) #Bi2Se3 100-10
+
+
     if prop ==2:
         plt.text(102, 13.5, r'$\mathrm{T_{\lambda, \theta}}$', color='black', fontsize=14)
         plt.text(-13, 17.6, '(d)', color='black', fontsize=14)
-        plt.text(65.5, 0.65, r'$\mathrm {d_d = 100nm}$' + '\n' + r'$\mathrm{d_{TI} = 10nm}$', color='white', fontsize=10) 
-        
+        plt.text(65.5, 0.65, r'$\mathrm {d_d = 100nm}$' + '\n' + r'$\mathrm{d_{TI} = 10nm}$', color='white', fontsize=10)
+
 #                 bbox={'facecolor':'red', 'alpha':0.0, 'pad':10})
-        #plt.text(65.0, 0.7, r'$d_{TI} = 100nm$', color='white', fontsize=12, 
+        #plt.text(65.0, 0.7, r'$d_{TI} = 100nm$', color='white', fontsize=12,
         #                 bbox={'facecolor':'red', 'alpha':0.0, 'pad':10}))
-        
+
     #plt.title(filename[:-11])
 
     xmajor_ticks = np.arange(0, 105, 15)
@@ -208,6 +209,8 @@ def doContourPlot(wl, theta_i, R, foldername, filename, prop, style='gray'):
     ax.axes.text(-4.9, 4.72, '5', fontsize=10, transform = ax.transData)
     ax.axes.text(-4.9, 0.94, '1', fontsize=10, transform = ax.transData)
     ax.axes.text(-7,  0.47, '0.5', fontsize=10, transform = ax.transData)
+    ax.tick_params(direction = 'in')
+    ax.tick_params(which = 'minor', direction = 'in')
     #ax.axes.text(-12,4.7, r'$5\cdot10^{0}$', fontsize=10, transform = ax.transData)
 
 
@@ -240,23 +243,23 @@ def writeToFile_Contour(fn, title, data):
     f = open(fn, 'w')
 
     f.write(title+"\n")
-    
+
     for i in range(len(data[1])):
         f.write(str(data[1][i]) + '\t')
     f.write('\n')
-    
+
     for i in range(len(data[0])):
         f.write(str(data[0][i]) + '\t')
     f.write('\n')
     f.write('\n')
-    
+
     for i in range(len(data[1])):
         for j in range(len(data[0])):
             f.write(str(data[2][i][j]) + '\t')
-        f.write('\n')        
-    
+        f.write('\n')
+
     f.close()
-      
+
     return
 
 #================== Read from file =====================#
