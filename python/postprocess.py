@@ -118,6 +118,7 @@ def doContourPlot(wl, theta_i, R, foldername, filename, prop, style='gray'):
     ax.set_yscale("log")
 
     p = ax.contourf(y,x,R, cmap=style)
+
     norm = colors.Normalize(vmin=0, vmax=p.cvalues.max())
 
     l1 = np.linspace(0.0, p.cvalues.max(), num=6, endpoint=True)
@@ -134,26 +135,24 @@ def doContourPlot(wl, theta_i, R, foldername, filename, prop, style='gray'):
     if prop == 1: # Reflectance is always up to 100%
         num_ticks = 6
         ticks_labels = ['0.00', '0.20', '0.40', '0.60', '0.80', '1.00']
+        print p.cvalues
         #num_ticks = 9
         #ticks_labels = ['0.00', '0.01', '0.02', '0.03', '0.04', '0.05',  '0.06', '0.07', '0.08'] # for Bi2Se3 Tr 12-10
     if prop==2:
-#        num_ticks = 6
-#        ticks_labels = ['0.00', '0.04', '0.08', '0.12', '0.16', '0.20']
-        a = round(p.cvalues.max(), 2)
-        if (int(repr(a)[-1])%2 == 1):
-            a = a - 1.0/pow(10,len(repr(a))-2)
+#        num_ticks = 5
+#        ticks_labels = ['0.01', '0.04', '0.07', '0.10', '0.13']
 
-        if (int(repr(a)[-1]) < 5):
-            num_ticks = int(repr(a)[-1])+6 #ATTENTION!!!!!!!!!!!!!!!!
-        else:
-            num_ticks = int(repr(a)[-1])+1
-        labels = np.linspace(0, a, num= num_ticks)
+        a = p.cvalues.max()
+        num_ticks = 6
+
+        labels = np.linspace(0.0, a, num= num_ticks)
         ticks_labels = [[] for _ in range(num_ticks)]
         for i in range(len(labels)):
             labels[i] = round(labels[i], 2)
             ticks_labels[i] = "%.2f" % labels[i]
-#
+
         #ticks_labels = [repr(i) for i in labels]
+        print p.cvalues
 
 
 # Creating colobar with 6 ticks and applying user-created labels
@@ -180,15 +179,16 @@ def doContourPlot(wl, theta_i, R, foldername, filename, prop, style='gray'):
 
     if prop ==1:
         plt.text(102, 13, r'$\mathrm{R_{\lambda, \theta}}$', color='black', fontsize=14)
-        plt.text(-13, 17.6, '(b)', color='black', fontsize=14)
+        plt.text(-13, 17.6, '(c)', color='black', fontsize=14)
         plt.text(60.5, 8, r'$\mathrm{d_d = 100nm}$' + '\n' + r'$\mathrm{d_{TI} = 10nm}$', color='white', fontsize=10) #Bi2Te3 100-10
-        #plt.text(63, 8, r'$\mathrm{d_d = 12nm}$' + '\n' + r'$\mathrm{d_{TI} = 10nm}$', color='white', fontsize=10)    #Bi2Te3 12-10
+        #plt.text(66, 8.0, r'$\mathrm{d_d = 30nm}$' + '\n' + r'$\mathrm{d_{TI} = 50nm}$', color='white', fontsize=10)    #Bi2Te3 12-10
         #plt.text(60.5, 12, r'$\mathrm{d_d = 100nm}$' + '\n' + r'$\mathrm{d_{TI} = 100nm}$', color='white', fontsize=10) #Bi2Se3 100-100
         #plt.text(50, 12, r'$\mathrm{d_d = 100nm}$' + '\n' + r'$\mathrm{d_{TI} = 10nm}$', color='white', fontsize=10) #Bi2Se3 100-10
 
 
     if prop ==2:
         plt.text(102, 13.5, r'$\mathrm{T_{\lambda, \theta}}$', color='black', fontsize=14)
+        #plt.text(102, 12.2, r'$\mathrm{T_{\lambda, \theta}}$', color='black', fontsize=14)
         plt.text(-13, 17.6, '(d)', color='black', fontsize=14)
         plt.text(65.5, 0.65, r'$\mathrm {d_d = 100nm}$' + '\n' + r'$\mathrm{d_{TI} = 10nm}$', color='white', fontsize=10)
 
@@ -226,7 +226,8 @@ def writeToFile(fn, title, data):
     f.write(title+"\n")
 
 #    for k in data:
-#        print k
+#        f.write(k)
+
 
     for j in range(len(data[0])):
         for i in range(len(data)):
@@ -235,8 +236,8 @@ def writeToFile(fn, title, data):
                 f.write('\n')
         f.close
     return
-
-
+#======================== Write raw data======================#
+    
 #================== Write to file ======================#
 
 def writeToFile_Contour(fn, title, data):

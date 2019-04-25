@@ -33,8 +33,8 @@ mu0 = 4*pi*1e-7
 def calculateRpTrAb(substrate, ti, total, wl_r=10, angle_r=10):
 
     N_periods = int(round(total/(substrate+ti)))
-    #N_layers = int(3+N_periods*4) #43 layers
-    N_layers = int(2+N_periods*4) #42 layers
+    N_layers = int(3+N_periods*4) #43 layers
+    #N_layers = int(2+N_periods*4) #42 layers
     Wavelength_resolution = wl_r
     Angle_resolution = angle_r
 
@@ -50,12 +50,13 @@ def calculateRpTrAb(substrate, ti, total, wl_r=10, angle_r=10):
 
 
     aa_ = [d_dielectric, d_cond, d_bulk, d_cond]
+    #aa_ = [d_cond, d_bulk, d_cond, d_dielectric] #start with Surface
     d_TMM[0] = d_air
     aa_ = np.tile(aa_, N_periods)
-    #for i in range(len(d_TMM[0])-3): #43 layers
-    for i in range(len(d_TMM[0])-2): #42 layes
+    for i in range(len(d_TMM[0])-3): #43 layers
+    #for i in range(len(d_TMM[0])-2): #42 layes
         d_TMM[0][i+1] = aa_[i]
-    #d_TMM[0][-2] = d_dielectric  #uncomment for 43 layers
+    d_TMM[0][-2] = d_dielectric  #uncomment for 43 layers
 
 
     diff_norm = np.cumsum(d_TMM[0])/total
@@ -70,13 +71,13 @@ def calculateRpTrAb(substrate, ti, total, wl_r=10, angle_r=10):
     # Setup wavelengths
     wl = np.zeros((1,Wavelength_resolution), dtype=float)
     wl[0] = np.logspace(np.log10(500), np.log10(20000), Wavelength_resolution)
-    #wl[0] = np.linspace(500, 2000, Wavelength_resolution)
-    #wl= np.array([[500, 1000]])
+    #wl[0] = np.linspace(9900, 10100, Wavelength_resolution)
+    #wl= np.array([[1400, 3000]])
 
     # Select angles of incidence
     theta_i= np.zeros((1,Angle_resolution), dtype=float)
     theta_i[0] = np.linspace(0,89.9,Angle_resolution)
-    #theta_i= np.array([[0, 60]])
+    #theta_i= np.array([[30]])
 
     # Setup dielectric fn for each layer at different wavelengths
     eps_air = np.array([[1.0]])
@@ -148,7 +149,7 @@ def calculateRpTrAb(substrate, ti, total, wl_r=10, angle_r=10):
             eps_bulkO[0][j] = bulk_Wolf(wl[0][j])
             eps_bulkE[0][j] = bulk_Wolf(wl[0][j])
 
-            eps_condO[0][j] = eps_conductor(wl[0][j], d_cond, tau(), muf()) + eps_bulkO[0][j]
+            eps_condO[0][j] = eps_conductor(wl[0][j], d_cond, tau(), muf())# + eps_bulkO[0][j]
             eps_condE[0][j] = complex(lorentz_E_eps(wl[0][j])[0],lorentz_E_eps(wl[0][j])[1])
 
             eps_EMTO_st[0][j] = ff*eps_bulkO[0][j]+(1.0-ff)*eps_dO[0][j]
@@ -165,8 +166,10 @@ def calculateRpTrAb(substrate, ti, total, wl_r=10, angle_r=10):
             #Epsilon of period (dielectric, conduction, bulk, conduction)
             eps_period_O = np.array([
                 [eps_dO[0][j], eps_condO[0][j], eps_bulkO[0][j], eps_condO[0][j] ]])
+                #[eps_condO[0][j], eps_bulkO[0][j], eps_condO[0][j], eps_dO[0][j] ]]) # start with Surface
             eps_period_E = np.array([
                 [eps_dE[0][j], eps_condE[0][j], eps_bulkE[0][j], eps_condE[0][j] ]])
+                #[eps_condE[0][j], eps_bulkE[0][j], eps_condE[0][j], eps_dE[0][j] ]]) # start with Surface
 
             # Build a long array of nano-structure:
             # 1. do (period x N_periods)
@@ -175,13 +178,13 @@ def calculateRpTrAb(substrate, ti, total, wl_r=10, angle_r=10):
             # 4. change shape to match the rest of the code
             eps_period_O = np.tile(eps_period_O, N_periods)
             eps_TMM_O = np.append(eps_air, eps_period_O)
-            #eps_TMM_O = np.append(eps_TMM_O, eps_dO[0][j])  #uncomment for 43 layers
+            eps_TMM_O = np.append(eps_TMM_O, eps_dO[0][j])  #uncomment for 43 layers
             eps_TMM_O = np.append(eps_TMM_O, eps_air)
             eps_TMM_O = np.array([eps_TMM_O])
 
             eps_period_E = np.tile(eps_period_E, N_periods)
             eps_TMM_E = np.append(eps_air, eps_period_E)
-            #eps_TMM_E = np.append(eps_TMM_E, eps_dE[0][j])  #uncomment for 43 layers
+            eps_TMM_E = np.append(eps_TMM_E, eps_dE[0][j])  #uncomment for 43 layers
             eps_TMM_E = np.append(eps_TMM_E, eps_air)
             eps_TMM_E = np.array([eps_TMM_E])
 
@@ -257,17 +260,17 @@ def calculateRpTrAb(substrate, ti, total, wl_r=10, angle_r=10):
     condEi = eps_condE[0].imag
     condOi = eps_condO[0].imag
 
-    #fixed wl - many angles: !!! REDO!!!!!!!!
-    #for i in range(len(RpEMT_st[0])):
-    #    R_3[0][i] = RpEMT_st[i][0] #EMT_st
-    #    T_3[0][i] = TrEMT_st[i][0]
-    #
-    #    R_3[1][i] = RpEMT_i1[i][0] #EMT_i1
-    #    T_3[1][i] = TrEMT_i1[i][0]
-    #
-    #    R_3[2][i] = Rp[i][0] #TMM
-    #    T_3[2][i] = Tr[i][0]
-
+    #fixed wl - many angles
+#    for i in range(len(RpEMT_st[0])):
+#        R_3[0][i] = Rp[i][0]
+#        T_3[0][i] = Tr[i][0]  #TMM
+#        
+#        R_3[1][i] = RpEMT_st[i][0] #EMT_st
+#        T_3[1][i] = TrEMT_st[i][0]
+#    
+#        R_3[2][i] = RpEMT_i1[i][0] #EMTi
+#        T_3[2][i] = TrEMT_i1[i][0]
+#        
 
     today = datetime.date.today()
     month_day = today.strftime('%b')+'/'+ today.strftime('%d')+'/'
@@ -342,11 +345,11 @@ def calculateRpTrAb(substrate, ti, total, wl_r=10, angle_r=10):
 
     titleCOND = 'Wavelength,[nm]'+ '\t'+'ExtraO_real'+ '\t'+ "Ordinary_real"+ '\t'+"ExtraO_imag" \
      + '\t'+"Ordinary_imag"
-    #postprocess.writeToFile(fn3[:-4] +".xls", titleBULK, argsB) #FIG2 - BULK
-    #postprocess.writeToFile(fn4[:-4] +".xls", titleCOND, argsC) #FIG2 - COND
+   # writeToFile(fn3[:-4] +".xls", titleBULK, argsB) #FIG2 - BULK
+   # writeToFile(fn4[:-4] +".xls", titleCOND, argsC) #FIG2 - COND
 
     #writeToFile(fnEMTi[:-4] +".xls", titleEPSi, args)    #FIG3 -6
-    #postprocess.writeToFile(fn2[:-4] +".xls", titleAR, argsR)        #FIG4 -7
+    #writeToFile(fn2[:-4] +".xls", titleAR, [theta_i[0],R_3[0], R_3[2], R_3[1]])        #FIG4 -7
     #postprocess.writeToFile(fn21[:-4] +".xls", titleAR, argsA)       #FIG5 -8
 
     cfg = 'cfg.'+str(d_dielectric*1E9)[:3]+'x'+str(d_bulk*1E9)[:5]+'nm__'
@@ -382,7 +385,24 @@ def calculateRpTrAb(substrate, ti, total, wl_r=10, angle_r=10):
 
 #    writeToFile_Contour(fn6[:-1]+ ".xls", titleRP, argsRP)
 #    writeToFile_Contour(fn7[:-1]+ ".xls", titleTr, argsTr)
+    #print A_3[2], R_3[2], T_3[2]
+#    j = 0
+#    m = 0
+#    f = open (foldername+'raw_data_T.txt', 'w')
+#    
+#    for i in wl[0]:
+#        for k in range(len(theta_i[0])):
+#            #print "angle is:", theta_i[0][k]
+#            f.write(str(Tr[k][j]) + '\t')
+#            f.write('\n')
+#        f.write("wavelength is: " + str(wl[0][j]) + '\n')
+#        f.write("angles are: " + str(theta_i[0]) + '\n')
+#        f.write('\n')
+#        j = j+1
+#    f.close()
+
+
     return
 
 #testing
-calculateRpTrAb(100, 10, 2000, 200 , 180)
+calculateRpTrAb(100, 10 , 2000, 200 , 180)
