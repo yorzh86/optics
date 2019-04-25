@@ -118,23 +118,6 @@ def calculateRpTrAb(substrate, ti, total, wl_r=10, angle_r=10):
     kz_end = np.zeros((len(theta_i[0]),len(wl[0])), dtype=complex)
     kz_EMT = np.zeros((len(theta_i[0]),len(wl[0])), dtype=complex)
 
-    # what is this?
-#    step = 100
-#    z_min = -0.5
-#    z_max = 2
-#    slab = total
-#    z_range = np.zeros((len(d_TMM), step*2.5), dtype = float)
-#    z_range[0] = np.linspace(z_min,-1.0/step,step*2.5)
-#
-#    ii = 1
-#    for ii in range(len(d_TMM)):
-#        z_range[ii] = np.linspace()
-#   for zz = 2:length(diff)
-#       z_range{zz} = linspace(sum(diff(1:(zz-1)))/slab,sum(diff(1:zz))/slab-(diff(zz)/slab)/step,step)
-#
-#   z_range{length(diff)+1} = linspace(1,z_max,step)
-#   z_norm = [z_range{1:end}]
-
     #-------------------------------
     # TESTING
     #-------------------------------
